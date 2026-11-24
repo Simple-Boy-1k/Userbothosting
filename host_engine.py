@@ -5,9 +5,12 @@ import random
 from pathlib import Path
 from pymongo import MongoClient
 from telethon import TelegramClient, events
+from telethon.errors import SessionPasswordNeededError
 from telethon.sessions import StringSession
 
-STORE_FILE = Path("sessions_store.json")
+STORE_FILE = Path("hoster_data.json")
+
+FIRST_DM_WELCOME = "Hey welcome to my dm! How are you...? 😊"
 
 RANDOM_MESSAGES = [
     "Kya chal raha hai? 😄",
@@ -22,78 +25,131 @@ RANDOM_MESSAGES = [
     "Naya message = naya random reply!",
 ]
 
-# user_id (int) -> {"client": TelegramClient, "session": str, "raid_users": set(), "tagging": set(), "last_msg": {}}
+# user_id (int) -> {
+#   "client": TelegramClient,
+#   "session": str,
+#   "raid_users": set(),
+#   "tagging": set(),
+#   "welcomed_users": set(),
+#   "last_msg": {},
+# }
 ACTIVE_HOSTS = {}
 
-_mongo_collection = None
+# user_id (int) -> {"step": "phone"|"otp"|"2fa", "phone": str, "phone_code_hash": str, "client": TelegramClient}
+PENDING_LOGINS = {}
+
+_db = None
 
 
-def _get_collection():
-    global _mongo_collection
-    if _mongo_collection is not None:
-        return _mongo_collection
-    mongo_uri = os.getenv("MONGO_URI", "").strip()
-    if not mongo_uri:
+def _get_db():
+    global _db
+    if _db is not None:
+        return _db
+    uri = os.getenv("MONGO_URI", "").strip()
+    if not uri:
         return None
-    client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-    db = client["userbot_hoster_db"]
-    _mongo_collection = db["hosted_sessions"]
-    return _mongo_collection
+    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+    _db = client["zudo_hoster_db"]
+    return _db
 
 
-def _save_session_record(user_id: int, string_session: str):
-    col = _get_collection()
-    if col is not None:
-        col.update_one(
+def _default_local_store() -> dict:
+    return {
+        "sessions": {},
+        "sudos": [],
+        "blocked": [],
+        "dp_url": "",
+        "secret_mode": False,
+    }
+
+
+def _load_local() -> dict:
+    base = _default_local_store()
+    if STORE_FILE.exists():
+        try:
+            loaded = json.loads(STORE_FILE.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                base.update(loaded)
+        except Exception:
+            pass
+    return base
+
+
+def _save_local(data: dict):
+    STORE_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+def save_session(user_id: int, string_session: str):
+    db = _get_db()
+    if db is not None:
+        db["sessions"].update_one(
             {"_id": str(user_id)},
             {"$set": {"user_id": int(user_id), "session": string_session}},
             upsert=True,
         )
         return
-
-    data = {}
-    if STORE_FILE.exists():
-        try:
-            data = json.loads(STORE_FILE.read_text(encoding="utf-8"))
-        except Exception:
-            data = {}
-    data[str(user_id)] = string_session
-    STORE_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    data = _load_local()
+    data["sessions"][str(user_id)] = string_session
+    _save_local(data)
 
 
-def _delete_session_record(user_id: int):
-    col = _get_collection()
-    if col is not None:
-        col.delete_one({"_id": str(user_id)})
+def delete_session(user_id: int):
+    db = _get_db()
+    if db is not None:
+        db["sessions"].delete_one({"_id": str(user_id)})
         return
-
-    if STORE_FILE.exists():
-        try:
-            data = json.loads(STORE_FILE.read_text(encoding="utf-8"))
-            data.pop(str(user_id), None)
-            STORE_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
-        except Exception:
-            pass
+    data = _load_local()
+    data["sessions"].pop(str(user_id), None)
+    _save_local(data)
 
 
-def load_all_saved_sessions() -> dict[int, str]:
-    col = _get_collection()
-    if col is not None:
-        result = {}
-        for doc in col.find({}):
-            uid_raw = doc.get("user_id") or doc.get("_id")
+def load_all_sessions() -> dict[int, str]:
+    db = _get_db()
+    if db is not None:
+        out = {}
+        for doc in db["sessions"].find({}):
+            uid = doc.get("user_id") or doc.get("_id")
             sess = doc.get("session")
-            if uid_raw and sess and str(uid_raw).isdigit():
-                result[int(uid_raw)] = sess
-        return result
+            if uid and sess and str(uid).isdigit():
+                out[int(uid)] = sess
+        return out
+    data = _load_local()
+    return {int(k): v for k, v in data.get("sessions", {}).items() if str(k).isdigit() and v}
 
-    if STORE_FILE.exists():
-        try:
-            raw = json.loads(STORE_FILE.read_text(encoding="utf-8"))
-            return {int(k): v for k, v in raw.items() if str(k).isdigit() and v}
-        except Exception:
-            return {}
-    return {}
+
+def get_meta_state() -> dict:
+    db = _get_db()
+    if db is not None:
+        doc = db["meta"].find_one({"_id": "config"}) or {}
+        return {
+            "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
+            "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
+            "dp_url": str(doc.get("dp_url") or ""),
+            "secret_mode": bool(doc.get("secret_mode", False)),
+        }
+    data = _load_local()
+    return {
+        "sudos": list(dict.fromkeys(int(x) for x in data.get("sudos", []) if str(x).isdigit())),
+        "blocked": list(dict.fromkeys(int(x) for x in data.get("blocked", []) if str(x).isdigit())),
+        "dp_url": str(data.get("dp_url") or ""),
+        "secret_mode": bool(data.get("secret_mode", False)),
+    }
+
+
+def save_meta_state(meta: dict):
+    clean = {
+        "sudos": list(dict.fromkeys(int(x) for x in meta.get("sudos", []) if str(x).isdigit())),
+        "blocked": list(dict.fromkeys(int(x) for x in meta.get("blocked", []) if str(x).isdigit())),
+        "dp_url": str(meta.get("dp_url") or ""),
+        "secret_mode": bool(meta.get("secret_mode", False)),
+    }
+    db = _get_db()
+    if db is not None:
+        db["meta"].update_one({"_id": "config"}, {"$set": clean}, upsert=True)
+        return
+    data = _load_local()
+    data.update(clean)
+    _save_local(data)
 
 
 def pick_random_message(host_state: dict, target_id: int) -> str:
@@ -111,11 +167,12 @@ def pick_random_message(host_state: dict, target_id: int) -> str:
 async def _attach_handlers(client: TelegramClient, host_state: dict):
     raid_users = host_state["raid_users"]
     tagging_chats = host_state["tagging"]
+    welcomed_users = host_state["welcomed_users"]
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall$"))
     async def tagall_cmd(event):
         if not event.is_group:
-            await event.edit("Yeh command sirf group mein kaam karega.")
+            await event.edit("Yeh command sirf group mein chalega.")
             return
 
         chat_id = event.chat_id
@@ -170,16 +227,29 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         await event.edit(f"DM Replyraid OFF: `{target_id}`")
 
     @client.on(events.NewMessage(incoming=True))
-    async def dm_auto_reply_handler(event):
+    async def dm_auto_handler(event):
         if not event.is_private:
             return
-        if event.sender_id in raid_users:
-            reply_text = pick_random_message(host_state, event.sender_id)
+
+        sender_id = event.sender_id
+        if not sender_id:
+            return
+
+        # 1. Agar ID replyraid list mein hai toh har message par random reply bhejein
+        if sender_id in raid_users:
+            reply_text = pick_random_message(host_state, sender_id)
             await asyncio.sleep(0.8)
             await event.reply(reply_text)
+            return
+
+        # 2. Pehli baar DM aane par automatic welcome message bhejein
+        if sender_id not in welcomed_users:
+            welcomed_users.add(sender_id)
+            await asyncio.sleep(0.5)
+            await event.reply(FIRST_DM_WELCOME)
 
 
-async def host_user_account(
+async def start_client_from_session(
     user_id: int, string_session: str, api_id: int, api_hash: str, persist: bool = True
 ) -> tuple[bool, str]:
     existing = ACTIVE_HOSTS.pop(user_id, None)
@@ -189,19 +259,20 @@ async def host_user_account(
         except Exception:
             pass
 
-    cleaned_session = string_session.strip()
-    client = TelegramClient(StringSession(cleaned_session), api_id, api_hash)
+    cleaned = string_session.strip()
+    client = TelegramClient(StringSession(cleaned), api_id, api_hash)
     try:
         await client.connect()
         if not await client.is_user_authorized():
             await client.disconnect()
-            return False, "Session valid ya authorized nahi hai. Naya StringSession dein."
+            return False, "Session valid ya authorized nahi hai."
 
         host_state = {
             "client": client,
-            "session": cleaned_session,
+            "session": cleaned,
             "raid_users": set(),
             "tagging": set(),
+            "welcomed_users": set(),
             "last_msg": {},
         }
         ACTIVE_HOSTS[user_id] = host_state
@@ -209,9 +280,9 @@ async def host_user_account(
         asyncio.create_task(client.run_until_disconnected())
 
         if persist:
-            _save_session_record(user_id, cleaned_session)
+            save_session(user_id, cleaned)
 
-        return True, "Account host ho gaya hai! Ab `.tagall`, `.stoptagall`, `.replyraid <id>`, `.dreplyraid <id>` chalayein."
+        return True, "Account successfully host ho gaya hai! Ab `.tagall`, `.stoptagall`, `.replyraid <id>`, `.dreplyraid <id>` chalayein."
     except Exception as e:
         try:
             await client.disconnect()
@@ -220,21 +291,115 @@ async def host_user_account(
         return False, f"Host karne mein error aaya: {e}"
 
 
+async def send_login_code(user_id: int, phone: str, api_id: int, api_hash: str) -> tuple[bool, str]:
+    old = PENDING_LOGINS.pop(user_id, None)
+    if old and old.get("client"):
+        try:
+            await old["client"].disconnect()
+        except Exception:
+            pass
+
+    cleaned_phone = phone.strip().replace(" ", "")
+    client = TelegramClient(StringSession(), api_id, api_hash)
+    try:
+        await client.connect()
+        sent = await client.send_code_request(cleaned_phone)
+        PENDING_LOGINS[user_id] = {
+            "step": "otp",
+            "phone": cleaned_phone,
+            "phone_code_hash": sent.phone_code_hash,
+            "client": client,
+        }
+        return True, "OTP bhej diya gaya hai! Kripya apna **OTP** bhejein (jaise `1 2 3 4 5` ya `12345`):"
+    except Exception as e:
+        try:
+            await client.disconnect()
+        except Exception:
+            pass
+        return False, f"OTP bhejne mein error aaya: {e}"
+
+
+async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: str) -> tuple[str, str]:
+    pending = PENDING_LOGINS.get(user_id)
+    if not pending or pending.get("step") != "otp":
+        return "error", "Koi active OTP request nahi mila. Pehle `/host` likhein."
+
+    code = "".join(ch for ch in otp_text if ch.isdigit())
+    if not code:
+        return "retry", "Valid numeric OTP bhejein."
+
+    client = pending["client"]
+    phone = pending["phone"]
+    phone_code_hash = pending["phone_code_hash"]
+
+    try:
+        await client.sign_in(phone=phone, code=code, phone_code_hash=phone_code_hash)
+        session_str = client.session.save()
+        await client.disconnect()
+        PENDING_LOGINS.pop(user_id, None)
+
+        ok, msg = await start_client_from_session(user_id, session_str, api_id, api_hash, persist=True)
+        return ("done" if ok else "error"), msg
+    except SessionPasswordNeededError:
+        pending["step"] = "2fa"
+        return "2fa", "Is account par **2FA Password** set hai. Kripya apna **2FA Password** bhejein:"
+    except Exception as e:
+        try:
+            await client.disconnect()
+        except Exception:
+            pass
+        PENDING_LOGINS.pop(user_id, None)
+        return "error", f"Login fail ho gaya: {e}"
+
+
+async def submit_2fa_password(user_id: int, password: str, api_id: int, api_hash: str) -> tuple[str, str]:
+    pending = PENDING_LOGINS.get(user_id)
+    if not pending or pending.get("step") != "2fa":
+        return "error", "Koi active 2FA step nahi mila. Pehle `/host` likhein."
+
+    client = pending["client"]
+    try:
+        await client.sign_in(password=password.strip())
+        session_str = client.session.save()
+        await client.disconnect()
+        PENDING_LOGINS.pop(user_id, None)
+
+        ok, msg = await start_client_from_session(user_id, session_str, api_id, api_hash, persist=True)
+        return ("done" if ok else "error"), msg
+    except Exception as e:
+        try:
+            await client.disconnect()
+        except Exception:
+            pass
+        PENDING_LOGINS.pop(user_id, None)
+        return "error", f"2FA login fail ho gaya: {e}"
+
+
+async def cancel_pending_login(user_id: int):
+    pending = PENDING_LOGINS.pop(user_id, None)
+    if pending and pending.get("client"):
+        try:
+            await pending["client"].disconnect()
+        except Exception:
+            pass
+
+
 async def restart_user_account(user_id: int, api_id: int, api_hash: str) -> tuple[bool, str]:
     info = ACTIVE_HOSTS.get(user_id)
     if info:
-        return await host_user_account(user_id, info["session"], api_id, api_hash, persist=True)
+        return await start_client_from_session(user_id, info["session"], api_id, api_hash, persist=True)
 
-    saved = load_all_saved_sessions()
+    saved = load_all_sessions()
     if user_id in saved:
-        return await host_user_account(user_id, saved[user_id], api_id, api_hash, persist=True)
+        return await start_client_from_session(user_id, saved[user_id], api_id, api_hash, persist=True)
 
-    return False, "Aapka koi hosted account nahi mila. Pehle `/host <string_session>` karein."
+    return False, "Aapka koi hosted account nahi mila. Pehle `/host` likhein."
 
 
 async def logout_user_account(user_id: int) -> tuple[bool, str]:
+    await cancel_pending_login(user_id)
     info = ACTIVE_HOSTS.pop(user_id, None)
-    _delete_session_record(user_id)
+    delete_session(user_id)
 
     if not info:
         return False, "Logout karne ke liye koi active hosted account nahi mila."
@@ -248,6 +413,6 @@ async def logout_user_account(user_id: int) -> tuple[bool, str]:
 
 
 async def restore_all_saved_sessions(api_id: int, api_hash: str):
-    saved = load_all_saved_sessions()
+    saved = load_all_sessions()
     for uid, session_str in saved.items():
-        await host_user_account(uid, session_str, api_id, api_hash, persist=False)
+        await start_client_from_session(uid, session_str, api_id, api_hash, persist=False)
