@@ -12,21 +12,21 @@ STORE_FILE = Path("hoster_data.json")
 
 FIRST_DM_WELCOME = "Hey welcome to my dm! How are you...? 😊"
 
-# Yahan apni marzi ke 50 random messages likhein
+# Yahan apni marzi ke random messages likhein
 RANDOM_MESSAGES = [
     "𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",   # 01
-    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 �_K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 02
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 _K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 02
     "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄𝐈 𝐒𝐏𝐎𝐓𝐈𝐅𝐘 𝐃𝐀𝐋 𝐊𝐄",   # 03
     "𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",   # 04
     "𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐒𝐔𝐀𝐑 𝐊𝐀 𝐋𝐎𝐔𝐃𝐀 𝐎𝐑 𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐎𝐃𝐀",   # 05
     "𝙆𝙄𝙏𝙉𝙄 𝙂𝙇𝙄𝙔𝘼 𝙋𝘿𝙒𝙀𝙂𝘼 𝘼𝙋𝙉𝙄 𝙈𝘼 𝙆𝙊",   # 06
-    "𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 𝐌𝐄𝐈 𝐁𝐄𝐒𝐀𝐍 𝐊𝐄 𝐋𝐀𝐃𝐃𝐔 𝐁𝐇𝐀𝐑 𝐃𝐔𝐍𝐆𝐀🤩🥳�fire😈",   # 07
+    "𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 𝐌𝐄𝐈 𝐁𝐄𝐒𝐀𝐍 𝐊𝐄 𝐋𝐀𝐃𝐃𝐔 𝐁𝐇𝐀𝐑 𝐃𝐔𝐍𝐆𝐀🤩🥳fire😈",   # 07
     "𝙋𝘼𝙋𝘼 𝙆𝙄 𝙎𝙋𝙀𝙀𝘿 𝙈𝙏𝘾𝙃 𝙉𝙃𝙄 𝙃𝙊 𝙍𝙃𝙄 𝙆𝙔𝘼",   # 08
     "𝙆𝙪𝙩𝙩𝙚 𝙠𝙞 𝙟𝙖𝙩",   # 09
     "𝘼𝙥𝙣𝙞 𝙜𝙖𝙖𝙣𝙙 𝙢𝙚𝙞𝙣 𝙢𝙪𝙩𝙝𝙞 𝙙𝙖𝙖𝙡",   # 10
     "𝙎𝘼𝘽 𝘽𝙊𝙇𝙏𝙀 𝙈𝙐𝙅𝙃𝙆𝙊 𝙋𝘼𝙋𝘼 𝙆𝙔𝙊𝙐𝙉𝙆𝙄 𝙈𝙀𝙉𝙀 𝘽𝘼𝙉𝘼𝘿𝙄𝘼 𝙏𝙀𝙍𝙄 𝙈𝘼𝘼𝙆𝙊 𝙋𝙍𝙀𝙂𝙉𝙀𝙉𝙏 🤣🤣",   # 11
     "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘 𝗦𝗨𝗧𝗟𝗜 𝗕𝗢𝗠𝗕 𝗙𝗢𝗗 𝗗𝗨𝗡𝗚𝗔 𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗝𝗛𝗔𝗔𝗧𝗘 𝗝𝗔𝗟 𝗞𝗘 𝗞𝗛𝗔𝗔𝗞 𝗛𝗢 𝗝𝗔𝗬𝗘𝗚𝗜💣",   # 12
-    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 �_K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 13
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 _K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 13
     "𝘼𝙥𝙣𝙞 𝙜𝙖𝙖𝙣𝙙 𝙢𝙚𝙞𝙣 𝙢𝙪𝙩𝙝𝙞 𝙙𝙖𝙖𝙡",   # 14
     "𝙅𝙝𝙖𝙖𝙣𝙩 𝙠𝙚 𝙥𝙞𝙨𝙨𝙪-",   # 15
     "𝙏𝙀𝙍𝙄 𝘽𝙀𝙃𝙀𝙉 𝙆𝙀 𝘽𝙃𝙊𝙎𝘿𝙀 𝙈𝙀 𝘼𝘼𝘼𝙂 𝙇𝘼𝙂𝘼𝘿𝙄𝘼 𝙈𝙀𝙍𝘼 𝙈𝙊𝙏𝘼 𝙇𝙐𝙉𝘿 𝘿𝘼𝙇𝙆𝙀 🔥🔥💦😆😆",   # 16
@@ -34,14 +34,14 @@ RANDOM_MESSAGES = [
     "𝙏𝙀𝙍𝙄 𝘽𝙀𝙃𝙀𝙉 𝙆𝙊𝙏𝙊 𝘾𝙃𝙊𝘿 𝘾𝙃𝙊𝘿𝙆𝙀 𝙋𝙐𝙍𝘼 𝙁𝘼𝘼𝘿 𝘿𝙄𝘼 𝘾𝙃𝙐𝙏𝙃 𝘼𝘽𝘽 𝙏𝙀𝙍𝙄 𝙂𝙁 𝙆𝙊 𝘽𝙃𝙀𝙅 😆💦🤤",   # 18
     "𝙏𝙀𝙍𝙄 𝙂𝙁 𝙆 𝙎𝘼𝘼𝙏𝙃 𝙈𝙈𝙎 𝘽𝘼𝙉𝘼𝘼 𝘾𝙃𝙐𝙆𝘼 𝙃𝙐",   # 19
     "𝙆𝙄𝙎𝘼𝙉 𝙆𝙊 𝙆𝙃𝙊𝘿𝙉𝘼 𝙊𝙍",   # 20
-    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 �_K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 21
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 _K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 21
     "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥",   # 22
     "𝐓𝐔𝐉𝐇𝐄 𝐀𝐁 𝐓𝐀𝐊 𝐍𝐀𝐇𝐈 𝐒𝐌𝐉𝐇 𝐀𝐘𝐀 𝐊𝐈 𝐌𝐀𝐈 𝐇𝐈 𝐇𝐔 𝐓𝐔𝐉𝐇𝐄 𝐏𝐀𝐈𝐃𝐀 𝐊𝐀𝐑𝐍𝐄 𝐖𝐀𝐋𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄𝐄 𝐀𝐏𝐍𝐈 𝐌𝐀𝐀 𝐒𝐄 𝐏𝐔𝐂𝐇 𝐑𝐀𝐍𝐃𝐈 𝐊𝐄 𝐁𝐀𝐂𝐇𝐄𝐄𝐄𝐄 🤩👊👤😍",   # 23
     "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋",   # 24
     "𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝗞𝗔 𝗪𝗥𝗔𝗣 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 30𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 💥😂😎",   # 25
     "𝙂𝘼𝙇𝙄 𝙂𝘼𝙇𝙄 𝙉𝙀 𝙎𝙃𝙊𝙍 𝙃𝙀 𝙏𝙀𝙍𝙄 𝙈𝘼𝘼 𝙍𝘼𝙉𝘿𝙄 𝘾𝙃𝙊𝙍 𝙃𝙀 💋💋💦",   # 26
     "𝐒𝐔𝐍 𝐒𝐔𝐍 𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐉𝐇𝐀𝐍𝐓𝐎 𝐊𝐄 𝐒𝐎𝐔𝐃𝐀𝐆𝐀𝐑 𝐀𝐏𝐍𝐈 𝐌𝐔𝐌𝐌𝐘 𝐊𝐈 𝐍𝐔𝐃𝐄𝐒 𝐁𝐇𝐄𝐉",   # 27
-    "𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 𝟑𝟎𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎",   # 28
+    "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 𝟑𝟎𝐖 𝐇𝐈𝐆𝐇 𝗣𝗢𝗪𝗘𝗥 💥😂😎",   # 28
     "𝙏𝙀𝙍𝙄 𝙈𝘼𝘼𝙆𝙊 𝘾𝙃𝙀𝙀𝙈𝙎 𝙎𝙀 𝘾𝙃𝙐𝘿𝙒𝘼𝙑𝙐𝙉𝙂𝘼 𝙈𝘼𝘿𝙀𝙍𝘾𝙃𝙊𝙊𝘿 𝙆𝙀 𝙋𝙄𝙇𝙇𝙀 💦🤣",   # 29
     "𝙆𝙄𝙁𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎",   # 30
     "𝙏𝙀𝙍𝙄 𝙈𝘼𝘼 𝙆𝙀 𝙂𝘼𝙉𝘿 𝙈𝙀 𝘿𝙀𝙏𝙊𝙇 𝘿𝘼𝘼𝙇 𝘿𝙐𝙉𝙂𝘼",   # 31
@@ -58,26 +58,21 @@ RANDOM_MESSAGES = [
     "𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝗞𝗔 𝗪𝗥𝗔𝗣 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 30𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 💥😂😎",   # 42
     "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐕𝐈𝐃𝐄𝐎 𝐁𝐀𝐍𝐀𝐊𝐄 𝐗𝐍𝐗𝐗.𝐂𝐎𝐌 𝐏𝐄 𝐍𝐄𝐄𝐋𝐀𝐌 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐊𝐔𝐓𝐓𝐄 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 💦💋",   # 43
     "𝙆𝙄𝙎𝘼𝙉 𝙆𝙊 𝙆𝙃𝙊𝘿𝙉𝘼 𝙊𝙍",   # 44
-    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖�_H𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋",   # 45
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖_H𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋",   # 45
     "𝐆𝐀𝐋𝐈 𝐆𝐀𝐋𝐈 𝐌𝐄 𝐑𝐄𝐇𝐓𝐀 𝐇𝐄 𝐒𝐀𝐍𝐃 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 𝐎𝐑 𝐁𝐀𝐍𝐀 𝐃𝐈𝐀 𝐑𝐀𝐍𝐃 🤤🤣",   # 46
     "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋",   # 47
     "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗢 𝗞𝗢𝗟𝗞𝗔𝗧𝗔 𝗩𝗔𝗔𝗟𝗘 𝗝𝗜𝗧𝗨 𝗕𝗛𝗔𝗜𝗬𝗔 𝗞𝗔 𝗟𝗨𝗡𝗗 𝗠𝗨𝗕𝗔𝗥𝗔𝗞 🤩🤩",   # 48
     "𝗧𝗘𝗥𝗜 𝗠𝗨𝗠𝗠𝗬 𝗞𝗘 𝗦𝗔𝗔𝗧𝗛 𝗟𝗨𝗗𝗢 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟𝗧𝗘 𝗨𝗦𝗞𝗘 𝗠𝗨𝗛 𝗠𝗘 𝗔𝗣𝗡𝗔 𝗟𝗢𝗗𝗔 𝗗𝗘 𝗗𝗨𝗡𝗚𝗔☝🏻☝🏻😬",   # 49
     "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐔𝐍𝐃 𝐊𝐀𝐀𝐋𝐀",   # 50
-
+    "Ullu ke pathe ",   # 51
+    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥 ",   # 52
+    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥 ",   # 53
+    " 𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",   # 54
+    "𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣 ",   # 55
+    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋 ",   # 56
 ]
 
-# user_id (int) -> {
-#   "client": TelegramClient,
-#   "session": str,
-#   "raid_users": set(),
-#   "tagging": set(),
-#   "welcomed_users": set(),
-#   "last_msg": {},
-# }
 ACTIVE_HOSTS = {}
-
-# user_id (int) -> {"step": "phone"|"otp"|"2fa", "phone": str, "phone_code_hash": str, "client": TelegramClient}
 PENDING_LOGINS = {}
 
 _db = None
@@ -207,6 +202,44 @@ def pick_random_message(host_state: dict, target_id: int) -> str:
     return chosen
 
 
+def _clean_mention_name(name: str | None) -> str:
+    cleaned = (name or "User").replace("[", "").replace("]", "").replace("(", "").replace(")", "").strip()
+    return cleaned or "User"
+
+
+async def _collect_group_targets(client: TelegramClient, chat_id: int) -> list[tuple[int, str]]:
+    me = await client.get_me()
+    my_id = me.id if me else 0
+    targets: list[tuple[int, str]] = []
+    seen_ids: set[int] = set()
+
+    try:
+        entity = await client.get_entity(chat_id)
+        async for member in client.iter_participants(entity, aggressive=True):
+            if not member or member.bot or member.deleted or member.id == my_id:
+                continue
+            if member.id not in seen_ids:
+                seen_ids.add(member.id)
+                targets.append((member.id, _clean_mention_name(member.first_name)))
+    except Exception:
+        pass
+
+    # Fallback agar iter_participants restrict ho toh recent chat messages se users collect karein
+    if not targets:
+        try:
+            async for msg in client.iter_messages(chat_id, limit=200):
+                sender = msg.sender
+                if not sender or getattr(sender, "bot", False) or getattr(sender, "deleted", False):
+                    continue
+                if sender.id and sender.id != my_id and sender.id not in seen_ids:
+                    seen_ids.add(sender.id)
+                    targets.append((sender.id, _clean_mention_name(getattr(sender, "first_name", None))))
+        except Exception:
+            pass
+
+    return targets
+
+
 async def _attach_handlers(client: TelegramClient, host_state: dict):
     raid_users = host_state["raid_users"]
     tagging_chats = host_state["tagging"]
@@ -233,25 +266,26 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         except Exception:
             pass
 
-        mentions = []
-        async for member in client.iter_participants(chat_id):
-            if chat_id not in tagging_chats:
-                break
-            if member.bot or member.deleted:
-                continue
+        try:
+            targets = await _collect_group_targets(client, chat_id)
+            if not targets:
+                await client.send_message(chat_id, "Is group mein tag karne ke liye koi member nahi mila.")
+                return
 
-            safe_name = (member.first_name or "User").replace("[", "").replace("]", "")
-            mentions.append(f"[{safe_name}](tg://user?id={member.id})")
+            mentions = []
+            for uid, uname in targets:
+                if chat_id not in tagging_chats:
+                    break
+                mentions.append(f"[{uname}](tg://user?id={uid})")
+                if len(mentions) == 5:
+                    await client.send_message(chat_id, " ".join(mentions), parse_mode="md")
+                    mentions = []
+                    await asyncio.sleep(1.5)
 
-            if len(mentions) == 5:
-                await client.send_message(chat_id, " ".join(mentions))
-                mentions = []
-                await asyncio.sleep(1.5)
-
-        if mentions and chat_id in tagging_chats:
-            await client.send_message(chat_id, " ".join(mentions))
-
-        tagging_chats.discard(chat_id)
+            if mentions and chat_id in tagging_chats:
+                await client.send_message(chat_id, " ".join(mentions), parse_mode="md")
+        finally:
+            tagging_chats.discard(chat_id)
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
     async def stoptagall_cmd(event):
@@ -303,7 +337,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             await event.reply(reply_text)
             return
 
-        # 2. Pehli baar DM aane par automatic welcome message bhejein
+        # 2. Account host hone ke baad jiska bhi pehla DM aaye usko welcome message bhejein
         if sender_id not in welcomed_users:
             welcomed_users.add(sender_id)
             await asyncio.sleep(0.5)
