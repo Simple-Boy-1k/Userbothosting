@@ -73,24 +73,24 @@ def start_caption_html() -> str:
 def help_text_html() -> str:
     return (
         "<b>🌟 PREMIUM HOSTER BOT COMMANDS 🌟</b>\n\n"
-        "🔹 <code>/start</code> - LAUNCH THE BOT WITH A GRAND WELCOME\n"
-        "🔹 <code>/help</code> - DISCOVER ALL COMMANDS\n"
-        "🔹 <code>/commands</code> - EXPLORE USERBOT FEATURES\n"
-        "🔹 <code>/host</code> - DEPLOY YOUR OWN USERBOT\n"
-        "🔹 <code>/support</code> - REQUEST SUPPORT FROM ADMIN (FAST RESPONSE)\n"
-        "🔹 <code>/restart</code> - REVIVE YOUR HOSTED USERBOT\n"
-        "🔹 <code>/supportraid</code> - PRO SUPPORT RAID COMMAND (OWNERS / PREMIUM USERS ONLY)\n"
-        "🔹 <code>/restartall</code> - RESTART ALL USERBOTS (OWNERS ONLY)\n"
-        "🔹 <code>/refresh</code> - REFRESH BOT STATE (OWNERS ONLY)\n"
-        "🔹 <code>/status</code> - CHECK YOUR USERBOT'S PULSE\n"
-        "🔹 <code>/logout</code> - SAFELY LOG OUT YOUR USERBOT\n"
-        "🔹 <code>/sudolist</code> - VIEW SUDO USERS (OWNERS ONLY)\n"
-        "🔹 <code>/setdp</code> - SET DISPLAY PHOTO (OWNERS ONLY)\n"
-        "🔹 <code>/block</code> - BLOCK A USER (OWNERS ONLY)\n"
-        "🔹 <code>/unblock</code> - UNBLOCK A USER (OWNERS ONLY)\n"
-        "🔹 <code>/blockeduser</code> - VIEW BLOCKED USERS (OWNERS ONLY)\n"
-        "🔹 <code>/stats</code> - VIEW BOT STATISTICS (OWNERS ONLY)\n"
-        "🔹 <code>/secretfunction</code> - VIEW SECRET COMMANDS (OWNERS ONLY)"
+        "🔹 /start - LAUNCH THE BOT WITH A GRAND WELCOME\n"
+        "🔹 /help - DISCOVER ALL COMMANDS\n"
+        "🔹 /commands - EXPLORE USERBOT FEATURES\n"
+        "🔹 /host - DEPLOY YOUR OWN USERBOT\n"
+        "🔹 /support - REQUEST SUPPORT FROM ADMIN (FAST RESPONSE)\n"
+        "🔹 /restart - REVIVE YOUR HOSTED USERBOT\n"
+        "🔹 /supportraid - PRO SUPPORT RAID COMMAND (OWNERS / PREMIUM USERS ONLY)\n"
+        "🔹 /restartall - RESTART ALL USERBOTS (OWNERS ONLY)\n"
+        "🔹 /refresh - REFRESH BOT STATE (OWNERS ONLY)\n"
+        "🔹 /status - CHECK YOUR USERBOT'S PULSE\n"
+        "🔹 /logout - SAFELY LOG OUT YOUR USERBOT\n"
+        "🔹 /sudolist - VIEW SUDO USERS (OWNERS ONLY)\n"
+        "🔹 /setdp - SET DISPLAY PHOTO (OWNERS ONLY)\n"
+        "🔹 /block - BLOCK A USER (OWNERS ONLY)\n"
+        "🔹 /unblock - UNBLOCK A USER (OWNERS ONLY)\n"
+        "🔹 /blockeduser - VIEW BLOCKED USERS (OWNERS ONLY)\n"
+        "🔹 /stats - VIEW BOT STATISTICS (OWNERS ONLY)\n"
+        "🔹 /secretfunction - VIEW SECRET COMMANDS (OWNERS ONLY)"
     )
 
 
@@ -138,11 +138,11 @@ async def commands_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     txt = (
         "<b>⚡ USERBOT FEATURES ⚡</b>\n\n"
-        "• <code>.ping</code> — Check userbot response\n"
-        "• <code>.tagall</code> — Group members ko tag karein\n"
-        "• <code>.stoptagall</code> — Tagall stop karein\n"
-        "• <code>.replyraid &lt;user_id&gt;</code> — DM random reply ON\n"
-        "• <code>.dreplyraid &lt;user_id&gt;</code> — DM random reply OFF"
+        "• .ping — Check userbot response\n"
+        "• .tagall — Group members ko tag karein\n"
+        "• .stoptagall — Tagall stop karein\n"
+        "• .replyraid &lt;user_id&gt; — DM random reply ON\n"
+        "• .dreplyraid &lt;user_id&gt; — DM random reply OFF"
     )
     await update.message.reply_text(txt, parse_mode="HTML")
 
@@ -155,8 +155,8 @@ async def host_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if uid in ACTIVE_HOSTS:
         await update.message.reply_text(
             "<b>Error Userbot Already Hosted!</b>\n"
-            "Try <code>/restart</code> or <code>/logout</code>.\n"
-            "Check <code>/commands</code>.",
+            "Try /restart or /logout.\n"
+            "Check /commands.",
             parse_mode="HTML",
         )
         return
@@ -223,7 +223,7 @@ async def support_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await guard(update):
         return
     await update.message.reply_text(
-        f"Support ke liye Owner ID <code>{OWNER_ID}</code> par contact karein.",
+        f"Support ke liye Owner ID {OWNER_ID} par contact karein.",
         parse_mode="HTML",
     )
 
@@ -280,9 +280,9 @@ async def status_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uptime = int(time.time() - START_TIME)
     await update.message.reply_text(
         f"<b>Status</b>\n"
-        f"• Uptime: <code>{uptime}s</code>\n"
-        f"• Your Slot: <code>{'Running' if uid in ACTIVE_HOSTS else 'Not Hosted'}</code>\n"
-        f"• Active Hosts: <code>{len(ACTIVE_HOSTS)}</code>",
+        f"• Uptime: {uptime}s\n"
+        f"• Your Slot: {'Running' if uid in ACTIVE_HOSTS else 'Not Hosted'}\n"
+        f"• Active Hosts: {len(ACTIVE_HOSTS)}",
         parse_mode="HTML",
     )
 
@@ -302,7 +302,7 @@ async def sudolist_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not sudos:
         await update.message.reply_text("Sudo list khali hai.")
         return
-    lines = "\n".join(f"• <code>{u}</code>" for u in sudos)
+    lines = "\n".join(f"• {u}" for u in sudos)
     await update.message.reply_text(f"<b>Sudo Users:</b>\n{lines}", parse_mode="HTML")
 
 
@@ -366,7 +366,7 @@ async def blockeduser_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not blocked:
         await update.message.reply_text("Koi blocked user nahi hai.")
         return
-    lines = "\n".join(f"• <code>{u}</code>" for u in blocked)
+    lines = "\n".join(f"• {u}" for u in blocked)
     await update.message.reply_text(f"<b>Blocked Users:</b>\n{lines}", parse_mode="HTML")
 
 
@@ -377,9 +377,9 @@ async def stats_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     meta = get_meta_state()
     await update.message.reply_text(
         f"<b>Bot Stats</b>\n"
-        f"• Active Hosts: <code>{len(ACTIVE_HOSTS)}</code>\n"
-        f"• Sudo Users: <code>{len(meta['sudos'])}</code>\n"
-        f"• Blocked Users: <code>{len(meta['blocked'])}</code>",
+        f"• Active Hosts: {len(ACTIVE_HOSTS)}\n"
+        f"• Sudo Users: {len(meta['sudos'])}\n"
+        f"• Blocked Users: {len(meta['blocked'])}",
         parse_mode="HTML",
     )
 
