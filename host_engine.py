@@ -12,17 +12,58 @@ STORE_FILE = Path("hoster_data.json")
 
 FIRST_DM_WELCOME = "Hey welcome to my dm! How are you...? 😊"
 
+# Yahan apni marzi ke 50 random messages likhein (har line mein apna text daal sakte hain)
 RANDOM_MESSAGES = [
-    "Kya chal raha hai? 😄",
-    "Phir se DM kar diya? 👀",
-    "Aaj bada yaad aa rahi hai kya?",
-    "Bot bol raha hoon, boss abhi busy hain!",
-    "Ek aur message aaya, ek aur random reply!",
-    "Kya baat hai, ruk hi nahi rahe ho?",
-    "Online toh dikh rahe ho, baat kya karni hai?",
-    "Auto reply mode full on hai! ⚡",
-    "Bolo bolo, sun raha hoon.",
-    "Naya message = naya random reply!",
+    "Message 01 yahan likhein",   # 01
+    "Message 02 yahan likhein",   # 02
+    "Message 03 yahan likhein",   # 03
+    "Message 04 yahan likhein",   # 04
+    "Message 05 yahan likhein",   # 05
+    "Message 06 yahan likhein",   # 06
+    "Message 07 yahan likhein",   # 07
+    "Message 08 yahan likhein",   # 08
+    "Message 09 yahan likhein",   # 09
+    "Message 10 yahan likhein",   # 10
+    "Message 11 yahan likhein",   # 11
+    "Message 12 yahan likhein",   # 12
+    "Message 13 yahan likhein",   # 13
+    "Message 14 yahan likhein",   # 14
+    "Message 15 yahan likhein",   # 15
+    "Message 16 yahan likhein",   # 16
+    "Message 17 yahan likhein",   # 17
+    "Message 18 yahan likhein",   # 18
+    "Message 19 yahan likhein",   # 19
+    "Message 20 yahan likhein",   # 20
+    "Message 21 yahan likhein",   # 21
+    "Message 22 yahan likhein",   # 22
+    "Message 23 yahan likhein",   # 23
+    "Message 24 yahan likhein",   # 24
+    "Message 25 yahan likhein",   # 25
+    "Message 26 yahan likhein",   # 26
+    "Message 27 yahan likhein",   # 27
+    "Message 28 yahan likhein",   # 28
+    "Message 29 yahan likhein",   # 29
+    "Message 30 yahan likhein",   # 30
+    "Message 31 yahan likhein",   # 31
+    "Message 32 yahan likhein",   # 32
+    "Message 33 yahan likhein",   # 33
+    "Message 34 yahan likhein",   # 34
+    "Message 35 yahan likhein",   # 35
+    "Message 36 yahan likhein",   # 36
+    "Message 37 yahan likhein",   # 37
+    "Message 38 yahan likhein",   # 38
+    "Message 39 yahan likhein",   # 39
+    "Message 40 yahan likhein",   # 40
+    "Message 41 yahan likhein",   # 41
+    "Message 42 yahan likhein",   # 42
+    "Message 43 yahan likhein",   # 43
+    "Message 44 yahan likhein",   # 44
+    "Message 45 yahan likhein",   # 45
+    "Message 46 yahan likhein",   # 46
+    "Message 47 yahan likhein",   # 47
+    "Message 48 yahan likhein",   # 48
+    "Message 49 yahan likhein",   # 49
+    "Message 50 yahan likhein",   # 50
 ]
 
 # user_id (int) -> {
@@ -153,13 +194,14 @@ def save_meta_state(meta: dict):
 
 
 def pick_random_message(host_state: dict, target_id: int) -> str:
-    if not RANDOM_MESSAGES:
+    valid_msgs = [m.strip() for m in RANDOM_MESSAGES if isinstance(m, str) and m.strip()]
+    if not valid_msgs:
         return "Hello!"
-    if len(RANDOM_MESSAGES) == 1:
-        return RANDOM_MESSAGES[0]
+    if len(valid_msgs) == 1:
+        return valid_msgs[0]
     last_msg = host_state["last_msg"].get(target_id)
-    pool = [m for m in RANDOM_MESSAGES if m != last_msg]
-    chosen = random.choice(pool or RANDOM_MESSAGES)
+    pool = [m for m in valid_msgs if m != last_msg]
+    chosen = random.choice(pool or valid_msgs)
     host_state["last_msg"][target_id] = chosen
     return chosen
 
