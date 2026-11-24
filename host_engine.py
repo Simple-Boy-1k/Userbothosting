@@ -12,58 +12,64 @@ STORE_FILE = Path("hoster_data.json")
 
 FIRST_DM_WELCOME = "Hey welcome to my dm! How are you...? 😊"
 
-# Yahan apni marzi ke 50 random messages likhein (har line mein apna text daal sakte hain)
+# Yahan apni marzi ke 50 random messages likhein
 RANDOM_MESSAGES = [
-    "Message 01 yahan likhein",   # 01
-    "Message 02 yahan likhein",   # 02
-    "Message 03 yahan likhein",   # 03
-    "Message 04 yahan likhein",   # 04
-    "Message 05 yahan likhein",   # 05
-    "Message 06 yahan likhein",   # 06
-    "Message 07 yahan likhein",   # 07
-    "Message 08 yahan likhein",   # 08
-    "Message 09 yahan likhein",   # 09
-    "Message 10 yahan likhein",   # 10
-    "Message 11 yahan likhein",   # 11
-    "Message 12 yahan likhein",   # 12
-    "Message 13 yahan likhein",   # 13
-    "Message 14 yahan likhein",   # 14
-    "Message 15 yahan likhein",   # 15
-    "Message 16 yahan likhein",   # 16
-    "Message 17 yahan likhein",   # 17
-    "Message 18 yahan likhein",   # 18
-    "Message 19 yahan likhein",   # 19
-    "Message 20 yahan likhein",   # 20
-    "Message 21 yahan likhein",   # 21
-    "Message 22 yahan likhein",   # 22
-    "Message 23 yahan likhein",   # 23
-    "Message 24 yahan likhein",   # 24
-    "Message 25 yahan likhein",   # 25
-    "Message 26 yahan likhein",   # 26
-    "Message 27 yahan likhein",   # 27
-    "Message 28 yahan likhein",   # 28
-    "Message 29 yahan likhein",   # 29
-    "Message 30 yahan likhein",   # 30
-    "Message 31 yahan likhein",   # 31
-    "Message 32 yahan likhein",   # 32
-    "Message 33 yahan likhein",   # 33
-    "Message 34 yahan likhein",   # 34
-    "Message 35 yahan likhein",   # 35
-    "Message 36 yahan likhein",   # 36
-    "Message 37 yahan likhein",   # 37
-    "Message 38 yahan likhein",   # 38
-    "Message 39 yahan likhein",   # 39
-    "Message 40 yahan likhein",   # 40
-    "Message 41 yahan likhein",   # 41
-    "Message 42 yahan likhein",   # 42
-    "Message 43 yahan likhein",   # 43
-    "Message 44 yahan likhein",   # 44
-    "Message 45 yahan likhein",   # 45
-    "Message 46 yahan likhein",   # 46
-    "Message 47 yahan likhein",   # 47
-    "Message 48 yahan likhein",   # 48
-    "Message 49 yahan likhein",   # 49
-    "Message 50 yahan likhein",   # 50
+    "𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",   # 01
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 �_K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 02
+    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄𝐈 𝐒𝐏𝐎𝐓𝐈𝐅𝐘 𝐃𝐀𝐋 𝐊𝐄",   # 03
+    "𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",   # 04
+    "𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐒𝐔𝐀𝐑 𝐊𝐀 𝐋𝐎𝐔𝐃𝐀 𝐎𝐑 𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐎𝐃𝐀",   # 05
+    "𝙆𝙄𝙏𝙉𝙄 𝙂𝙇𝙄𝙔𝘼 𝙋𝘿𝙒𝙀𝙂𝘼 𝘼𝙋𝙉𝙄 𝙈𝘼 𝙆𝙊",   # 06
+    "𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 𝐌𝐄𝐈 𝐁𝐄𝐒𝐀𝐍 𝐊𝐄 𝐋𝐀𝐃𝐃𝐔 𝐁𝐇𝐀𝐑 𝐃𝐔𝐍𝐆𝐀🤩🥳�fire😈",   # 07
+    "𝙋𝘼𝙋𝘼 𝙆𝙄 𝙎𝙋𝙀𝙀𝘿 𝙈𝙏𝘾𝙃 𝙉𝙃𝙄 𝙃𝙊 𝙍𝙃𝙄 𝙆𝙔𝘼",   # 08
+    "𝙆𝙪𝙩𝙩𝙚 𝙠𝙞 𝙟𝙖𝙩",   # 09
+    "𝘼𝙥𝙣𝙞 𝙜𝙖𝙖𝙣𝙙 𝙢𝙚𝙞𝙣 𝙢𝙪𝙩𝙝𝙞 𝙙𝙖𝙖𝙡",   # 10
+    "𝙎𝘼𝘽 𝘽𝙊𝙇𝙏𝙀 𝙈𝙐𝙅𝙃𝙆𝙊 𝙋𝘼𝙋𝘼 𝙆𝙔𝙊𝙐𝙉𝙆𝙄 𝙈𝙀𝙉𝙀 𝘽𝘼𝙉𝘼𝘿𝙄𝘼 𝙏𝙀𝙍𝙄 𝙈𝘼𝘼𝙆𝙊 𝙋𝙍𝙀𝙂𝙉𝙀𝙉𝙏 🤣🤣",   # 11
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘 𝗦𝗨𝗧𝗟𝗜 𝗕𝗢𝗠𝗕 𝗙𝗢𝗗 𝗗𝗨𝗡𝗚𝗔 𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗝𝗛𝗔𝗔𝗧𝗘 𝗝𝗔𝗟 𝗞𝗘 𝗞𝗛𝗔𝗔𝗞 𝗛𝗢 𝗝𝗔𝗬𝗘𝗚𝗜💣",   # 12
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 �_K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 13
+    "𝘼𝙥𝙣𝙞 𝙜𝙖𝙖𝙣𝙙 𝙢𝙚𝙞𝙣 𝙢𝙪𝙩𝙝𝙞 𝙙𝙖𝙖𝙡",   # 14
+    "𝙅𝙝𝙖𝙖𝙣𝙩 𝙠𝙚 𝙥𝙞𝙨𝙨𝙪-",   # 15
+    "𝙏𝙀𝙍𝙄 𝘽𝙀𝙃𝙀𝙉 𝙆𝙀 𝘽𝙃𝙊𝙎𝘿𝙀 𝙈𝙀 𝘼𝘼𝘼𝙂 𝙇𝘼𝙂𝘼𝘿𝙄𝘼 𝙈𝙀𝙍𝘼 𝙈𝙊𝙏𝘼 𝙇𝙐𝙉𝘿 𝘿𝘼𝙇𝙆𝙀 🔥🔥💦😆😆",   # 16
+    "𝙎𝘼𝘽 𝘽𝙊𝙇𝙏𝙀 𝙈𝙐𝙅𝙃𝙆𝙊 𝙋𝘼𝙋𝘼 𝙆𝙔𝙊𝙐𝙉𝙆𝙄 𝙈𝙀𝙉𝙀 𝘽𝘼𝙉𝘼𝘿𝙄𝘼 𝙏𝙀𝙍𝙄 𝙈𝘼𝘼𝙆𝙊 𝙋𝙍𝙀𝙂𝙉𝙀𝙉𝙏 🤣🤣",   # 17
+    "𝙏𝙀𝙍𝙄 𝘽𝙀𝙃𝙀𝙉 𝙆𝙊𝙏𝙊 𝘾𝙃𝙊𝘿 𝘾𝙃𝙊𝘿𝙆𝙀 𝙋𝙐𝙍𝘼 𝙁𝘼𝘼𝘿 𝘿𝙄𝘼 𝘾𝙃𝙐𝙏𝙃 𝘼𝘽𝘽 𝙏𝙀𝙍𝙄 𝙂𝙁 𝙆𝙊 𝘽𝙃𝙀𝙅 😆💦🤤",   # 18
+    "𝙏𝙀𝙍𝙄 𝙂𝙁 𝙆 𝙎𝘼𝘼𝙏𝙃 𝙈𝙈𝙎 𝘽𝘼𝙉𝘼𝘼 𝘾𝙃𝙐𝙆𝘼 𝙃𝙐",   # 19
+    "𝙆𝙄𝙎𝘼𝙉 𝙆𝙊 𝙆𝙃𝙊𝘿𝙉𝘼 𝙊𝙍",   # 20
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗟 𝗞𝗘 𝗔𝗚𝗘 𝗦𝗘 500 𝗞𝗘 𝗞𝗔𝗔𝗥𝗘 �_K𝗔𝗔𝗥𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘💰💰🤩",   # 21
+    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥",   # 22
+    "𝐓𝐔𝐉𝐇𝐄 𝐀𝐁 𝐓𝐀𝐊 𝐍𝐀𝐇𝐈 𝐒𝐌𝐉𝐇 𝐀𝐘𝐀 𝐊𝐈 𝐌𝐀𝐈 𝐇𝐈 𝐇𝐔 𝐓𝐔𝐉𝐇𝐄 𝐏𝐀𝐈𝐃𝐀 𝐊𝐀𝐑𝐍𝐄 𝐖𝐀𝐋𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄𝐄 𝐀𝐏𝐍𝐈 𝐌𝐀𝐀 𝐒𝐄 𝐏𝐔𝐂𝐇 𝐑𝐀𝐍𝐃𝐈 𝐊𝐄 𝐁𝐀𝐂𝐇𝐄𝐄𝐄𝐄 🤩👊👤😍",   # 23
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋",   # 24
+    "𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝗞𝗔 𝗪𝗥𝗔𝗣 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 30𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 💥😂😎",   # 25
+    "𝙂𝘼𝙇𝙄 𝙂𝘼𝙇𝙄 𝙉𝙀 𝙎𝙃𝙊𝙍 𝙃𝙀 𝙏𝙀𝙍𝙄 𝙈𝘼𝘼 𝙍𝘼𝙉𝘿𝙄 𝘾𝙃𝙊𝙍 𝙃𝙀 💋💋💦",   # 26
+    "𝐒𝐔𝐍 𝐒𝐔𝐍 𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐉𝐇𝐀𝐍𝐓𝐎 𝐊𝐄 𝐒𝐎𝐔𝐃𝐀𝐆𝐀𝐑 𝐀𝐏𝐍𝐈 𝐌𝐔𝐌𝐌𝐘 𝐊𝐈 𝐍𝐔𝐃𝐄𝐒 𝐁𝐇𝐄𝐉",   # 27
+    "𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 𝟑𝟎𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎",   # 28
+    "𝙏𝙀𝙍𝙄 𝙈𝘼𝘼𝙆𝙊 𝘾𝙃𝙀𝙀𝙈𝙎 𝙎𝙀 𝘾𝙃𝙐𝘿𝙒𝘼𝙑𝙐𝙉𝙂𝘼 𝙈𝘼𝘿𝙀𝙍𝘾𝙃𝙊𝙊𝘿 𝙆𝙀 𝙋𝙄𝙇𝙇𝙀 💦🤣",   # 29
+    "𝙆𝙄𝙁𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎𝙎",   # 30
+    "𝙏𝙀𝙍𝙄 𝙈𝘼𝘼 𝙆𝙀 𝙂𝘼𝙉𝘿 𝙈𝙀 𝘿𝙀𝙏𝙊𝙇 𝘿𝘼𝘼𝙇 𝘿𝙐𝙉𝙂𝘼",   # 31
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘 𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗥𝗨𝗚𝗔 𝗙𝗜𝗥 𝗧𝗘𝗥𝗜 𝗕𝗛𝗘𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬 𝗨𝗣𝗗𝗔𝗧𝗘 𝗛𝗢𝗝𝗔𝗔𝗬𝗘𝗚𝗜🤖🙏🤔",   # 32
+    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥",   # 33
+    "𝗧𝗘𝗥𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗞𝗜 𝗖𝗛𝗨𝗨‌𝗧 𝗠𝗘𝗜 𝗦𝗛𝗢𝗨𝗟𝗗𝗘𝗥𝗜𝗡𝗚 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔𝗔 𝗛𝗜𝗟𝗔𝗧𝗘 𝗛𝗨𝗬𝗘 𝗕𝗛𝗜 𝗗𝗔𝗥𝗗 𝗛𝗢𝗚𝗔𝗔𝗔😱🤮👺",   # 34
+    "𝙍𝘼𝙉𝙄𝘿𝙄𝙄𝙄",   # 35
+    "𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐄𝐍 𝐊𝐎 𝐀𝐏𝐍𝐄 𝐋𝐔𝐍𝐃 𝐏𝐑 𝐈𝐓𝐍𝐀 𝐉𝐇𝐔𝐋𝐀𝐀𝐔𝐍𝐆𝐀 𝐊𝐈 𝐉𝐇𝐔𝐋𝐓𝐄 𝐉𝐇𝐔𝐋𝐓𝐄 𝐇𝐈 𝐁𝐀𝐂𝐇𝐀 𝐏𝐀𝐈𝐃𝐀 𝐊𝐑 𝐃𝐄𝐆𝐈 💦💋",   # 36
+    "𝙆𝙄𝙏𝙉𝙄 𝘾𝙃𝙊𝘿𝙐 𝙏𝙀𝙍𝙄 𝙈𝘼 𝘼𝘽 𝙊𝙍..",   # 37
+    "𝙆𝙄𝙎𝘼𝙉 𝙆𝙊 𝙆𝙃𝙊𝘿𝙉𝘼 𝙊𝙍",   # 38
+    "𝙏𝙀𝙍𝙄𝙄𝙄 𝙈𝘼𝘼 𝙆𝘼𝘼 𝘽𝙅𝙎𝙊𝘿𝘼𝘼𝘼",   # 39
+    "𝙎𝘼𝘽 𝘽𝙊𝙇𝙏𝙀 𝙈𝙐𝙅𝙃𝙆𝙊 𝙋𝘼𝙋𝘼 𝙆𝙔𝙊𝙐𝙉𝙆𝙄 𝙈𝙀𝙉𝙀 𝘽𝘼𝙉𝘼𝘿𝙄𝘼 𝙏𝙀𝙍𝙄 𝙈𝘼𝘼𝙆𝙊 𝙋𝙍𝙀𝙂𝙉𝙀𝙉𝙏 🤣🤣",   # 40
+    "𝐃𝐔𝐃𝐇 𝐇𝐈𝐋𝐀𝐀𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐄𝐍 𝐊𝐄 𝐔𝐏𝐑 𝐍𝐈𝐂𝐇𝐄 🆙🆒😙",   # 41
+    "𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝗞𝗔 𝗪𝗥𝗔𝗣 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 30𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 💥😂😎",   # 42
+    "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐕𝐈𝐃𝐄𝐎 𝐁𝐀𝐍𝐀𝐊𝐄 𝐗𝐍𝐗𝐗.𝐂𝐎𝐌 𝐏𝐄 𝐍𝐄𝐄𝐋𝐀𝐌 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐊𝐔𝐓𝐓𝐄 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 💦💋",   # 43
+    "𝙆𝙄𝙎𝘼𝙉 𝙆𝙊 𝙆𝙃𝙊𝘿𝙉𝘼 𝙊𝙍",   # 44
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖�_H𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋",   # 45
+    "𝐆𝐀𝐋𝐈 𝐆𝐀𝐋𝐈 𝐌𝐄 𝐑𝐄𝐇𝐓𝐀 𝐇𝐄 𝐒𝐀𝐍𝐃 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 𝐎𝐑 𝐁𝐀𝐍𝐀 𝐃𝐈𝐀 𝐑𝐀𝐍𝐃 🤤🤣",   # 46
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋",   # 47
+    "𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌ 𝗞𝗢 𝗞𝗢𝗟𝗞𝗔𝗧𝗔 𝗩𝗔𝗔𝗟𝗘 𝗝𝗜𝗧𝗨 𝗕𝗛𝗔𝗜𝗬𝗔 𝗞𝗔 𝗟𝗨𝗡𝗗 𝗠𝗨𝗕𝗔𝗥𝗔𝗞 🤩🤩",   # 48
+    "𝗧𝗘𝗥𝗜 𝗠𝗨𝗠𝗠𝗬 𝗞𝗘 𝗦𝗔𝗔𝗧𝗛 𝗟𝗨𝗗𝗢 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟𝗧𝗘 𝗨𝗦𝗞𝗘 𝗠𝗨𝗛 𝗠𝗘 𝗔𝗣𝗡𝗔 𝗟𝗢𝗗𝗔 𝗗𝗘 𝗗𝗨𝗡𝗚𝗔☝🏻☝🏻😬",   # 49
+    "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐔𝐍𝐃 𝐊𝐀𝐀𝐋𝐀",   # 50
+"𝙐𝙡𝙡𝙪 𝙠𝙚 𝙥𝙖𝙩𝙝𝙚 "‚   #51
+"𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗔𝗞𝗘 𝗡𝗨𝗗𝗘𝗦 𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 �𝗞𝗔𝗥𝗗𝗨𝗡𝗚𝗔 𝗕𝗘‌𝗛𝗘𝗡 𝗞𝗘 𝗟𝗔𝗘𝗪𝗗𝗘 👻🔥 "‚   #52
+"𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗔𝗞𝗘 𝗡𝗨𝗗𝗘𝗦 𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥𝗗𝗨𝗡𝗚𝗔 𝗕𝗘‌𝗛𝗘𝗡 𝗞𝗘 𝗟𝗔𝗘𝗪𝗗𝗘 👻🔥 "‚   #53
+" 𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃"‚   #54
+"𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣 "‚   #55
+"𝗧𝗘𝗥𝗜 𝗠𝗔‌𝗔‌𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋 "‚   #56
 ]
 
 # user_id (int) -> {
@@ -211,6 +217,10 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     tagging_chats = host_state["tagging"]
     welcomed_users = host_state["welcomed_users"]
 
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.ping$"))
+    async def ping_cmd(event):
+        await event.edit("🏓 Pong! Userbot is active.")
+
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall$"))
     async def tagall_cmd(event):
         if not event.is_group:
@@ -260,13 +270,27 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     async def replyraid_add_cmd(event):
         target_id = int(event.pattern_match.group(1))
         raid_users.add(target_id)
-        await event.edit(f"DM Replyraid ON: `{target_id}`")
+        try:
+            await event.delete()
+        except Exception:
+            pass
+        await client.send_message(
+            event.chat_id,
+            f"🎯 Reply raid ACTIVATED!\n👤 Target: {target_id}\n📝 Type: DEFAULT",
+        )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dreplyraid\s+(\d+)$"))
     async def replyraid_del_cmd(event):
         target_id = int(event.pattern_match.group(1))
         raid_users.discard(target_id)
-        await event.edit(f"DM Replyraid OFF: `{target_id}`")
+        try:
+            await event.delete()
+        except Exception:
+            pass
+        await client.send_message(
+            event.chat_id,
+            f"🎯 Reply raid DEACTIVATED for {target_id}!",
+        )
 
     @client.on(events.NewMessage(incoming=True))
     async def dm_auto_handler(event):
@@ -292,7 +316,12 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
 
 async def start_client_from_session(
-    user_id: int, string_session: str, api_id: int, api_hash: str, persist: bool = True
+    user_id: int,
+    string_session: str,
+    api_id: int,
+    api_hash: str,
+    persist: bool = True,
+    is_restart: bool = False,
 ) -> tuple[bool, str]:
     existing = ACTIVE_HOSTS.pop(user_id, None)
     if existing:
@@ -324,7 +353,9 @@ async def start_client_from_session(
         if persist:
             save_session(user_id, cleaned)
 
-        return True, "Account successfully host ho gaya hai! Ab `.tagall`, `.stoptagall`, `.replyraid <id>`, `.dreplyraid <id>` chalayein."
+        if is_restart:
+            return True, "Success Userbot Restarted! Use .ping."
+        return True, "Success Userbot Hosted! Use .ping to check."
     except Exception as e:
         try:
             await client.disconnect()
@@ -352,7 +383,7 @@ async def send_login_code(user_id: int, phone: str, api_id: int, api_hash: str) 
             "phone_code_hash": sent.phone_code_hash,
             "client": client,
         }
-        return True, "OTP bhej diya gaya hai! Kripya apna **OTP** bhejein (jaise `1 2 3 4 5` ya `12345`):"
+        return True, "🔑 Enter OTP (e.g., 1 2 3 4 5): Hurry, expires in 1-2 min!"
     except Exception as e:
         try:
             await client.disconnect()
@@ -364,7 +395,7 @@ async def send_login_code(user_id: int, phone: str, api_id: int, api_hash: str) 
 async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: str) -> tuple[str, str]:
     pending = PENDING_LOGINS.get(user_id)
     if not pending or pending.get("step") != "otp":
-        return "error", "Koi active OTP request nahi mila. Pehle `/host` likhein."
+        return "error", "Koi active OTP request nahi mila. Pehle /host likhein."
 
     code = "".join(ch for ch in otp_text if ch.isdigit())
     if not code:
@@ -384,7 +415,7 @@ async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: st
         return ("done" if ok else "error"), msg
     except SessionPasswordNeededError:
         pending["step"] = "2fa"
-        return "2fa", "Is account par **2FA Password** set hai. Kripya apna **2FA Password** bhejein:"
+        return "2fa", "🔒 Enter 2FA Password:"
     except Exception as e:
         try:
             await client.disconnect()
@@ -397,7 +428,7 @@ async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: st
 async def submit_2fa_password(user_id: int, password: str, api_id: int, api_hash: str) -> tuple[str, str]:
     pending = PENDING_LOGINS.get(user_id)
     if not pending or pending.get("step") != "2fa":
-        return "error", "Koi active 2FA step nahi mila. Pehle `/host` likhein."
+        return "error", "Koi active 2FA step nahi mila. Pehle /host likhein."
 
     client = pending["client"]
     try:
@@ -429,13 +460,17 @@ async def cancel_pending_login(user_id: int):
 async def restart_user_account(user_id: int, api_id: int, api_hash: str) -> tuple[bool, str]:
     info = ACTIVE_HOSTS.get(user_id)
     if info:
-        return await start_client_from_session(user_id, info["session"], api_id, api_hash, persist=True)
+        return await start_client_from_session(
+            user_id, info["session"], api_id, api_hash, persist=True, is_restart=True
+        )
 
     saved = load_all_sessions()
     if user_id in saved:
-        return await start_client_from_session(user_id, saved[user_id], api_id, api_hash, persist=True)
+        return await start_client_from_session(
+            user_id, saved[user_id], api_id, api_hash, persist=True, is_restart=True
+        )
 
-    return False, "Aapka koi hosted account nahi mila. Pehle `/host` likhein."
+    return False, "Aapka koi hosted account nahi mila. Pehle /host likhein."
 
 
 async def logout_user_account(user_id: int) -> tuple[bool, str]:
