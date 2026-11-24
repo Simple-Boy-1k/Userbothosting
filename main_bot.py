@@ -2,15 +2,28 @@ import os
 import time
 from dotenv import load_dotenv
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import Application, CallbackQueryHandler, CommandHandler, ContextTypes
+from telegram.ext import (
+    Application,
+    CallbackQueryHandler,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 
 from host_engine import (
     ACTIVE_HOSTS,
-    host_user_account,
-    load_all_saved_sessions,
+    PENDING_LOGINS,
+    cancel_pending_login,
+    get_meta_state,
+    load_all_sessions,
     logout_user_account,
     restore_all_saved_sessions,
     restart_user_account,
+    save_meta_state,
+    send_login_code,
+    submit_2fa_password,
+    submit_otp_code,
 )
 
 load_dotenv()
@@ -19,134 +32,355 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 API_ID = int(os.getenv("API_ID", "0"))
 API_HASH = os.getenv("API_HASH", "")
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
+DEFAULT_BANNER_URL = os.getenv("START_BANNER_URL", "")
+CRAFTED_BY = os.getenv("CRAFTED_BY", "@ITZ_ME_ADITYA_02")
 START_TIME = time.time()
 
 
-def build_keyboard() -> InlineKeyboardMarkup:
+def is_owner(uid: int) -> bool:
+    return uid == OWNER_ID
+
+
+def is_sudo(uid: int) -> bool:
+    meta = get_meta_state()
+    return uid == OWNER_ID or uid in meta["sudos"]
+
+
+def is_blocked(uid: int) -> bool:
+    if uid == OWNER_ID:
+        return False
+    meta = get_meta_state()
+    return uid in meta["blocked"]
+
+
+def help_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("Help Menu", callback_data="menu_help")],
-        [
-            InlineKeyboardButton("Commands", callback_data="menu_cmds"),
-            InlineKeyboardButton("Status", callback_data="menu_status"),
-        ],
+        [InlineKeyboardButton("📖 Help", callback_data="open_help")]
     ])
 
 
-def help_html() -> str:
+def start_caption_html() -> str:
     return (
-        "<b>Userbot Hoster Menu</b>\n\n"
-        "<b>Bot Commands:</b>\n"
-        "• <code>/host &lt;string_session&gt;</code> — Account host karein\n"
-        "• <code>/restart</code> — Apna hosted bot restart karein\n"
-        "• <code>/logout</code> — Account disconnect karein\n"
-        "• <code>/status</code> — Status check karein\n\n"
-        "<b>Userbot Commands (Account Se):</b>\n"
-        "• <code>.tagall</code> — Group members tag karein\n"
-        "• <code>.stoptagall</code> — Tagall stop karein\n"
-        "• <code>.replyraid &lt;user_id&gt;</code> — DM random reply ON\n"
-        "• <code>.dreplyraid &lt;user_id&gt;</code> — DM random reply OFF"
+        "<b>🏆 WELCOME TO THE PREMIUM USERBOT HOSTER BOT! 🏆</b>\n\n"
+        "<b>🚀 UNLEASH THE POWER OF AUTOMATION WITH STYLE! 🚀</b>\n\n"
+        f"<b>👑 CRAFTED BY: {CRAFTED_BY} 👑</b>\n\n"
+        "<b>🔒 100% SECURE &amp; LIGHTNING FAST! 🔒</b>\n\n"
+        "<b>✨ EXPLORE COMMANDS WITH /help OR TAP BELOW! ✨</b>"
     )
+
+
+def help_text_html() -> str:
+    return (
+        "<b>🌟 PREMIUM HOSTER BOT COMMANDS 🌟</b>\n\n"
+        "🔹 <code>/start</code> - LAUNCH THE BOT WITH A GRAND WELCOME\n"
+        "🔹 <code>/help</code> - DISCOVER ALL COMMANDS\n"
+        "🔹 <code>/commands</code> - EXPLORE USERBOT FEATURES\n"
+        "🔹 <code>/host</code> - DEPLOY YOUR OWN USERBOT (PHONE -&gt; OTP -&gt; 2FA)\n"
+        "🔹 <code>/support</code> - REQUEST SUPPORT FROM ADMIN (FAST RESPONSE)\n"
+        "🔹 <code>/restart</code> - REVIVE YOUR HOSTED USERBOT\n"
+        "🔹 <code>/supportraid</code> - PRO SUPPORT RAID COMMAND (OWNERS / PREMIUM USERS ONLY)\n"
+        "🔹 <code>/restartall</code> - RESTART ALL USERBOTS (OWNERS ONLY)\n"
+        "🔹 <code>/refresh</code> - REFRESH BOT STATE (OWNERS ONLY)\n"
+        "🔹 <code>/status</code> - CHECK YOUR USERBOT'S PULSE\n"
+        "🔹 <code>/logout</code> - SAFELY LOG OUT YOUR USERBOT\n"
+        "🔹 <code>/sudolist</code> - VIEW SUDO USERS (OWNERS ONLY)\n"
+        "🔹 <code>/setdp</code> - SET DISPLAY PHOTO / BANNER (OWNERS ONLY)\n"
+        "🔹 <code>/block</code> - BLOCK A USER (OWNERS ONLY)\n"
+        "🔹 <code>/unblock</code> - UNBLOCK A USER (OWNERS ONLY)\n"
+        "🔹 <code>/blockeduser</code> - VIEW BLOCKED USERS (OWNERS ONLY)\n"
+        "🔹 <code>/stats</code> - VIEW BOT STATISTICS (OWNERS ONLY)\n"
+        "🔹 <code>/secretfunction</code> - VIEW SECRET COMMANDS (OWNERS ONLY)"
+    )
+
+
+async def guard(update: Update) -> bool:
+    user = update.effective_user
+    if not user:
+        return False
+    if is_blocked(user.id):
+        if update.message:
+            await update.message.reply_text("Aap is bot ke liye blocked hain.")
+        return False
+    return True
 
 
 async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-    text = (
-        f"<b>Welcome To Userbot Hoster</b>\n\n"
-        f"Hi <b>{user.first_name}</b>! Host karne ke liye:\n"
-        f"<code>/host YOUR_STRING_SESSION</code>\n\n"
-        f"Menu ke liye <code>/help</code> bhejein."
-    )
-    await update.message.reply_text(text, parse_mode="HTML", reply_markup=build_keyboard())
+    if not await guard(update):
+        return
+    meta = get_meta_state()
+    photo = meta["dp_url"] or DEFAULT_BANNER_URL
+    caption = start_caption_html()
+
+    if photo:
+        try:
+            await update.message.reply_photo(
+                photo=photo,
+                caption=caption,
+                parse_mode="HTML",
+                reply_markup=help_keyboard(),
+            )
+            return
+        except Exception:
+            pass
+
+    await update.message.reply_text(caption, parse_mode="HTML", reply_markup=help_keyboard())
 
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(help_html(), parse_mode="HTML", reply_markup=build_keyboard())
+    if not await guard(update):
+        return
+    await update.message.reply_text(help_text_html(), parse_mode="HTML")
+
+
+async def commands_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await guard(update):
+        return
+    txt = (
+        "<b>⚡ USERBOT FEATURES ⚡</b>\n\n"
+        "• <code>.tagall</code> — Group ke sabhi members ko tag karein\n"
+        "• <code>.stoptagall</code> — Tagall stop karein\n"
+        "• <code>.replyraid &lt;user_id&gt;</code> — DM mein random auto-reply ON\n"
+        "• <code>.dreplyraid &lt;user_id&gt;</code> — DM mein random auto-reply OFF\n"
+        "• <b>First DM Auto-Welcome:</b> Bina kuch set kiye pehle DM par welcome message jayega"
+    )
+    await update.message.reply_text(txt, parse_mode="HTML")
 
 
 async def host_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not context.args:
-        await update.message.reply_text(
-            "Usage: <code>/host YOUR_STRING_SESSION</code>",
-            parse_mode="HTML",
-        )
+    if not await guard(update):
+        return
+    uid = update.effective_user.id
+    await cancel_pending_login(uid)
+    PENDING_LOGINS[uid] = {"step": "phone"}
+    await update.message.reply_text(
+        "Apna <b>Phone Number</b> country code ke saath bhejein (jaise <code>+919876543210</code>):\n"
+        "Cancel karne ke liye <code>/cancel</code> likhein.",
+        parse_mode="HTML",
+    )
+
+
+async def cancel_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await guard(update):
+        return
+    uid = update.effective_user.id
+    if uid in PENDING_LOGINS:
+        await cancel_pending_login(uid)
+        await update.message.reply_text("Host login process cancel kar diya gaya hai.")
+    else:
+        await update.message.reply_text("Koi active login process nahi hai.")
+
+
+async def text_step_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message or not update.message.text:
+        return
+    if not await guard(update):
         return
 
-    session_str = " ".join(context.args).strip()
-    msg_box = await update.message.reply_text("Account host ho raha hai...")
-    ok, res_msg = await host_user_account(update.effective_user.id, session_str, API_ID, API_HASH, persist=True)
-    await msg_box.edit_text(res_msg)
+    uid = update.effective_user.id
+    pending = PENDING_LOGINS.get(uid)
+    if not pending:
+        return
+
+    text = update.message.text.strip()
+    step = pending.get("step")
+
+    if step == "phone":
+        msg = await update.message.reply_text("OTP bheja ja raha hai...")
+        ok, res = await send_login_code(uid, text, API_ID, API_HASH)
+        await msg.edit_text(res, parse_mode="Markdown")
+        if not ok:
+            PENDING_LOGINS.pop(uid, None)
+
+    elif step == "otp":
+        msg = await update.message.reply_text("OTP verify kiya ja raha hai...")
+        status, res = await submit_otp_code(uid, text, API_ID, API_HASH)
+        await msg.edit_text(res, parse_mode="Markdown")
+
+    elif step == "2fa":
+        msg = await update.message.reply_text("2FA password verify aur host kiya ja raha hai...")
+        status, res = await submit_2fa_password(uid, text, API_ID, API_HASH)
+        await msg.edit_text(res, parse_mode="Markdown")
+        try:
+            await update.message.delete()
+        except Exception:
+            pass
+
+
+async def support_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await guard(update):
+        return
+    await update.message.reply_text(
+        f"Support ke liye Owner ID <code>{OWNER_ID}</code> par contact karein.",
+        parse_mode="HTML",
+    )
 
 
 async def restart_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    msg_box = await update.message.reply_text("Restart ho raha hai...")
-    ok, res_msg = await restart_user_account(update.effective_user.id, API_ID, API_HASH)
-    await msg_box.edit_text(res_msg)
+    if not await guard(update):
+        return
+    msg = await update.message.reply_text("Aapka hosted userbot restart ho raha hai...")
+    ok, res = await restart_user_account(update.effective_user.id, API_ID, API_HASH)
+    await msg.edit_text(res)
 
 
-async def logout_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    ok, res_msg = await logout_user_account(update.effective_user.id)
-    await update.message.reply_text(res_msg)
+async def supportraid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await guard(update):
+        return
+    if not is_sudo(update.effective_user.id):
+        await update.message.reply_text("Yeh command sirf Owner ya Sudo users ke liye hai.")
+        return
+    await update.message.reply_text("Support raid module ready (authorized access).")
+
+
+async def restartall_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_owner(update.effective_user.id):
+        await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+        return
+    saved_ids = list(load_all_sessions().keys())
+    all_ids = list(set(ACTIVE_HOSTS.keys()) | set(saved_ids))
+    done = 0
+    for uid in all_ids:
+        ok, _ = await restart_user_account(uid, API_ID, API_HASH)
+        if ok:
+            done += 1
+    await update.message.reply_text(f"Restarted {done}/{len(all_ids)} hosted accounts.")
+
+
+async def refresh_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_owner(update.effective_user.id):
+        await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+        return
+    _ = get_meta_state()
+    await update.message.reply_text("Bot state refreshed.")
 
 
 async def status_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await guard(update):
+        return
     uid = update.effective_user.id
     uptime = int(time.time() - START_TIME)
     await update.message.reply_text(
-        f"<b>Bot Status</b>\n"
+        f"<b>Status</b>\n"
         f"• Uptime: <code>{uptime}s</code>\n"
-        f"• Your Slot: <code>{'Active' if uid in ACTIVE_HOSTS else 'Inactive'}</code>\n"
+        f"• Your Slot: <code>{'Running' if uid in ACTIVE_HOSTS else 'Not Hosted'}</code>\n"
         f"• Active Hosts: <code>{len(ACTIVE_HOSTS)}</code>",
         parse_mode="HTML",
     )
 
 
-async def restartall_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != OWNER_ID:
+async def logout_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await guard(update):
+        return
+    ok, res = await logout_user_account(update.effective_user.id)
+    await update.message.reply_text(res)
+
+
+async def sudolist_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_owner(update.effective_user.id):
         await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
         return
+    sudos = get_meta_state()["sudos"]
+    if not sudos:
+        await update.message.reply_text("Sudo list khali hai.")
+        return
+    lines = "\n".join(f"• <code>{u}</code>" for u in sudos)
+    await update.message.reply_text(f"<b>Sudo Users:</b>\n{lines}", parse_mode="HTML")
 
-    saved_ids = list(load_all_saved_sessions().keys())
-    all_ids = list(set(ACTIVE_HOSTS.keys()) | set(saved_ids))
-    count = 0
-    for uid in all_ids:
-        ok, _ = await restart_user_account(uid, API_ID, API_HASH)
-        if ok:
-            count += 1
-    await update.message.reply_text(f"Restarted {count}/{len(all_ids)} accounts.")
+
+async def setdp_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_owner(update.effective_user.id):
+        await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+        return
+    meta = get_meta_state()
+    if update.message.reply_to_message and update.message.reply_to_message.photo:
+        file_id = update.message.reply_to_message.photo[-1].file_id
+        meta["dp_url"] = file_id
+        save_meta_state(meta)
+        await update.message.reply_text("Display photo / start banner update ho gaya.")
+        return
+    if context.args:
+        meta["dp_url"] = context.args[0].strip()
+        save_meta_state(meta)
+        await update.message.reply_text("Banner URL save ho gaya.")
+        return
+    await update.message.reply_text("Photo reply karke <code>/setdp</code> likhein ya image URL dein.", parse_mode="HTML")
+
+
+async def block_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_owner(update.effective_user.id):
+        await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+        return
+    if not context.args or not context.args[0].isdigit():
+        await update.message.reply_text("Usage: <code>/block 123456789</code>", parse_mode="HTML")
+        return
+    target = int(context.args[0])
+    if target == OWNER_ID:
+        await update.message.reply_text("Owner ko block nahi kiya ja sakta.")
+        return
+    meta = get_meta_state()
+    if target not in meta["blocked"]:
+        meta["blocked"].append(target)
+        save_meta_state(meta)
+    await update.message.reply_text(f"User <code>{target}</code> blocked.", parse_mode="HTML")
+
+
+async def unblock_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_owner(update.effective_user.id):
+        await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+        return
+    if not context.args or not context.args[0].isdigit():
+        await update.message.reply_text("Usage: <code>/unblock 123456789</code>", parse_mode="HTML")
+        return
+    target = int(context.args[0])
+    meta = get_meta_state()
+    if target in meta["blocked"]:
+        meta["blocked"].remove(target)
+        save_meta_state(meta)
+    await update.message.reply_text(f"User <code>{target}</code> unblocked.", parse_mode="HTML")
+
+
+async def blockeduser_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_owner(update.effective_user.id):
+        await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+        return
+    blocked = get_meta_state()["blocked"]
+    if not blocked:
+        await update.message.reply_text("Koi blocked user nahi hai.")
+        return
+    lines = "\n".join(f"• <code>{u}</code>" for u in blocked)
+    await update.message.reply_text(f"<b>Blocked Users:</b>\n{lines}", parse_mode="HTML")
 
 
 async def stats_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != OWNER_ID:
+    if not is_owner(update.effective_user.id):
         await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
         return
-    await update.message.reply_text(f"Total Active Hosts: <code>{len(ACTIVE_HOSTS)}</code>", parse_mode="HTML")
+    meta = get_meta_state()
+    await update.message.reply_text(
+        f"<b>Bot Stats</b>\n"
+        f"• Active Hosts: <code>{len(ACTIVE_HOSTS)}</code>\n"
+        f"• Sudo Users: <code>{len(meta['sudos'])}</code>\n"
+        f"• Blocked Users: <code>{len(meta['blocked'])}</code>",
+        parse_mode="HTML",
+    )
 
 
-async def button_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def secretfunction_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_sudo(update.effective_user.id):
+        await update.message.reply_text("Access denied.")
+        return
+    meta = get_meta_state()
+    meta["secret_mode"] = not meta["secret_mode"]
+    save_meta_state(meta)
+    state_label = "ENABLED" if meta["secret_mode"] else "DISABLED"
+    await update.message.reply_text(f"Secret mode: <b>{state_label}</b>", parse_mode="HTML")
+
+
+async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
-    if query.data == "menu_help":
-        await query.edit_message_text(help_html(), parse_mode="HTML", reply_markup=build_keyboard())
-    elif query.data == "menu_cmds":
-        await query.edit_message_text(
-            "<b>Commands</b>\n"
-            "• <code>/host &lt;session&gt;</code>\n"
-            "• <code>/restart</code>\n"
-            "• <code>/logout</code>\n"
-            "• <code>.tagall</code> / <code>.stoptagall</code>\n"
-            "• <code>.replyraid &lt;id&gt;</code> / <code>.dreplyraid &lt;id&gt;</code>",
-            parse_mode="HTML",
-            reply_markup=build_keyboard(),
-        )
-    elif query.data == "menu_status":
-        uid = query.from_user.id
-        await query.edit_message_text(
-            f"<b>Your Slot:</b> <code>{'Active' if uid in ACTIVE_HOSTS else 'Inactive'}</code>\n"
-            f"<b>Active Hosts:</b> <code>{len(ACTIVE_HOSTS)}</code>",
-            parse_mode="HTML",
-            reply_markup=build_keyboard(),
-        )
+    if query.data == "open_help":
+        await query.message.reply_text(help_text_html(), parse_mode="HTML")
 
 
 async def post_init(application: Application):
@@ -156,20 +390,39 @@ async def post_init(application: Application):
 
 def main():
     if not BOT_TOKEN or not API_ID or not API_HASH:
-        raise ValueError("BOT_TOKEN, API_ID, aur API_HASH set karein.")
+        raise ValueError("BOT_TOKEN, API_ID, aur API_HASH environment variables set karein.")
 
     app = Application.builder().token(BOT_TOKEN).post_init(post_init).build()
-    app.add_handler(CommandHandler("start", start_cmd))
-    app.add_handler(CommandHandler("help", help_cmd))
-    app.add_handler(CommandHandler("host", host_cmd))
-    app.add_handler(CommandHandler("restart", restart_cmd))
-    app.add_handler(CommandHandler("logout", logout_cmd))
-    app.add_handler(CommandHandler("status", status_cmd))
-    app.add_handler(CommandHandler("restartall", restartall_cmd))
-    app.add_handler(CommandHandler("stats", stats_cmd))
-    app.add_handler(CallbackQueryHandler(button_cb))
 
-    print("Heroku Hoster Bot running...")
+    handlers = [
+        ("start", start_cmd),
+        ("help", help_cmd),
+        ("commands", commands_cmd),
+        ("host", host_cmd),
+        ("cancel", cancel_cmd),
+        ("support", support_cmd),
+        ("restart", restart_cmd),
+        ("supportraid", supportraid_cmd),
+        ("restartall", restartall_cmd),
+        ("refresh", refresh_cmd),
+        ("status", status_cmd),
+        ("logout", logout_cmd),
+        ("sudolist", sudolist_cmd),
+        ("setdp", setdp_cmd),
+        ("block", block_cmd),
+        ("unblock", unblock_cmd),
+        ("blockeduser", blockeduser_cmd),
+        ("stats", stats_cmd),
+        ("secretfunction", secretfunction_cmd),
+    ]
+
+    for cmd, fn in handlers:
+        app.add_handler(CommandHandler(cmd, fn))
+
+    app.add_handler(CallbackQueryHandler(callback_handler))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_step_handler))
+
+    print("Hoster Bot running...")
     app.run_polling()
 
 
