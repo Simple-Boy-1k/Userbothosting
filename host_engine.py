@@ -10,7 +10,7 @@ from telethon.sessions import StringSession
 
 STORE_FILE = Path("hoster_data.json")
 
-FIRST_DM_WELCOME = "Hey welcome to my dm! How are you...? 😊"
+FIRST_DM_WELCOME = "https://t.me/+CBnAUbPjGdlmYzBk"
 
 RANDOM_MESSAGES = [
     "𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",   # 01
