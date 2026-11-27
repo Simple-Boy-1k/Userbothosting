@@ -12,8 +12,8 @@ from telethon.tl.types import ChatAction
 STORE_FILE = Path("hoster_data.json")
 
 # ================= GROUP LINKS & FIRST DM TEXT =================
-GROUP_LINK_1 = "https://t.me/your_group_link_1"
-GROUP_LINK_2 = "https://t.me/your_group_link_2"
+GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
+GROUP_LINK_2 = "https://t.me/+rWodwEmUoKA0M2Nl"
 
 FIRST_DM_WELCOME = (
     "✨ Join my GC & be respectful! No 18+ allowed 🚫\n\n"
