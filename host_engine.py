@@ -17,8 +17,7 @@ GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
 BTN_1_TEXT = "💬𝗚𝗥𝗜𝗟𝗦 𝗚𝗥𝗢𝗨𝗣𝟭"
 BTN_2_TEXT = "🔥𝗚𝗥𝗜𝗟𝗦 𝗚𝗥𝗢𝗨𝗣𝟮"
 
-FIRST_DM_HEADER = "🖤 𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖 ✨
-🔥 Good Vibes, Crazy People & Unlimited Fun! 😎"
+FIRST_DM_HEADER = "🖤 𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖 Good Vibes, Crazy People & Unlimited Fun!😎"
 QUIT_MESSAGE = "🚪👋 Member group se quit kar gaya hai!"
 
 RANDOM_MESSAGES = [
