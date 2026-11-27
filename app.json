@@ -2,7 +2,7 @@
   "name": "Premium Userbot Hoster Bot",
   "description": "Telegram Userbot Hoster with Force-Join Gate, Session Management, and Tagall Engine",
   "keywords": ["telegram", "userbot", "hoster", "python", "tagall"],
-  "repository": "https://github.com/Simple-Boy-1k/userbot-hoster",
+  "repository": "https://github.com/Simple-Boy-1k/Userbothosting",
   "stack": "container",
   "env": {
     "BOT_TOKEN": {
