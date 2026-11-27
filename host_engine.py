@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import random
+import re
 from pathlib import Path
 from pymongo import MongoClient
 from telethon import TelegramClient, events, functions, types
@@ -35,7 +36,7 @@ RANDOM_MESSAGES = [
     "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
     "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐒𝐔𝐓𝐋𝐈 𝐁𝐎𝐌𝐁 𝐅𝐎𝐃 𝐃𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐉𝐇𝐀𝐀𝐓𝐄 𝐉𝐀𝐋 𝐊𝐄 𝐊𝐇𝐀𝐀𝐊 𝐇𝐎 𝐉𝐀𝐘𝐄𝐆𝐈 💣</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
     "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
     "<b>𝐉𝐡𝐚𝐚𝐧𝐭 𝐤𝐞 𝐩𝐢𝐬𝐬𝐮-</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄 𝐀𝐀𝐀𝐆 𝐋𝐀𝐆𝐀𝐃𝐈𝐀 𝐌𝐄𝐑𝐀 𝐌𝐎𝐓𝐀 𝐋𝐔𝐍𝐃 𝐃𝐀𝐋𝐊𝐄 🔥🔥💦😆😆</b>",
@@ -44,7 +45,7 @@ RANDOM_MESSAGES = [
     "<b>𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊 𝐒𝐀𝐀𝐓𝐇 𝐌𝐌𝐒 𝐁𝐀𝐍𝐀𝐀 𝐂𝐇𝐔𝐊𝐀 𝐇𝐔</b>",
     "<b>𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥</b>",
     "<b>𝐓𝐔𝐉𝐇𝐄 𝐀𝐁 𝐓𝐀𝐊 𝐍𝐀𝐇𝐈 𝐒𝐌𝐉𝐇 𝐀𝐘𝐀 𝐊𝐈 𝐌𝐀𝐈 𝐇𝐈 𝐇𝐔 𝐓𝐔𝐉𝐇𝐄 𝐏𝐀𝐈𝐃𝐀 𝐊𝐀𝐑𝐍𝐄 𝐖𝐀𝐋𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄𝐄 𝐀𝐏𝐍𝐈 𝐌𝐀𝐀 𝐒𝐄 𝐏𝐔𝐂𝐇 𝐑𝐀𝐍𝐃𝐈 𝐊𝐄 𝐁𝐀𝐂𝐇𝐄𝐄𝐄𝐄 🤩👊👤😍</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 30𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎</b>",
@@ -291,7 +292,11 @@ async def _check_single_link_joined_or_requested(client: TelegramClient, user_id
 
     try:
         if "/+" in raw or "joinchat/" in raw:
-            invite_hash = raw.split("/+", 1)[1].split("?", 1)[0].strip() if "/+" in raw else raw.split("joinchat/", 1)[1].split("?", 1)[0].strip()
+            invite_hash = (
+                raw.split("/+", 1)[1].split("?", 1)[0].strip()
+                if "/+" in raw
+                else raw.split("joinchat/", 1)[1].split("?", 1)[0].strip()
+            )
             info = await client(functions.messages.CheckChatInviteRequest(hash=invite_hash))
             chat_obj = getattr(info, "chat", None)
             if chat_obj:
@@ -344,9 +349,25 @@ def pick_random_message(host_state: dict, target_id: int) -> str:
     return chosen
 
 
-def _clean_mention_name(name: str | None) -> str:
-    cleaned = (name or "User").replace("<", "").replace(">", "").replace("&", "").strip()
-    return cleaned or "User"
+def _clean_mention_name(user) -> str:
+    if not user:
+        return "Member"
+    first = (getattr(user, "first_name", None) or "").replace("<", "").replace(">", "").replace("&", "").strip()
+    if first:
+        return first
+    uname = (getattr(user, "username", None) or "").replace("<", "").replace(">", "").replace("&", "").strip()
+    if uname:
+        return f"@{uname}"
+    return "Member"
+
+
+def _extract_tag_text(raw_text: str) -> str:
+    txt = (raw_text or "").strip()
+    match = re.match(r"^[.]?tagall(?:\s+(.*))?$", txt, flags=re.IGNORECASE | re.DOTALL)
+    if not match:
+        return "Hii"
+    extra = (match.group(1) or "").strip()
+    return _escape_html(extra) if extra else "Hii"
 
 
 async def _collect_group_targets(client: TelegramClient, chat_id: int) -> list[tuple[int, str]]:
@@ -362,7 +383,7 @@ async def _collect_group_targets(client: TelegramClient, chat_id: int) -> list[t
                 continue
             if member.id not in seen_ids:
                 seen_ids.add(member.id)
-                targets.append((member.id, _clean_mention_name(member.first_name)))
+                targets.append((member.id, _clean_mention_name(member)))
     except Exception:
         pass
 
@@ -374,18 +395,24 @@ async def _collect_group_targets(client: TelegramClient, chat_id: int) -> list[t
                     continue
                 if sender.id and sender.id != my_id and sender.id not in seen_ids:
                     seen_ids.add(sender.id)
-                    targets.append((sender.id, _clean_mention_name(getattr(sender, "first_name", None))))
+                    targets.append((sender.id, _clean_mention_name(sender)))
         except Exception:
             pass
 
     return targets
 
 
-async def _run_tagall_in_chat(client: TelegramClient, chat_id: int, tagging_chats: set):
+async def _run_tagall_in_chat(
+    client: TelegramClient,
+    chat_id: int,
+    tagging_chats: set,
+    tag_text: str = "Hii",
+):
     if chat_id in tagging_chats:
         return
     tagging_chats.add(chat_id)
 
+    clean_tag_text = (tag_text or "Hii").strip() or "Hii"
     tagged_count = 0
     total_count = 0
     stopped_early = False
@@ -404,18 +431,18 @@ async def _run_tagall_in_chat(client: TelegramClient, chat_id: int, tagging_chat
 
         await client.send_message(
             chat_id,
-            f"<blockquote>🚀✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗮𝗿𝘁𝗲𝗱!</b>\n👥 <b>𝗧𝗼𝘁𝗮𝗹 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{total_count}</code></blockquote>",
+            f"<blockquote>🚀✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗮𝗿𝘁𝗲𝗱!</b>\n💬 <b>𝗠𝗲𝘀𝘀𝗮𝗴𝗲:</b> <b>{clean_tag_text}</b>\n👥 <b>𝗧𝗼𝘁𝗮𝗹 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{total_count}</code></blockquote>",
             parse_mode="html",
         )
 
-        # Ek-ek karke (1 member per message) tag karega
+        # Ek-ek karke (1 member per message) custom text ke saath tag karega
         for uid, uname in targets:
             if chat_id not in tagging_chats:
                 stopped_early = True
                 break
             await client.send_message(
                 chat_id,
-                f'<blockquote>✨ <b><a href="tg://user?id={uid}">{uname}</a></b></blockquote>',
+                f'<blockquote>✨ <b><a href="tg://user?id={uid}">{uname}</a></b> — <b>{clean_tag_text}</b></blockquote>',
                 parse_mode="html",
             )
             tagged_count += 1
@@ -448,8 +475,8 @@ async def _is_userbot_mentioned(event, me) -> bool:
 
 
 async def _send_quit_alert(client: TelegramClient, chat_id: int, user):
-    uname = _clean_mention_name(getattr(user, "first_name", None)) if user else "Member"
-    uid = getattr(user, "id", None)
+    uname = _clean_mention_name(user)
+    uid = getattr(user, "id", None) if user else None
     mention = f'<b><a href="tg://user?id={uid}">{uname}</a></b>' if uid else f"<b>{uname}</b>"
     await client.send_message(
         chat_id,
@@ -481,7 +508,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             parse_mode="html",
         )
 
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+.*)?$"))
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+([\s\S]+))?$"))
     async def tagall_cmd(event):
         if not event.is_group:
             await event.edit("<blockquote>⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗰𝗵𝗮𝗹𝗲𝗴𝗮.</b></blockquote>", parse_mode="html")
@@ -489,11 +516,12 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         if event.chat_id in tagging_chats:
             await event.edit("<blockquote>⏳ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴𝗮𝗹𝗹 𝗽𝗲𝗵𝗹𝗲 𝘀𝗲 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
             return
+        tag_text = _extract_tag_text(event.raw_text or "")
         try:
             await event.delete()
         except Exception:
             pass
-        await _run_tagall_in_chat(client, event.chat_id, tagging_chats)
+        await _run_tagall_in_chat(client, event.chat_id, tagging_chats, tag_text=tag_text)
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
     async def stoptagall_cmd(event):
@@ -581,8 +609,9 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                 tagging_chats.discard(event.chat_id)
                 return
 
-            if txt == "tagall hii" or txt.startswith("tagall ") or txt.startswith(".tagall"):
-                await _run_tagall_in_chat(client, event.chat_id, tagging_chats)
+            if re.match(r"^[.]?tagall(?:\s+.*)?$", (event.raw_text or "").strip(), flags=re.IGNORECASE):
+                tag_text = _extract_tag_text(event.raw_text or "")
+                await _run_tagall_in_chat(client, event.chat_id, tagging_chats, tag_text=tag_text)
                 return
 
             if sender_id in raid_users and await _is_userbot_mentioned(event, me):
