@@ -1,3 +1,6 @@
+ACTIVE_HOSTS = {}
+PENDING_LOGINS = {}
+LOGIN_FLOW = {}
 import asyncio
 import io
 import math
