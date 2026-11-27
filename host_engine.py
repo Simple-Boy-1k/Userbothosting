@@ -21,7 +21,7 @@ BTN_2_TEXT = "🔥 <b>𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮</b>"
 FIRST_DM_HEADER = "🖤 <b>𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖</b> — <b>𝗚𝗼𝗼𝗱 𝗩𝗶𝗯𝗲𝘀, 𝗖𝗿𝗮𝘇𝘆 𝗣𝗲𝗼𝗽𝗹𝗲 &amp; 𝗨𝗻𝗹𝗶𝗺𝗶𝘁𝗲𝗱 𝗙𝘂𝗻!</b> 😎"
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
-TAG_DELAY_SECONDS = 0.35
+TAG_DELAY_SECONDS = 1.2
 
 RANDOM_MESSAGES = [
     "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
