@@ -225,12 +225,7 @@ async def host_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    _, _, support_url = get_force_join_config()
     await cancel_pending_login(uid)
-    await update.message.reply_text(
-        f"Warning Join Our Support Group!\nJoin: <a href=\"{support_url}\">Support Group</a>\nYou can still host.",
-        parse_mode="HTML",
-    )
     PENDING_LOGINS[uid] = {"step": "phone"}
     await update.message.reply_text("📱 Enter Phone Number (+91xxxxxxxxxx):")
 
@@ -311,7 +306,10 @@ async def setforce_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     meta["force_join_chat_id"] = chat_id
     meta["force_join_link"] = link
     save_meta_state(meta)
-    await update.message.reply_text(f"Force-Join updated:\n• Chat ID: <code>{chat_id}</code>\n• Link: {link}", parse_mode="HTML")
+    await update.message.reply_text(
+        f"Force-Join updated:\n• Chat ID: <code>{chat_id}</code>\n• Link: {link}",
+        parse_mode="HTML",
+    )
 
 
 async def setsupport_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
