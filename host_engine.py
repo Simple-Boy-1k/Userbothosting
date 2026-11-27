@@ -20,6 +20,8 @@ BTN_2_TEXT = "🔥 <b>𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮</b>"
 FIRST_DM_HEADER = "🖤 <b>𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖</b> — <b>𝗚𝗼𝗼𝗱 𝗩𝗶𝗯𝗲𝘀, 𝗖𝗿𝗮𝘇𝘆 𝗣𝗲𝗼𝗽𝗹𝗲 &amp; 𝗨𝗻𝗹𝗶𝗺𝗶𝘁𝗲𝗱 𝗙𝘂𝗻!</b> 😎"
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
+TAG_DELAY_SECONDS = 1.2
+
 RANDOM_MESSAGES = [
     "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
@@ -33,7 +35,7 @@ RANDOM_MESSAGES = [
     "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
     "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐒𝐔𝐓𝐋𝐈 𝐁𝐎𝐌𝐁 𝐅𝐎𝐃 𝐃𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐉𝐇𝐀𝐀𝐓𝐄 𝐉𝐀𝐋 𝐊𝐄 𝐊𝐇𝐀𝐀𝐊 𝐇𝐎 𝐉𝐀𝐘𝐄𝐆𝐈 💣</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
     "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
     "<b>𝐉𝐡𝐚𝐚𝐧𝐭 𝐤𝐞 𝐩𝐢𝐬𝐬𝐮-</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄 𝐀𝐀𝐀𝐆 𝐋𝐀𝐆𝐀𝐃𝐈𝐀 𝐌𝐄𝐑𝐀 𝐌𝐎𝐓𝐀 𝐋𝐔𝐍𝐃 𝐃𝐀𝐋𝐊𝐄 🔥🔥💦😆😆</b>",
@@ -261,10 +263,10 @@ async def send_force_join_prompt(event):
     safe_l2 = _escape_html(link_2)
 
     msg = (
-        f"🔒✨ <b>𝗣𝗘𝗛𝗟𝗘 𝗗𝗢𝗡𝗢 𝗚𝗥𝗢𝗨𝗣𝗦 𝗣𝗘 𝗝𝗢𝗜𝗡 / 𝗥𝗘𝗤𝗨𝗘𝗦𝗧 𝗗𝗔𝗔𝗟𝗘𝗜𝗡!</b>\n\n"
-        f'<blockquote><b><a href="{safe_l1}">{BTN_1_TEXT}</a></b></blockquote>\n'
-        f'<blockquote><b><a href="{safe_l2}">{BTN_2_TEXT}</a></b></blockquote>\n\n'
-        f"✅ <b>𝗗𝗼𝗻𝗼 𝗽𝗲 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗱𝗮𝗮𝗹𝗻𝗲 𝗸𝗲 𝗯𝗮𝗮𝗱 <code>check joined</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻!</b>"
+        f"<blockquote><b>🔒✨ 𝗣𝗘𝗛𝗟𝗘 𝗗𝗢𝗡𝗢 𝗚𝗥𝗢𝗨𝗣𝗦 𝗣𝗘 𝗝𝗢𝗜𝗡 / 𝗥𝗘𝗤𝗨𝗘𝗦𝗧 𝗗𝗔𝗔𝗟𝗘𝗜𝗡!</b>\n\n"
+        f'• <a href="{safe_l1}">{BTN_1_TEXT}</a>\n'
+        f'• <a href="{safe_l2}">{BTN_2_TEXT}</a>\n\n'
+        f"✅ <b>𝗗𝗼𝗻𝗼 𝗽𝗲 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗱𝗮𝗮𝗹𝗻𝗲 𝗸𝗲 𝗯𝗮𝗮𝗱 <code>check joined</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻!</b></blockquote>"
     )
     await event.reply(msg, parse_mode="html", link_preview=False)
 
@@ -275,9 +277,9 @@ async def send_first_dm_card(event):
     safe_l2 = _escape_html(link_2)
 
     msg = (
-        f"{FIRST_DM_HEADER}\n\n"
-        f'<blockquote><b><a href="{safe_l1}">{BTN_1_TEXT}</a></b></blockquote>\n'
-        f'<blockquote><b><a href="{safe_l2}">{BTN_2_TEXT}</a></b></blockquote>'
+        f"<blockquote><b>{FIRST_DM_HEADER}</b>\n\n"
+        f'• <a href="{safe_l1}">{BTN_1_TEXT}</a>\n'
+        f'• <a href="{safe_l2}">{BTN_2_TEXT}</a></blockquote>'
     )
     await event.reply(msg, parse_mode="html", link_preview=False)
 
@@ -332,7 +334,7 @@ async def verify_both_groups_for_user(client: TelegramClient, user_id: int) -> t
 def pick_random_message(host_state: dict, target_id: int) -> str:
     valid_msgs = [m.strip() for m in RANDOM_MESSAGES if isinstance(m, str) and m.strip()]
     if not valid_msgs:
-        return "<b>𝗛𝗲𝗹𝗹𝗼! 👋</b>"
+        return "<blockquote><b>𝗛𝗲𝗹𝗹𝗼! 👋</b></blockquote>"
     if len(valid_msgs) == 1:
         return valid_msgs[0]
     last_msg = host_state["last_msg"].get(target_id)
@@ -383,28 +385,48 @@ async def _run_tagall_in_chat(client: TelegramClient, chat_id: int, tagging_chat
     if chat_id in tagging_chats:
         return
     tagging_chats.add(chat_id)
+
+    tagged_count = 0
+    total_count = 0
+    stopped_early = False
+
     try:
         targets = await _collect_group_targets(client, chat_id)
+        total_count = len(targets)
+
         if not targets:
             await client.send_message(
                 chat_id,
-                "⚠️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴 𝗸𝗮𝗿𝗻𝗲 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗸𝗼𝗶 𝗺𝗲𝗺𝗯𝗲𝗿 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮.</b>",
+                "<blockquote>⚠️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴 𝗸𝗮𝗿𝗻𝗲 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗸𝗼𝗶 𝗺𝗲𝗺𝗯𝗲𝗿 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮.</b></blockquote>",
                 parse_mode="html",
             )
             return
 
-        mentions = []
+        await client.send_message(
+            chat_id,
+            f"<blockquote>🚀✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗮𝗿𝘁𝗲𝗱!</b>\n👥 <b>𝗧𝗼𝘁𝗮𝗹 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{total_count}</code></blockquote>",
+            parse_mode="html",
+        )
+
+        # Ek-ek karke (1 member per message) tag karega
         for uid, uname in targets:
             if chat_id not in tagging_chats:
+                stopped_early = True
                 break
-            mentions.append(f'✨ <b><a href="tg://user?id={uid}">{uname}</a></b>')
-            if len(mentions) == 5:
-                await client.send_message(chat_id, " ".join(mentions), parse_mode="html")
-                mentions = []
-                await asyncio.sleep(1.5)
+            await client.send_message(
+                chat_id,
+                f'<blockquote>✨ <b><a href="tg://user?id={uid}">{uname}</a></b></blockquote>',
+                parse_mode="html",
+            )
+            tagged_count += 1
+            await asyncio.sleep(TAG_DELAY_SECONDS)
 
-        if mentions and chat_id in tagging_chats:
-            await client.send_message(chat_id, " ".join(mentions), parse_mode="html")
+        status_title = "🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗼𝗽𝗽𝗲𝗱!</b>" if stopped_early else "✅🎉 <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗲𝗱!</b>"
+        await client.send_message(
+            chat_id,
+            f"<blockquote>{status_title}\n📊 <b>𝗧𝗮𝗴𝗴𝗲𝗱 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{tagged_count}</code> / <code>{total_count}</code></blockquote>",
+            parse_mode="html",
+        )
     finally:
         tagging_chats.discard(chat_id)
 
@@ -431,7 +453,7 @@ async def _send_quit_alert(client: TelegramClient, chat_id: int, user):
     mention = f'<b><a href="tg://user?id={uid}">{uname}</a></b>' if uid else f"<b>{uname}</b>"
     await client.send_message(
         chat_id,
-        f"{QUIT_MESSAGE}\n👤 {mention}",
+        f"<blockquote>{QUIT_MESSAGE}\n👤 {mention}</blockquote>",
         parse_mode="html",
     )
 
@@ -445,7 +467,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.ping$"))
     async def ping_cmd(event):
-        await event.edit("🏓 <b>𝗣𝗼𝗻𝗴! 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗶𝘀 𝗮𝗰𝘁𝗶𝘃𝗲.</b>", parse_mode="html")
+        await event.edit("<blockquote>🏓 <b>𝗣𝗼𝗻𝗴! 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗶𝘀 𝗮𝗰𝘁𝗶𝘃𝗲.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.setlinks\s+(\S+)\s+(\S+)$"))
     async def setlinks_cmd(event):
@@ -453,19 +475,19 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         l2 = event.pattern_match.group(2)
         set_group_links(l1, l2)
         await event.edit(
-            f"✅🔗 <b>𝗚𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝘂𝗽𝗱𝗮𝘁𝗲 𝗵𝗼 𝗴𝗮𝘆𝗲!</b>\n"
+            f"<blockquote>✅🔗 <b>𝗚𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝘂𝗽𝗱𝗮𝘁𝗲 𝗵𝗼 𝗴𝗮𝘆𝗲!</b>\n"
             f"1️⃣ {BTN_1_TEXT}\n"
-            f"2️⃣ {BTN_2_TEXT}",
+            f"2️⃣ {BTN_2_TEXT}</blockquote>",
             parse_mode="html",
         )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+.*)?$"))
     async def tagall_cmd(event):
         if not event.is_group:
-            await event.edit("⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗰𝗵𝗮𝗹𝗲𝗴𝗮.</b>", parse_mode="html")
+            await event.edit("<blockquote>⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗰𝗵𝗮𝗹𝗲𝗴𝗮.</b></blockquote>", parse_mode="html")
             return
         if event.chat_id in tagging_chats:
-            await event.edit("⏳ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴𝗮𝗹𝗹 𝗽𝗲𝗵𝗹𝗲 𝘀𝗲 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮 𝗵𝗮𝗶.</b>", parse_mode="html")
+            await event.edit("<blockquote>⏳ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴𝗮𝗹𝗹 𝗽𝗲𝗵𝗹𝗲 𝘀𝗲 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
             return
         try:
             await event.delete()
@@ -477,19 +499,22 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     async def stoptagall_cmd(event):
         if event.chat_id in tagging_chats:
             tagging_chats.discard(event.chat_id)
-            await event.edit("🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗿𝗼𝗸 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>", parse_mode="html")
+            try:
+                await event.delete()
+            except Exception:
+                pass
         else:
-            await event.edit("ℹ️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝘁𝗮𝗴𝗮𝗹𝗹 𝗻𝗮𝗵𝗶 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮.</b>", parse_mode="html")
+            await event.edit("<blockquote>ℹ️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝘁𝗮𝗴𝗮𝗹𝗹 𝗻𝗮𝗵𝗶 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopquit$"))
     async def stopquit_cmd(event):
         host_state["quit_enabled"] = False
-        await event.edit("🛑🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗙𝗙 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b>", parse_mode="html")
+        await event.edit("<blockquote>🛑🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗙𝗙 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.startquit$"))
     async def startquit_cmd(event):
         host_state["quit_enabled"] = True
-        await event.edit("✅🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗡 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b>", parse_mode="html")
+        await event.edit("<blockquote>✅🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗡 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.replyraid\s+(\d+)$"))
     async def replyraid_add_cmd(event):
@@ -501,7 +526,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             pass
         await client.send_message(
             event.chat_id,
-            f"🎯🔥 <b>𝗔𝘂𝘁𝗼-𝗥𝗲𝗽𝗹𝘆 / 𝗥𝗮𝗶𝗱 𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 (𝗗𝗠 + 𝗚𝗿𝗼𝘂𝗽)!</b>\n👤 <b>𝗧𝗮𝗿𝗴𝗲𝘁:</b> <code>{target_id}</code>",
+            f"<blockquote>🎯🔥 <b>𝗔𝘂𝘁𝗼-𝗥𝗲𝗽𝗹𝘆 / 𝗥𝗮𝗶𝗱 𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 (𝗗𝗠 + 𝗚𝗿𝗼𝘂𝗽)!</b>\n👤 <b>𝗧𝗮𝗿𝗴𝗲𝘁:</b> <code>{target_id}</code></blockquote>",
             parse_mode="html",
         )
 
@@ -515,7 +540,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             pass
         await client.send_message(
             event.chat_id,
-            f"🎯🛑 <b>𝗔𝘂𝘁𝗼-𝗥𝗲𝗽𝗹𝘆 / 𝗥𝗮𝗶𝗱 𝗗𝗘𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 (𝗗𝗠 + 𝗚𝗿𝗼𝘂𝗽) 𝗳𝗼𝗿</b> <code>{target_id}</code>!",
+            f"<blockquote>🎯🛑 <b>𝗔𝘂𝘁𝗼-𝗥𝗲𝗽𝗹𝘆 / 𝗥𝗮𝗶𝗱 𝗗𝗘𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 (𝗗𝗠 + 𝗚𝗿𝗼𝘂𝗽) 𝗳𝗼𝗿</b> <code>{target_id}</code>!</blockquote>",
             parse_mode="html",
         )
 
@@ -528,7 +553,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                 user = await event.get_user()
                 await _send_quit_alert(client, event.chat_id, user)
             except Exception:
-                await client.send_message(event.chat_id, QUIT_MESSAGE, parse_mode="html")
+                await client.send_message(event.chat_id, f"<blockquote>{QUIT_MESSAGE}</blockquote>", parse_mode="html")
 
     @client.on(events.Raw)
     async def raw_quit_handler(event):
@@ -554,7 +579,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             txt = (event.raw_text or "").strip().lower()
             if txt == "stop tagall":
                 tagging_chats.discard(event.chat_id)
-                await event.reply("🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗿𝗼𝗸 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>", parse_mode="html")
                 return
 
             if txt == "tagall hii" or txt.startswith("tagall ") or txt.startswith(".tagall"):
@@ -564,7 +588,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             if sender_id in raid_users and await _is_userbot_mentioned(event, me):
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
-                await event.reply(reply_text, parse_mode="html")
+                await event.reply(f"<blockquote>{reply_text}</blockquote>", parse_mode="html")
             return
 
         if event.is_private:
@@ -576,7 +600,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                     mark_user_verified(sender_id)
                     welcomed_users.add(sender_id)
                     await event.reply(
-                        "✅🎉 <b>𝗗𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽𝘀 𝗽𝗲 𝗷𝗼𝗶𝗻 / 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝘃𝗲𝗿𝗶𝗳𝘆 𝗵𝗼 𝗴𝗮𝘆𝗮! 𝗔𝗯 𝗮𝗮𝗴𝗲 𝗸𝗮 𝗮𝗰𝗰𝗲𝘀𝘀 𝗼𝗽𝗲𝗻 𝗵𝗮𝗶.</b>",
+                        "<blockquote>✅🎉 <b>𝗗𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽𝘀 𝗽𝗲 𝗷𝗼𝗶𝗻 / 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝘃𝗲𝗿𝗶𝗳𝘆 𝗵𝗼 𝗴𝗮𝘆𝗮! 𝗔𝗯 𝗮𝗮𝗴𝗲 𝗸𝗮 𝗮𝗰𝗰𝗲𝘀𝘀 𝗼𝗽𝗲𝗻 𝗵𝗮𝗶.</b></blockquote>",
                         parse_mode="html",
                     )
                     await send_first_dm_card(event)
@@ -584,10 +608,10 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                     s1 = "✅" if g1_ok else "❌"
                     s2 = "✅" if g2_ok else "❌"
                     await event.reply(
-                        f"⚠️ <b>𝗣𝗲𝗵𝗹𝗲 𝗱𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽𝘀 𝗽𝗲 𝗷𝗼𝗶𝗻 / 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗱𝗮𝗮𝗹𝗲𝗶𝗻:</b>\n"
+                        f"<blockquote>⚠️ <b>𝗣𝗲𝗵𝗹𝗲 𝗱𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽𝘀 𝗽𝗲 𝗷𝗼𝗶𝗻 / 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗱𝗮𝗮𝗹𝗲𝗶𝗻:</b>\n"
                         f"{s1} {BTN_1_TEXT}\n"
                         f"{s2} {BTN_2_TEXT}\n\n"
-                        f"👉 <b>𝗗𝗼𝗻𝗼 𝗸𝗲 𝗯𝗮𝗮𝗱 <code>check joined</code> 𝗯𝗵𝗲𝗷𝗲𝗶𝗻!</b>",
+                        f"👉 <b>𝗗𝗼𝗻𝗼 𝗸𝗲 𝗯𝗮𝗮𝗱 <code>check joined</code> 𝗯𝗵𝗲𝗷𝗲𝗶𝗻!</b></blockquote>",
                         parse_mode="html",
                     )
                 return
@@ -599,7 +623,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             if sender_id in raid_users:
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
-                await event.reply(reply_text, parse_mode="html")
+                await event.reply(f"<blockquote>{reply_text}</blockquote>", parse_mode="html")
                 return
 
             if sender_id not in welcomed_users:
