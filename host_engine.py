@@ -4,18 +4,18 @@ import os
 import random
 from pathlib import Path
 from pymongo import MongoClient
-from telethon import TelegramClient, events
+from telethon import TelegramClient, events, types
 from telethon.errors import FloodWaitError, PhoneNumberInvalidError, SessionPasswordNeededError
 from telethon.sessions import StringSession
 
 STORE_FILE = Path("hoster_data.json")
 
-# ================= GROUP LINKS, INLINE BOT & FIRST DM TEXT =================
+# ================= GROUP LINKS & FIRST DM TEXT =================
 GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
 GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
 
-# Jis @bot ke inline query se 2 buttons wala card bhejna hai (optional, par buttons ke liye zaroori)
-INLINE_BOT_USERNAME = os.getenv("INLINE_BOT_USERNAME", "").strip().lstrip("@")
+BTN_1_TEXT = "💬𝗚𝗥𝗜𝗟𝗦 𝗚𝗥𝗢𝗨𝗣𝟭"
+BTN_2_TEXT = "🔥𝗚𝗥𝗜𝗟𝗦 𝗚𝗥𝗢𝗨𝗣𝟮"
 
 FIRST_DM_HEADER = "✨ Join my GC & be respectful! No 18+ allowed 🚫"
 QUIT_MESSAGE = "🚪👋 Member group se quit kar gaya hai!"
@@ -81,7 +81,6 @@ RANDOM_MESSAGES = [
 
 ACTIVE_HOSTS = {}
 PENDING_LOGINS = {}
-
 _db = None
 
 
@@ -223,26 +222,26 @@ def get_active_group_links() -> tuple[str, str]:
     return meta["group_links"][0], meta["group_links"][1]
 
 
-async def send_first_dm_card(client: TelegramClient, event):
-    link_1, link_2 = get_active_group_links()
-    if INLINE_BOT_USERNAME:
-        try:
-            results = await client.inline_query(
-                INLINE_BOT_USERNAME,
-                f"gc_buttons|{link_1}|{link_2}"
-            )
-            if results:
-                await results[0].click(event.chat_id)
-                return
-        except Exception:
-            pass
-
-    # Fallback agar INLINE_BOT_USERNAME set nahi hai (link text ke andar)
-    await event.reply(
-        f"{FIRST_DM_HEADER}\n\n"
-        f"💬 Join Group 1: {link_1}\n"
-        f"🔥 Join Group 2: {link_2}"
+def _escape_html(text: str) -> str:
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
     )
+
+
+async def send_first_dm_card(event):
+    link_1, link_2 = get_active_group_links()
+    safe_l1 = _escape_html(link_1)
+    safe_l2 = _escape_html(link_2)
+
+    msg = (
+        f"{FIRST_DM_HEADER}\n\n"
+        f'<blockquote><b><a href="{safe_l1}">{BTN_1_TEXT}</a></b></blockquote>\n'
+        f'<blockquote><b><a href="{safe_l2}">{BTN_2_TEXT}</a></b></blockquote>'
+    )
+    await event.reply(msg, parse_mode="html", link_preview=False)
 
 
 def pick_random_message(host_state: dict, target_id: int) -> str:
@@ -337,6 +336,17 @@ async def _is_userbot_mentioned(event, me) -> bool:
     return False
 
 
+async def _send_quit_alert(client: TelegramClient, chat_id: int, user):
+    uname = _clean_mention_name(getattr(user, "first_name", None)) if user else "Member"
+    uid = getattr(user, "id", None)
+    mention = f"[{uname}](tg://user?id={uid})" if uid else uname
+    await client.send_message(
+        chat_id,
+        f"{QUIT_MESSAGE}\n👤 {mention}",
+        parse_mode="md",
+    )
+
+
 async def _attach_handlers(client: TelegramClient, host_state: dict):
     raid_users = host_state["raid_users"]
     tagging_chats = host_state["tagging"]
@@ -355,8 +365,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         set_group_links(l1, l2)
         await event.edit(
             f"✅🔗 Group links update ho gaye!\n"
-            f"💬 Group 1: {l1}\n"
-            f"🔥 Group 2: {l2}"
+            f"1️⃣ {BTN_1_TEXT}\n"
+            f"2️⃣ {BTN_2_TEXT}"
         )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall$"))
@@ -418,22 +428,29 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         )
 
     @client.on(events.ChatAction)
-    async def quit_handler(event):
+    async def quit_action_handler(event):
         if not event.is_group or not host_state.get("quit_enabled", True):
             return
         if event.user_left or event.user_kicked:
             try:
                 user = await event.get_user()
-                uname = _clean_mention_name(getattr(user, "first_name", None)) if user else "Member"
-                uid = getattr(user, "id", None)
-                mention = f"[{uname}](tg://user?id={uid})" if uid else uname
-                await client.send_message(
-                    event.chat_id,
-                    f"{QUIT_MESSAGE}\n👤 {mention}",
-                    parse_mode="md",
-                )
+                await _send_quit_alert(client, event.chat_id, user)
             except Exception:
                 await client.send_message(event.chat_id, QUIT_MESSAGE)
+
+    @client.on(events.Raw)
+    async def raw_quit_handler(event):
+        if not host_state.get("quit_enabled", True):
+            return
+        if isinstance(event, types.UpdateChannelParticipant):
+            if event.prev_participant and not event.new_participant:
+                try:
+                    chat_id = int(f"-100{event.channel_id}")
+                    uid = getattr(event.prev_participant, "user_id", None)
+                    user_obj = await client.get_entity(uid) if uid else None
+                    await _send_quit_alert(client, chat_id, user_obj)
+                except Exception:
+                    pass
 
     @client.on(events.NewMessage(incoming=True))
     async def dm_and_group_handler(event):
@@ -468,7 +485,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             if sender_id not in welcomed_users:
                 welcomed_users.add(sender_id)
                 await asyncio.sleep(0.5)
-                await send_first_dm_card(client, event)
+                await send_first_dm_card(event)
 
 
 async def start_client_from_session(
