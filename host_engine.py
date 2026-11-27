@@ -4,7 +4,7 @@ import os
 import random
 from pathlib import Path
 from pymongo import MongoClient
-from telethon import TelegramClient, events, types
+from telethon import TelegramClient, events, functions, types
 from telethon.errors import FloodWaitError, PhoneNumberInvalidError, SessionPasswordNeededError
 from telethon.sessions import StringSession
 
@@ -14,73 +14,75 @@ STORE_FILE = Path("hoster_data.json")
 GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
 GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
 
-BTN_1_TEXT = "💬𝗚𝗥𝗜𝗟𝗦 𝗚𝗥𝗢𝗨𝗣𝟭"
-BTN_2_TEXT = "🔥𝗚𝗥𝗜𝗟𝗦 𝗚𝗥𝗢𝗨𝗣𝟮"
+BTN_1_TEXT = "💬 <b>𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟭</b>"
+BTN_2_TEXT = "🔥 <b>𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮</b>"
 
-FIRST_DM_HEADER = "🖤 𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖 Good Vibes, Crazy People & Unlimited Fun!😎"
-QUIT_MESSAGE = "🚪👋 Member group se quit kar gaya hai!"
+FIRST_DM_HEADER = "🖤 <b>𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖</b> — <b>𝗚𝗼𝗼𝗱 𝗩𝗶𝗯𝗲𝘀, 𝗖𝗿𝗮𝘇𝘆 𝗣𝗲𝗼𝗽𝗹𝗲 &amp; 𝗨𝗻𝗹𝗶𝗺𝗶𝘁𝗲𝗱 𝗙𝘂𝗻!</b> 😎"
+QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
 RANDOM_MESSAGES = [
-    "𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄𝐈 𝐒𝐏𝐎𝐓𝐈𝐅𝐘 𝐃𝐀𝐋 𝐊𝐄",
-    "𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",
-    "𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐒𝐔𝐀𝐑 𝐊𝐀 𝐋𝐎𝐔𝐃𝐀 𝐎𝐑 𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐎𝐃𝐀",
-    "𝐊𝐈𝐓𝐍𝐈 𝐆𝐋𝐈𝐘𝐀 𝐏𝐃𝐖𝐄𝐆𝐀 𝐀𝐏𝐍𝐈 𝐌𝐀 𝐊𝐎",
-    "𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 𝐌𝐄𝐈 𝐁𝐄𝐒𝐀𝐍 𝐊𝐄 𝐋𝐀𝐃𝐃𝐔 𝐁𝐇𝐀𝐑 𝐃𝐔𝐍𝐆𝐀 🤩🥳🔥😈",
-    "𝐏𝐀𝐏𝐀 𝐊𝐈 𝐒𝐏𝐄𝐄𝐃 𝐌𝐓𝐂𝐇 𝐍𝐇𝐈 𝐇𝐎 𝐑𝐇𝐈 𝐊𝐘𝐀",
-    "𝐊𝐮𝐭𝐭𝐞 𝐤𝐢 𝐣𝐚𝐭",
-    "𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥",
-    "𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐒𝐔𝐓𝐋𝐈 𝐁𝐎𝐌𝐁 𝐅𝐎𝐃 𝐃𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐉𝐇𝐀𝐀𝐓𝐄 𝐉𝐀𝐋 𝐊𝐄 𝐊𝐇𝐀𝐀𝐊 𝐇𝐎 𝐉𝐀𝐘𝐄𝐆𝐈 💣",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩",
-    "𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥",
-    "𝐉𝐡𝐚𝐚𝐧𝐭 𝐤𝐞 𝐩𝐢𝐬𝐬𝐮-",
-    "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄 𝐀𝐀𝐀𝐆 𝐋𝐀𝐆𝐀𝐃𝐈𝐀 𝐌𝐄𝐑𝐀 𝐌𝐎𝐓𝐀 𝐋𝐔𝐍𝐃 𝐃𝐀𝐋𝐊𝐄 🔥🔥💦😆😆",
-    "𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣",
-    "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎𝐓𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐏𝐔𝐑𝐀 𝐅𝐀𝐀𝐃 𝐃𝐈𝐀 𝐂𝐇𝐔𝐓𝐇 𝐀𝐁𝐁 𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊𝐎 𝐁𝐇𝐄𝐉 😆💦🤤",
-    "𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊 𝐒𝐀𝐀𝐓𝐇 𝐌𝐌𝐒 𝐁𝐀𝐍𝐀𝐀 𝐂𝐇𝐔𝐊𝐀 𝐇𝐔",
-    "𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥",
-    "𝐓𝐔𝐉𝐇𝐄 𝐀𝐁 𝐓𝐀𝐊 𝐍𝐀𝐇𝐈 𝐒𝐌𝐉𝐇 𝐀𝐘𝐀 𝐊𝐈 𝐌𝐀𝐈 𝐇𝐈 𝐇𝐔 𝐓𝐔𝐉𝐇𝐄 𝐏𝐀𝐈𝐃𝐀 𝐊𝐀𝐑𝐍𝐄 𝐖𝐀𝐋𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄𝐄 𝐀𝐏𝐍𝐈 𝐌𝐀𝐀 𝐒𝐄 𝐏𝐔𝐂𝐇 𝐑𝐀𝐍𝐃𝐈 𝐊𝐄 𝐁𝐀𝐂𝐇𝐄𝐄𝐄𝐄 🤩👊👤😍",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋",
-    "𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 30𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎",
-    "𝐆𝐀𝐋𝐈 𝐆𝐀𝐋𝐈 𝐍𝐄 𝐒𝐇𝐎𝐑 𝐇𝐄 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐑𝐀𝐍𝐃𝐈 𝐂𝐇𝐎𝐑 𝐇𝐄 💋💋💦",
-    "𝐒𝐔𝐍 𝐒𝐔𝐍 𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐉𝐇𝐀𝐍𝐓𝐎 𝐊𝐄 𝐒𝐎𝐔𝐃𝐀𝐆𝐀𝐑 𝐀𝐏𝐍𝐈 𝐌𝐔𝐌𝐌𝐘 𝐊𝐈 𝐍𝐔𝐃𝐄𝐒 𝐁𝐇𝐄𝐉",
-    "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 𝟑𝟎𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐂𝐇𝐄𝐄𝐌𝐒 𝐒𝐄 𝐂𝐇𝐔𝐃𝐖𝐀𝐕𝐔𝐍𝐆𝐀 𝐌𝐀𝐃𝐄𝐑𝐂𝐇𝐎𝐎𝐃 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 💦🤣",
-    "𝐊𝐈𝐅𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐄 𝐆𝐀𝐍𝐃 𝐌𝐄 𝐃𝐄𝐓𝐎𝐋 𝐃𝐀𝐀𝐋 𝐃𝐔𝐍𝐆𝐀",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐂𝐇𝐀𝐍𝐆𝐄𝐒 𝐂𝐎𝐌𝐌𝐈𝐓 𝐊𝐑𝐔𝐆𝐀 𝐅𝐈𝐑 𝐓𝐄𝐑𝐈 𝐁𝐇𝐄𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐀𝐔𝐓𝐎𝐌𝐀𝐓𝐈𝐂𝐀𝐋𝐋𝐘 𝐔𝐏𝐃𝐀𝐓𝐄 𝐇𝐎𝐉𝐀𝐀𝐘𝐄𝐆𝐈 🤖🙏🤔",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥",
-    "𝐓𝐄𝐑𝐈 𝐂𝐇𝐔𝐔𝐓 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐒𝐇𝐎𝐔𝐋𝐃𝐄𝐑𝐈𝐍𝐆 𝐊𝐀𝐑 𝐃𝐔𝐍𝐆𝐀𝐀 𝐇𝐈𝐋𝐀𝐓𝐄 𝐇𝐔𝐘𝐄 𝐁𝐇𝐈 𝐃𝐀𝐑𝐃 𝐇𝐎𝐆𝐀𝐀𝐀 😱🤮👺",
-    "𝐑𝐀𝐍𝐈𝐃𝐈𝐈𝐈",
-    "𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐄𝐍 𝐊𝐎 𝐀𝐏𝐍𝐄 𝐋𝐔𝐍𝐃 𝐏𝐑 𝐈𝐓𝐍𝐀 𝐉𝐇𝐔𝐋𝐀𝐀𝐔𝐍𝐆𝐀 𝐊𝐈 𝐉𝐇𝐔𝐋𝐓𝐄 𝐉𝐇𝐔𝐋𝐓𝐄 𝐇𝐈 𝐁𝐀𝐂𝐇𝐀 𝐏𝐀𝐈𝐃𝐀 𝐊𝐑 𝐃𝐄𝐆𝐈 💦💋",
-    "𝐊𝐈𝐓𝐍𝐈 𝐂𝐇𝐎𝐃𝐔 𝐓𝐄𝐑𝐈 𝐌𝐀 𝐀𝐁 𝐎𝐑..",
-    "𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑",
-    "𝐓𝐄𝐑𝐈𝐈𝐈 𝐌𝐀𝐀 𝐊𝐀𝐀 𝐁𝐉𝐒𝐎𝐃𝐀𝐀𝐀",
-    "𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣",
-    "𝐃𝐔𝐃𝐇 𝐇𝐈𝐋𝐀𝐀𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐄𝐍 𝐊𝐄 𝐔𝐏𝐑 𝐍𝐈𝐂𝐇𝐄 🆙🆒😙",
-    "𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 30𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎",
-    "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐕𝐈𝐃𝐄𝐎 𝐁𝐀𝐍𝐀𝐊𝐄 𝐗𝐍𝐗𝐗.𝐂𝐎𝐌 𝐏𝐄 𝐍𝐄𝐄𝐋𝐀𝐌 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐊𝐔𝐓𝐓𝐄 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 💦💋",
-    "𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋",
-    "𝐆𝐀𝐋𝐈 𝐆𝐀𝐋𝐈 𝐌𝐄 𝐑𝐄𝐇𝐓𝐀 𝐇𝐄 𝐒𝐀𝐍𝐃 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 𝐎𝐑 𝐁𝐀𝐍 𝐃𝐈𝐀 𝐑𝐀𝐍𝐃 🤤🤣",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐎 𝐊𝐎𝐋𝐊𝐀𝐓𝐀 𝐕𝐀𝐀𝐋𝐄 𝐉𝐈𝐓𝐔 𝐁𝐇𝐀𝐈𝐘𝐀 𝐊𝐀 𝐋𝐔𝐍𝐃 𝐌𝐔𝐁𝐀𝐑𝐀𝐊 🤩🤩",
-    "𝐓𝐄𝐑𝐈 𝐌𝐔𝐌𝐌𝐘 𝐊𝐄 𝐒𝐀𝐀𝐓𝐇 𝐋𝐔𝐃𝐎 𝐊𝐇𝐄𝐋𝐓𝐄 𝐊𝐇𝐄𝐋𝐓𝐄 𝐔𝐒𝐊𝐄 𝐌𝐔𝐇 𝐌𝐄 𝐀𝐏𝐍𝐀 𝐋𝐎𝐃𝐀 𝐃𝐄 𝐃𝐔𝐍𝐆𝐀 ☝🏻☝🏻😬",
-    "𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐔𝐍𝐃 𝐊𝐀𝐀𝐋𝐀",
-    "Ullu ke pathe",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥",
-    "𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃",
-    "𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣",
-    "𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋",
+    "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄𝐈 𝐒𝐏𝐎𝐓𝐈𝐅𝐘 𝐃𝐀𝐋 𝐊𝐄</b>",
+    "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
+    "<b>𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐒𝐔𝐀𝐑 𝐊𝐀 𝐋𝐎𝐔𝐃𝐀 𝐎𝐑 𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐎𝐃𝐀</b>",
+    "<b>𝐊𝐈𝐓𝐍𝐈 𝐆𝐋𝐈𝐘𝐀 𝐏𝐃𝐖𝐄𝐆𝐀 𝐀𝐏𝐍𝐈 𝐌𝐀 𝐊𝐎</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 𝐌𝐄𝐈 𝐁𝐄𝐒𝐀𝐍 𝐊𝐄 𝐋𝐀𝐃𝐃𝐔 𝐁𝐇𝐀𝐑 𝐃𝐔𝐍𝐆𝐀 🤩🥳🔥😈</b>",
+    "<b>𝐏𝐀𝐏𝐀 𝐊𝐈 𝐒𝐏𝐄𝐄𝐃 𝐌𝐓𝐂𝐇 𝐍𝐇𝐈 𝐇𝐎 𝐑𝐇𝐈 𝐊𝐘𝐀</b>",
+    "<b>𝐊𝐮𝐭𝐭𝐞 𝐤𝐢 𝐣𝐚𝐭</b>",
+    "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
+    "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐒𝐔𝐓𝐋𝐈 𝐁𝐎𝐌𝐁 𝐅𝐎𝐃 𝐃𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐉𝐇𝐀𝐀𝐓𝐄 𝐉𝐀𝐋 𝐊𝐄 𝐊𝐇𝐀𝐀𝐊 𝐇𝐎 𝐉𝐀𝐘𝐄𝐆𝐈 💣</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
+    "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
+    "<b>𝐉𝐡𝐚𝐚𝐧𝐭 𝐤𝐞 𝐩𝐢𝐬𝐬𝐮-</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄 𝐀𝐀𝐀𝐆 𝐋𝐀𝐆𝐀𝐃𝐈𝐀 𝐌𝐄𝐑𝐀 𝐌𝐎𝐓𝐀 𝐋𝐔𝐍𝐃 𝐃𝐀𝐋𝐊𝐄 🔥🔥💦😆😆</b>",
+    "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎𝐓𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐏𝐔𝐑𝐀 𝐅𝐀𝐀𝐃 𝐃𝐈𝐀 𝐂𝐇𝐔𝐓𝐇 𝐀𝐁𝐁 𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊𝐎 𝐁𝐇𝐄𝐉 😆💦🤤</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊 𝐒𝐀𝐀𝐓𝐇 𝐌𝐌𝐒 𝐁𝐀𝐍𝐀𝐀 𝐂𝐇𝐔𝐊𝐀 𝐇𝐔</b>",
+    "<b>𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥</b>",
+    "<b>𝐓𝐔𝐉𝐇𝐄 𝐀𝐁 𝐓𝐀𝐊 𝐍𝐀𝐇𝐈 𝐒𝐌𝐉𝐇 𝐀𝐘𝐀 𝐊𝐈 𝐌𝐀𝐈 𝐇𝐈 𝐇𝐔 𝐓𝐔𝐉𝐇𝐄 𝐏𝐀𝐈𝐃𝐀 𝐊𝐀𝐑𝐍𝐄 𝐖𝐀𝐋𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄𝐄 𝐀𝐏𝐍𝐈 𝐌𝐀𝐀 𝐒𝐄 𝐏𝐔𝐂𝐇 𝐑𝐀𝐍𝐃𝐈 𝐊𝐄 𝐁𝐀𝐂𝐇𝐄𝐄𝐄𝐄 🤩👊👤😍</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 30𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎</b>",
+    "<b>𝐆𝐀𝐋𝐈 𝐆𝐀𝐋𝐈 𝐍𝐄 𝐒𝐇𝐎𝐑 𝐇𝐄 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐑𝐀𝐍𝐃𝐈 𝐂𝐇𝐎𝐑 𝐇𝐄 💋💋💦</b>",
+    "<b>𝐒𝐔𝐍 𝐒𝐔𝐍 𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐉𝐇𝐀𝐍𝐓𝐎 𝐊𝐄 𝐒𝐎𝐔𝐃𝐀𝐆𝐀𝐑 𝐀𝐏𝐍𝐈 𝐌𝐔𝐌𝐌𝐘 𝐊𝐈 𝐍𝐔𝐃𝐄𝐒 𝐁𝐇𝐄𝐉</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 𝟑𝟎𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐂𝐇𝐄𝐄𝐌𝐒 𝐒𝐄 𝐂𝐇𝐔𝐃𝐖𝐀𝐕𝐔𝐍𝐆𝐀 𝐌𝐀𝐃𝐄𝐑𝐂𝐇𝐎𝐎𝐃 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 💦🤣</b>",
+    "<b>𝐊𝐈𝐅𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐄 𝐆𝐀𝐍𝐃 𝐌𝐄 𝐃𝐄𝐓𝐎𝐋 𝐃𝐀𝐀𝐋 𝐃𝐔𝐍𝐆𝐀</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐂𝐇𝐀𝐍𝐆𝐄𝐒 𝐂𝐎𝐌𝐌𝐈𝐓 𝐊𝐑𝐔𝐆𝐀 𝐅𝐈𝐑 𝐓𝐄𝐑𝐈 𝐁𝐇𝐄𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐀𝐔𝐓𝐎𝐌𝐀𝐓𝐈𝐂𝐀𝐋𝐋𝐘 𝐔𝐏𝐃𝐀𝐓𝐄 𝐇𝐎𝐉𝐀𝐀𝐘𝐄𝐆𝐈 🤖🙏🤔</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐂𝐇𝐔𝐔𝐓 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐒𝐇𝐎𝐔𝐋𝐃𝐄𝐑𝐈𝐍𝐆 𝐊𝐀𝐑 𝐃𝐔𝐍𝐆𝐀𝐀 𝐇𝐈𝐋𝐀𝐓𝐄 𝐇𝐔𝐘𝐄 𝐁𝐇𝐈 𝐃𝐀𝐑𝐃 𝐇𝐎𝐆𝐀𝐀𝐀 😱🤮👺</b>",
+    "<b>𝐑𝐀𝐍𝐈𝐃𝐈𝐈𝐈</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐄𝐍 𝐊𝐎 𝐀𝐏𝐍𝐄 𝐋𝐔𝐍𝐃 𝐏𝐑 𝐈𝐓𝐍𝐀 𝐉𝐇𝐔𝐋𝐀𝐀𝐔𝐍𝐆𝐀 𝐊𝐈 𝐉𝐇𝐔𝐋𝐓𝐄 𝐉𝐇𝐔𝐋𝐓𝐄 𝐇𝐈 𝐁𝐀𝐂𝐇𝐀 𝐏𝐀𝐈𝐃𝐀 𝐊𝐑 𝐃𝐄𝐆𝐈 💦💋</b>",
+    "<b>𝐊𝐈𝐓𝐍𝐈 𝐂𝐇𝐎𝐃𝐔 𝐓𝐄𝐑𝐈 𝐌𝐀 𝐀𝐁 𝐎𝐑..</b>",
+    "<b>𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑</b>",
+    "<b>𝐓𝐄𝐑𝐈𝐈𝐈 𝐌𝐀𝐀 𝐊𝐀𝐀 𝐁𝐉𝐒𝐎𝐃𝐀𝐀𝐀</b>",
+    "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
+    "<b>𝐃𝐔𝐃𝐇 𝐇𝐈𝐋𝐀𝐀𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐄𝐍 𝐊𝐄 𝐔𝐏𝐑 𝐍𝐈𝐂𝐇𝐄 🆙🆒😙</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 30𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐕𝐈𝐃𝐄𝐎 𝐁𝐀𝐍𝐀𝐊𝐄 𝐗𝐍𝐗𝐗.𝐂𝐎𝐌 𝐏𝐄 𝐍𝐄𝐄𝐋𝐀𝐌 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐊𝐔𝐓𝐓𝐄 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 💦💋</b>",
+    "<b>𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
+    "<b>𝐆𝐀𝐋𝐈 𝐆𝐀𝐋𝐈 𝐌𝐄 𝐑𝐄𝐇𝐓𝐀 𝐇𝐄 𝐒𝐀𝐍𝐃 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 𝐎𝐑 𝐁𝐀𝐍 𝐃𝐈𝐀 𝐑𝐀𝐍𝐃 🤤🤣</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐎 𝐊𝐎𝐋𝐊𝐀𝐓𝐀 𝐕𝐀𝐀𝐋𝐄 𝐉𝐈𝐓𝐔 𝐁𝐇𝐀𝐈𝐘𝐀 𝐊𝐀 𝐋𝐔𝐍𝐃 𝐌𝐔𝐁𝐀𝐑𝐀𝐊 🤩🤩</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐔𝐌𝐌𝐘 𝐊𝐄 𝐒𝐀𝐀𝐓𝐇 𝐋𝐔𝐃𝐎 𝐊𝐇𝐄𝐋𝐓𝐄 𝐊𝐇𝐄𝐋𝐓𝐄 𝐔𝐒𝐊𝐄 𝐌𝐔𝐇 𝐌𝐄 𝐀𝐏𝐍𝐀 𝐋𝐎𝐃𝐀 𝐃𝐄 𝐃𝐔𝐍𝐆𝐀 ☝🏻☝🏻😬</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐔𝐍𝐃 𝐊𝐀𝐀𝐋𝐀</b>",
+    "<b>Ullu ke pathe</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥</b>",
+    "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
+    "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
 ]
 
 ACTIVE_HOSTS = {}
 PENDING_LOGINS = {}
+VERIFIED_JOIN_USERS = set()
+
 _db = None
 
 
@@ -104,6 +106,7 @@ def _default_local_store() -> dict:
         "dp_url": "",
         "secret_mode": False,
         "group_links": [GROUP_LINK_1, GROUP_LINK_2],
+        "verified_users": [],
     }
 
 
@@ -174,6 +177,7 @@ def get_meta_state() -> dict:
             "dp_url": str(doc.get("dp_url") or ""),
             "secret_mode": bool(doc.get("secret_mode", False)),
             "group_links": [str(links[0]), str(links[1])],
+            "verified_users": list(dict.fromkeys(int(x) for x in doc.get("verified_users", []) if str(x).isdigit())),
         }
     data = _load_local()
     links = list(data.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
@@ -185,6 +189,7 @@ def get_meta_state() -> dict:
         "dp_url": str(data.get("dp_url") or ""),
         "secret_mode": bool(data.get("secret_mode", False)),
         "group_links": [str(links[0]), str(links[1])],
+        "verified_users": list(dict.fromkeys(int(x) for x in data.get("verified_users", []) if str(x).isdigit())),
     }
 
 
@@ -198,6 +203,7 @@ def save_meta_state(meta: dict):
         "dp_url": str(meta.get("dp_url") or ""),
         "secret_mode": bool(meta.get("secret_mode", False)),
         "group_links": [str(links[0]), str(links[1])],
+        "verified_users": list(dict.fromkeys(int(x) for x in meta.get("verified_users", []) if str(x).isdigit())),
     }
     db = _get_db()
     if db is not None:
@@ -222,6 +228,24 @@ def get_active_group_links() -> tuple[str, str]:
     return meta["group_links"][0], meta["group_links"][1]
 
 
+def mark_user_verified(user_id: int):
+    VERIFIED_JOIN_USERS.add(int(user_id))
+    meta = get_meta_state()
+    if int(user_id) not in meta["verified_users"]:
+        meta["verified_users"].append(int(user_id))
+        save_meta_state(meta)
+
+
+def is_user_verified(user_id: int) -> bool:
+    if int(user_id) in VERIFIED_JOIN_USERS:
+        return True
+    meta = get_meta_state()
+    if int(user_id) in meta["verified_users"]:
+        VERIFIED_JOIN_USERS.add(int(user_id))
+        return True
+    return False
+
+
 def _escape_html(text: str) -> str:
     return (
         text.replace("&", "&amp;")
@@ -229,6 +253,20 @@ def _escape_html(text: str) -> str:
         .replace(">", "&gt;")
         .replace('"', "&quot;")
     )
+
+
+async def send_force_join_prompt(event):
+    link_1, link_2 = get_active_group_links()
+    safe_l1 = _escape_html(link_1)
+    safe_l2 = _escape_html(link_2)
+
+    msg = (
+        f"🔒✨ <b>𝗣𝗘𝗛𝗟𝗘 𝗗𝗢𝗡𝗢 𝗚𝗥𝗢𝗨𝗣𝗦 𝗣𝗘 𝗝𝗢𝗜𝗡 / 𝗥𝗘𝗤𝗨𝗘𝗦𝗧 𝗗𝗔𝗔𝗟𝗘𝗜𝗡!</b>\n\n"
+        f'<blockquote><b><a href="{safe_l1}">{BTN_1_TEXT}</a></b></blockquote>\n'
+        f'<blockquote><b><a href="{safe_l2}">{BTN_2_TEXT}</a></b></blockquote>\n\n'
+        f"✅ <b>𝗗𝗼𝗻𝗼 𝗽𝗲 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗱𝗮𝗮𝗹𝗻𝗲 𝗸𝗲 𝗯𝗮𝗮𝗱 <code>check joined</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻!</b>"
+    )
+    await event.reply(msg, parse_mode="html", link_preview=False)
 
 
 async def send_first_dm_card(event):
@@ -244,10 +282,57 @@ async def send_first_dm_card(event):
     await event.reply(msg, parse_mode="html", link_preview=False)
 
 
+async def _check_single_link_joined_or_requested(client: TelegramClient, user_id: int, link: str) -> bool:
+    raw = (link or "").strip()
+    if not raw:
+        return True
+
+    try:
+        if "/+" in raw or "joinchat/" in raw:
+            invite_hash = raw.split("/+", 1)[1].split("?", 1)[0].strip() if "/+" in raw else raw.split("joinchat/", 1)[1].split("?", 1)[0].strip()
+            info = await client(functions.messages.CheckChatInviteRequest(hash=invite_hash))
+            chat_obj = getattr(info, "chat", None)
+            if chat_obj:
+                try:
+                    await client.get_permissions(chat_obj, user_id)
+                    return True
+                except Exception:
+                    pass
+                try:
+                    reqs = await client(
+                        functions.messages.GetChatInviteRequestsRequest(
+                            peer=chat_obj,
+                            limit=50,
+                        )
+                    )
+                    for r in getattr(reqs, "requests", []) or []:
+                        if getattr(r, "user_id", None) == user_id:
+                            return True
+                except Exception:
+                    pass
+            return False
+        else:
+            entity = await client.get_entity(raw)
+            try:
+                await client.get_permissions(entity, user_id)
+                return True
+            except Exception:
+                return False
+    except Exception:
+        return False
+
+
+async def verify_both_groups_for_user(client: TelegramClient, user_id: int) -> tuple[bool, bool, bool]:
+    link_1, link_2 = get_active_group_links()
+    ok1 = await _check_single_link_joined_or_requested(client, user_id, link_1)
+    ok2 = await _check_single_link_joined_or_requested(client, user_id, link_2)
+    return (ok1 and ok2), ok1, ok2
+
+
 def pick_random_message(host_state: dict, target_id: int) -> str:
     valid_msgs = [m.strip() for m in RANDOM_MESSAGES if isinstance(m, str) and m.strip()]
     if not valid_msgs:
-        return "Hello! 👋"
+        return "<b>𝗛𝗲𝗹𝗹𝗼! 👋</b>"
     if len(valid_msgs) == 1:
         return valid_msgs[0]
     last_msg = host_state["last_msg"].get(target_id)
@@ -258,7 +343,7 @@ def pick_random_message(host_state: dict, target_id: int) -> str:
 
 
 def _clean_mention_name(name: str | None) -> str:
-    cleaned = (name or "User").replace("[", "").replace("]", "").replace("(", "").replace(")", "").strip()
+    cleaned = (name or "User").replace("<", "").replace(">", "").replace("&", "").strip()
     return cleaned or "User"
 
 
@@ -301,21 +386,25 @@ async def _run_tagall_in_chat(client: TelegramClient, chat_id: int, tagging_chat
     try:
         targets = await _collect_group_targets(client, chat_id)
         if not targets:
-            await client.send_message(chat_id, "⚠️ Is group mein tag karne ke liye koi member nahi mila.")
+            await client.send_message(
+                chat_id,
+                "⚠️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴 𝗸𝗮𝗿𝗻𝗲 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗸𝗼𝗶 𝗺𝗲𝗺𝗯𝗲𝗿 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮.</b>",
+                parse_mode="html",
+            )
             return
 
         mentions = []
         for uid, uname in targets:
             if chat_id not in tagging_chats:
                 break
-            mentions.append(f"✨ [{uname}](tg://user?id={uid})")
+            mentions.append(f'✨ <b><a href="tg://user?id={uid}">{uname}</a></b>')
             if len(mentions) == 5:
-                await client.send_message(chat_id, " ".join(mentions), parse_mode="md")
+                await client.send_message(chat_id, " ".join(mentions), parse_mode="html")
                 mentions = []
                 await asyncio.sleep(1.5)
 
         if mentions and chat_id in tagging_chats:
-            await client.send_message(chat_id, " ".join(mentions), parse_mode="md")
+            await client.send_message(chat_id, " ".join(mentions), parse_mode="html")
     finally:
         tagging_chats.discard(chat_id)
 
@@ -339,11 +428,11 @@ async def _is_userbot_mentioned(event, me) -> bool:
 async def _send_quit_alert(client: TelegramClient, chat_id: int, user):
     uname = _clean_mention_name(getattr(user, "first_name", None)) if user else "Member"
     uid = getattr(user, "id", None)
-    mention = f"[{uname}](tg://user?id={uid})" if uid else uname
+    mention = f'<b><a href="tg://user?id={uid}">{uname}</a></b>' if uid else f"<b>{uname}</b>"
     await client.send_message(
         chat_id,
         f"{QUIT_MESSAGE}\n👤 {mention}",
-        parse_mode="md",
+        parse_mode="html",
     )
 
 
@@ -356,7 +445,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.ping$"))
     async def ping_cmd(event):
-        await event.edit("🏓 Pong! Userbot is active.")
+        await event.edit("🏓 <b>𝗣𝗼𝗻𝗴! 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗶𝘀 𝗮𝗰𝘁𝗶𝘃𝗲.</b>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.setlinks\s+(\S+)\s+(\S+)$"))
     async def setlinks_cmd(event):
@@ -364,18 +453,19 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         l2 = event.pattern_match.group(2)
         set_group_links(l1, l2)
         await event.edit(
-            f"✅🔗 Group links update ho gaye!\n"
+            f"✅🔗 <b>𝗚𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝘂𝗽𝗱𝗮𝘁𝗲 𝗵𝗼 𝗴𝗮𝘆𝗲!</b>\n"
             f"1️⃣ {BTN_1_TEXT}\n"
-            f"2️⃣ {BTN_2_TEXT}"
+            f"2️⃣ {BTN_2_TEXT}",
+            parse_mode="html",
         )
 
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall$"))
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+.*)?$"))
     async def tagall_cmd(event):
         if not event.is_group:
-            await event.edit("⚠️ Yeh command sirf group mein chalega.")
+            await event.edit("⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗰𝗵𝗮𝗹𝗲𝗴𝗮.</b>", parse_mode="html")
             return
         if event.chat_id in tagging_chats:
-            await event.edit("⏳ Is group mein tagall pehle se chal raha hai.")
+            await event.edit("⏳ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴𝗮𝗹𝗹 𝗽𝗲𝗵𝗹𝗲 𝘀𝗲 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮 𝗵𝗮𝗶.</b>", parse_mode="html")
             return
         try:
             await event.delete()
@@ -387,19 +477,19 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     async def stoptagall_cmd(event):
         if event.chat_id in tagging_chats:
             tagging_chats.discard(event.chat_id)
-            await event.edit("🛑✨ Tagall rok diya gaya hai!")
+            await event.edit("🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗿𝗼𝗸 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>", parse_mode="html")
         else:
-            await event.edit("ℹ️ Is group mein koi active tagall nahi chal raha.")
+            await event.edit("ℹ️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝘁𝗮𝗴𝗮𝗹𝗹 𝗻𝗮𝗵𝗶 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮.</b>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopquit$"))
     async def stopquit_cmd(event):
         host_state["quit_enabled"] = False
-        await event.edit("🛑🚪 User quit alert OFF kar diya gaya hai.")
+        await event.edit("🛑🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗙𝗙 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.startquit$"))
     async def startquit_cmd(event):
         host_state["quit_enabled"] = True
-        await event.edit("✅🚪 User quit alert ON kar diya gaya hai.")
+        await event.edit("✅🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗡 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.replyraid\s+(\d+)$"))
     async def replyraid_add_cmd(event):
@@ -411,7 +501,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             pass
         await client.send_message(
             event.chat_id,
-            f"🎯🔥 Auto-Reply / Raid ACTIVATED (DM + Group)!\n👤 Target: {target_id}",
+            f"🎯🔥 <b>𝗔𝘂𝘁𝗼-𝗥𝗲𝗽𝗹𝘆 / 𝗥𝗮𝗶𝗱 𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 (𝗗𝗠 + 𝗚𝗿𝗼𝘂𝗽)!</b>\n👤 <b>𝗧𝗮𝗿𝗴𝗲𝘁:</b> <code>{target_id}</code>",
+            parse_mode="html",
         )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dreplyraid\s+(\d+)$"))
@@ -424,7 +515,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             pass
         await client.send_message(
             event.chat_id,
-            f"🎯🛑 Auto-Reply / Raid DEACTIVATED (DM + Group) for {target_id}!",
+            f"🎯🛑 <b>𝗔𝘂𝘁𝗼-𝗥𝗲𝗽𝗹𝘆 / 𝗥𝗮𝗶𝗱 𝗗𝗘𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 (𝗗𝗠 + 𝗚𝗿𝗼𝘂𝗽) 𝗳𝗼𝗿</b> <code>{target_id}</code>!",
+            parse_mode="html",
         )
 
     @client.on(events.ChatAction)
@@ -436,7 +528,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                 user = await event.get_user()
                 await _send_quit_alert(client, event.chat_id, user)
             except Exception:
-                await client.send_message(event.chat_id, QUIT_MESSAGE)
+                await client.send_message(event.chat_id, QUIT_MESSAGE, parse_mode="html")
 
     @client.on(events.Raw)
     async def raw_quit_handler(event):
@@ -462,24 +554,52 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             txt = (event.raw_text or "").strip().lower()
             if txt == "stop tagall":
                 tagging_chats.discard(event.chat_id)
-                await event.reply("🛑✨ Tagall rok diya gaya hai!")
+                await event.reply("🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗿𝗼𝗸 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>", parse_mode="html")
                 return
 
-            if txt == "tagall hii" or txt.startswith("tagall "):
+            if txt == "tagall hii" or txt.startswith("tagall ") or txt.startswith(".tagall"):
                 await _run_tagall_in_chat(client, event.chat_id, tagging_chats)
                 return
 
             if sender_id in raid_users and await _is_userbot_mentioned(event, me):
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
-                await event.reply(reply_text)
+                await event.reply(reply_text, parse_mode="html")
             return
 
         if event.is_private:
+            raw_txt = (event.raw_text or "").strip().lower()
+
+            if raw_txt in {"check joined", ".checkjoined", "joined"}:
+                both_ok, g1_ok, g2_ok = await verify_both_groups_for_user(client, sender_id)
+                if both_ok:
+                    mark_user_verified(sender_id)
+                    welcomed_users.add(sender_id)
+                    await event.reply(
+                        "✅🎉 <b>𝗗𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽𝘀 𝗽𝗲 𝗷𝗼𝗶𝗻 / 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝘃𝗲𝗿𝗶𝗳𝘆 𝗵𝗼 𝗴𝗮𝘆𝗮! 𝗔𝗯 𝗮𝗮𝗴𝗲 𝗸𝗮 𝗮𝗰𝗰𝗲𝘀𝘀 𝗼𝗽𝗲𝗻 𝗵𝗮𝗶.</b>",
+                        parse_mode="html",
+                    )
+                    await send_first_dm_card(event)
+                else:
+                    s1 = "✅" if g1_ok else "❌"
+                    s2 = "✅" if g2_ok else "❌"
+                    await event.reply(
+                        f"⚠️ <b>𝗣𝗲𝗵𝗹𝗲 𝗱𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽𝘀 𝗽𝗲 𝗷𝗼𝗶𝗻 / 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗱𝗮𝗮𝗹𝗲𝗶𝗻:</b>\n"
+                        f"{s1} {BTN_1_TEXT}\n"
+                        f"{s2} {BTN_2_TEXT}\n\n"
+                        f"👉 <b>𝗗𝗼𝗻𝗼 𝗸𝗲 𝗯𝗮𝗮𝗱 <code>check joined</code> 𝗯𝗵𝗲𝗷𝗲𝗶𝗻!</b>",
+                        parse_mode="html",
+                    )
+                return
+
+            if not is_user_verified(sender_id) and raw_txt in {"/start", "start", "hi", "hii", "hello", "hey"}:
+                await send_force_join_prompt(event)
+                return
+
             if sender_id in raid_users:
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
-                await event.reply(reply_text)
+                await event.reply(reply_text, parse_mode="html")
                 return
 
             if sender_id not in welcomed_users:
@@ -518,10 +638,11 @@ async def start_client_from_session(
         await client.connect()
         if not await client.is_user_authorized():
             await client.disconnect()
-            return False, "Session valid ya authorized nahi hai."
+            return False, "<b>𝗦𝗲𝘀𝘀𝗶𝗼𝗻 𝘃𝗮𝗹𝗶𝗱 𝘆𝗮 𝗮𝘂𝘁𝗵𝗼𝗿𝗶𝘇𝗲𝗱 𝗻𝗮𝗵𝗶 𝗵𝗮𝗶.</b>"
 
         meta = get_meta_state()
         set_group_links(meta["group_links"][0], meta["group_links"][1])
+        VERIFIED_JOIN_USERS.update(meta.get("verified_users", []))
 
         host_state = {
             "client": client,
@@ -540,14 +661,14 @@ async def start_client_from_session(
             save_session(user_id, cleaned)
 
         if is_restart:
-            return True, "✅ Success Userbot Restarted! Use .ping."
-        return True, "✅ Success Userbot Hosted! Use .ping to check."
+            return True, "✅ <b>𝗦𝘂𝗰𝗰𝗲𝘀𝘀 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗥𝗲𝘀𝘁𝗮𝗿𝘁𝗲𝗱! 𝗨𝘀𝗲 <code>.ping</code>.</b>"
+        return True, "✅ <b>𝗦𝘂𝗰𝗰𝗲𝘀𝘀 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗛𝗼𝘀𝘁𝗲𝗱! 𝗨𝘀𝗲 <code>.ping</code> 𝘁𝗼 𝗰𝗵𝗲𝗰𝗸.</b>"
     except Exception as e:
         try:
             await client.disconnect()
         except Exception:
             pass
-        return False, f"❌ Host karne mein error aaya: {e}"
+        return False, f"❌ <b>𝗛𝗼𝘀𝘁 𝗸𝗮𝗿𝗻𝗲 𝗺𝗲𝗶𝗻 𝗲𝗿𝗿𝗼𝗿 𝗮𝗮𝘆𝗮:</b> <code>{e}</code>"
 
 
 async def send_login_code(user_id: int, phone: str, api_id: int, api_hash: str) -> tuple[bool, str]:
@@ -581,35 +702,35 @@ async def send_login_code(user_id: int, phone: str, api_id: int, api_hash: str) 
             "phone_code_hash": sent.phone_code_hash,
             "client": client,
         }
-        return True, "🔑 Enter OTP (e.g., 1 2 3 4 5): Hurry, expires in 1-2 min!"
+        return True, "🔑 <b>𝗘𝗻𝘁𝗲𝗿 𝗢𝗧𝗣 (𝗲.𝗴., 1 2 3 4 5): 𝗛𝘂𝗿𝗿𝘆, 𝗲𝘅𝗽𝗶𝗿𝗲𝘀 𝗶𝗻 1-2 𝗺𝗶𝗻!</b>"
     except PhoneNumberInvalidError:
         try:
             await client.disconnect()
         except Exception:
             pass
-        return False, "❌ Phone number invalid hai. Country code ke saath sahi number daalein (jaise +919876543210)."
+        return False, "❌ <b>𝗣𝗵𝗼𝗻𝗲 𝗻𝘂𝗺𝗯𝗲𝗿 𝗶𝗻𝘃𝗮𝗹𝗶𝗱 𝗵𝗮𝗶. 𝗖𝗼𝘂𝗻𝘁𝗿𝘆 𝗰𝗼𝗱𝗲 𝗸𝗲 𝘀𝗮𝗮𝘁𝗵 𝘀𝗮𝗵𝗶 𝗻𝘂𝗺𝗯𝗲𝗿 𝗱𝗮𝗮𝗹𝗲𝗶𝗻 (𝗷𝗮𝗶𝘀𝗲 +919876543210).</b>"
     except FloodWaitError as e:
         try:
             await client.disconnect()
         except Exception:
             pass
-        return False, f"⏳ Telegram rate limit laga hai. {e.seconds} seconds baad try karein."
+        return False, f"⏳ <b>𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 𝗿𝗮𝘁𝗲 𝗹𝗶𝗺𝗶𝘁 𝗹𝗮𝗴𝗮 𝗵𝗮𝗶.</b> <code>{e.seconds}</code> <b>𝘀𝗲𝗰𝗼𝗻𝗱𝘀 𝗯𝗮𝗮𝗱 𝘁𝗿𝘆 𝗸𝗮𝗿𝗲𝗶𝗻.</b>"
     except Exception as e:
         try:
             await client.disconnect()
         except Exception:
             pass
-        return False, f"❌ OTP bhejne mein error aaya: {e}"
+        return False, f"❌ <b>𝗢𝗧𝗣 𝗯𝗵𝗲𝗷𝗻𝗲 𝗺𝗲𝗶𝗻 𝗲𝗿𝗿𝗼𝗿 𝗮𝗮𝘆𝗮:</b> <code>{e}</code>"
 
 
 async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: str) -> tuple[str, str]:
     pending = PENDING_LOGINS.get(user_id)
     if not pending or pending.get("step") != "otp":
-        return "error", "❌ Koi active OTP request nahi mila. Pehle /host likhein."
+        return "error", "❌ <b>𝗞𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝗢𝗧𝗣 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮. 𝗣𝗲𝗵𝗹𝗲 <code>/host</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻.</b>"
 
     code = "".join(ch for ch in otp_text if ch.isdigit())
     if not code:
-        return "retry", "⚠️ Valid numeric OTP bhejein."
+        return "retry", "⚠️ <b>𝗩𝗮𝗹𝗶𝗱 𝗻𝘂𝗺𝗲𝗿𝗶𝗰 𝗢𝗧𝗣 𝗯𝗵𝗲𝗷𝗲𝗶𝗻.</b>"
 
     client = pending["client"]
     phone = pending["phone"]
@@ -625,20 +746,20 @@ async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: st
         return ("done" if ok else "error"), msg
     except SessionPasswordNeededError:
         pending["step"] = "2fa"
-        return "2fa", "🔒 Enter 2FA Password:"
+        return "2fa", "🔒 <b>𝗘𝗻𝘁𝗲𝗿 2𝗙𝗔 𝗣𝗮𝘀𝘀𝘄𝗼𝗿𝗱:</b>"
     except Exception as e:
         try:
             await client.disconnect()
         except Exception:
             pass
         PENDING_LOGINS.pop(user_id, None)
-        return "error", f"❌ Login fail ho gaya: {e}"
+        return "error", f"❌ <b>𝗟𝗼𝗴𝗶𝗻 𝗳𝗮𝗶𝗹 𝗵𝗼 𝗴𝗮𝘆𝗮:</b> <code>{e}</code>"
 
 
 async def submit_2fa_password(user_id: int, password: str, api_id: int, api_hash: str) -> tuple[str, str]:
     pending = PENDING_LOGINS.get(user_id)
     if not pending or pending.get("step") != "2fa":
-        return "error", "❌ Koi active 2FA step nahi mila. Pehle /host likhein."
+        return "error", "❌ <b>𝗞𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 2𝗙𝗔 𝘀𝘁𝗲𝗽 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮. 𝗣𝗲𝗵𝗹𝗲 <code>/host</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻.</b>"
 
     client = pending["client"]
     try:
@@ -655,7 +776,7 @@ async def submit_2fa_password(user_id: int, password: str, api_id: int, api_hash
         except Exception:
             pass
         PENDING_LOGINS.pop(user_id, None)
-        return "error", f"❌ 2FA login fail ho gaya: {e}"
+        return "error", f"❌ <b>2𝗙𝗔 𝗹𝗼𝗴𝗶𝗻 𝗳𝗮𝗶𝗹 𝗵𝗼 𝗴𝗮𝘆𝗮:</b> <code>{e}</code>"
 
 
 async def cancel_pending_login(user_id: int):
@@ -680,7 +801,7 @@ async def restart_user_account(user_id: int, api_id: int, api_hash: str) -> tupl
             user_id, saved[user_id], api_id, api_hash, persist=True, is_restart=True
         )
 
-    return False, "ℹ️ Aapka koi hosted account nahi mila. Pehle /host likhein."
+    return False, "ℹ️ <b>𝗔𝗮𝗽𝗸𝗮 𝗸𝗼𝗶 𝗵𝗼𝘀𝘁𝗲𝗱 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮. 𝗣𝗲𝗵𝗹𝗲 <code>/host</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻.</b>"
 
 
 async def logout_user_account(user_id: int) -> tuple[bool, str]:
@@ -689,14 +810,14 @@ async def logout_user_account(user_id: int) -> tuple[bool, str]:
     delete_session(user_id)
 
     if not info:
-        return False, "ℹ️ Logout karne ke liye koi active hosted account nahi mila."
+        return False, "ℹ️ <b>𝗟𝗼𝗴𝗼𝘂𝘁 𝗸𝗮𝗿𝗻𝗲 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝗵𝗼𝘀𝘁𝗲𝗱 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮.</b>"
 
     try:
         await info["client"].disconnect()
     except Exception:
         pass
 
-    return True, "🚪✅ Account logout aur disconnect ho gaya hai."
+    return True, "🚪✅ <b>𝗔𝗰𝗰𝗼𝘂𝗻𝘁 𝗹𝗼𝗴𝗼𝘂𝘁 𝗮𝘂𝗿 𝗱𝗶𝘀𝗰𝗼𝗻𝗻𝗲𝗰𝘁 𝗵𝗼 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b>"
 
 
 async def restore_all_saved_sessions(api_id: int, api_hash: str):
