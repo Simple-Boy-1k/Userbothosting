@@ -13,7 +13,7 @@ STORE_FILE = Path("hoster_data.json")
 
 # ================= GROUP LINKS & FIRST DM TEXT =================
 GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
-GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
+GROUP_LINK_2 = "https://t.me/+CBnAUbPjGdlmYzBk"
 
 BTN_1_TEXT = "𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟭"
 BTN_2_TEXT = "𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮"
