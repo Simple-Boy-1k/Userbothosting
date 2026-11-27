@@ -12,68 +12,68 @@ from telethon.sessions import StringSession
 STORE_FILE = Path("hoster_data.json")
 
 # ================= FIRST DM TEXT & QUIT ALERT =================
-FIRST_DM_HEADER = "✨ 𝗛𝗲𝘆 𝗧𝗵𝗲𝗿𝗲! 👋 — 𝗪𝗲𝗹𝗰𝗼𝗺𝗲 𝘁𝗼 𝗺𝘆 𝗗𝗠, 𝗸𝗮𝗶𝘀𝗲 𝗵𝗼? 😎"
-QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
+FIRST_DM_HEADER = "Hey welcome to my dm! How are you...? 😊"
+QUIT_MESSAGE = "🚪👋 Member group se quit kar gaya hai!"
 
 TAG_DELAY_SECONDS = 2.5
 
 RANDOM_MESSAGES = [
-    "<blockquote><b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b></blockquote>",
-    "<blockquote><b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b></blockquote>",
-    "<blockquote><b>𝗦𝗣𝗢𝗧𝗜𝗙𝗬 𝗣𝗘 𝗖𝗛𝗔𝗟𝗔 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗧𝗘𝗥𝗔 𝗕𝗔𝗔𝗣</b></blockquote>",
-    "<blockquote><b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b></blockquote>",
-    "<blockquote><b>𝗦𝗨𝗔𝗥 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗦𝗘𝗘𝗗𝗛𝗔 𝗕𝗢𝗟 𝗥𝗔𝗛𝗔 𝗛𝗨𝗡</b></blockquote>",
-    "<blockquote><b>𝗞𝗜𝗧𝗡𝗜 𝗚𝗔𝗟𝗜𝗬𝗔𝗡 𝗞𝗛𝗔𝗬𝗘𝗚𝗔 𝗔𝗝</b></blockquote>",
-    "<blockquote><b>𝗕𝗘𝗦𝗔𝗡 𝗞𝗘 𝗟𝗔𝗗𝗗𝗨 𝗕𝗛𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗕𝗨 🤩🥳🔥😈</b></blockquote>",
-    "<blockquote><b>𝗦𝗣𝗘𝗘𝗗 𝗠𝗔𝗧𝗖𝗛 𝗡𝗔𝗛𝗜 𝗛𝗢 𝗥𝗔𝗛𝗜 𝗞𝗬𝗔</b></blockquote>",
-    "<blockquote><b>𝗞𝘂𝘁𝘁𝗲 𝗸𝗶 𝗷𝗮𝗮𝘁</b></blockquote>",
-    "<blockquote><b>𝗔𝗽𝗻𝗶 𝗷𝗮𝗴𝗮𝗵 𝗽𝗲 𝗯𝗮𝗶𝘁𝗵 𝗷𝗮𝗮</b></blockquote>",
-    "<blockquote><b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b></blockquote>",
-    "<blockquote><b>𝗦𝗨𝗧𝗟𝗜 𝗕𝗢𝗠𝗕 𝗙𝗢𝗗 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 💣</b></blockquote>",
-    "<blockquote><b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b></blockquote>",
-    "<blockquote><b>𝗔𝗽𝗻𝗶 𝗷𝗮𝗴𝗮𝗵 𝗽𝗲 𝗯𝗮𝗶𝘁𝗵 𝗷𝗮𝗮</b></blockquote>",
-    "<blockquote><b>𝗝𝗵𝗮𝗮𝗻𝘁 𝗸𝗲 𝗽𝗶𝘀𝘀𝘂</b></blockquote>",
-    "<blockquote><b>𝗔𝗔𝗚 𝗟𝗔𝗚𝗔 𝗗𝗨𝗡𝗚𝗔 𝗖𝗛𝗔𝗧 𝗠𝗘𝗜𝗡 🔥🔥💦😆😆</b></blockquote>",
-    "<blockquote><b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b></blockquote>",
-    "<blockquote><b>𝗣𝗨𝗥𝗔 𝗙𝗔𝗔𝗗 𝗞𝗘 𝗥𝗔𝗞𝗛 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 😆💦🤤</b></blockquote>",
-    "<blockquote><b>𝗠𝗠𝗦 𝗕𝗔𝗡𝗔 𝗖𝗛𝗨𝗞𝗔 𝗛𝗔𝗜 𝗔𝗕 𝗗𝗘𝗞𝗛</b></blockquote>",
-    "<blockquote><b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b></blockquote>",
-    "<blockquote><b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b></blockquote>",
-    "<blockquote><b>𝗦𝗨𝗗𝗢 𝗟𝗔𝗚𝗔 𝗞𝗘 𝟵𝟵𝟵𝟵 𝗖𝗛𝗔𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 🤩🥳🔥</b></blockquote>",
-    "<blockquote><b>𝗧𝗨𝗝𝗛𝗘 𝗔𝗕 𝗧𝗔𝗞 𝗦𝗔𝗠𝗔𝗝𝗛 𝗡𝗔𝗛𝗜 𝗔𝗬𝗔 𝗞𝗬𝗔 🤩👊👤😍</b></blockquote>",
-    "<blockquote><b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b></blockquote>",
-    "<blockquote><b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b></blockquote>",
-    "<blockquote><b>𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘𝗜𝗡 𝗦𝗛𝗢𝗥 𝗛𝗔𝗜 𝗔𝗝 💋💋💦</b></blockquote>",
-    "<blockquote><b>𝗦𝗨𝗡 𝗦𝗨𝗡 𝗦𝗨𝗔𝗥 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗕𝗔𝗔𝗧 𝗦𝗨𝗡</b></blockquote>",
-    "<blockquote><b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b></blockquote>",
-    "<blockquote><b>𝗖𝗛𝗘𝗘𝗠𝗦 𝗦𝗘 𝗕𝗔𝗝𝗪𝗔 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗕𝗨 💦🤣</b></blockquote>",
-    "<blockquote><b>𝗞𝗜𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦</b></blockquote>",
-    "<blockquote><b>𝗗𝗘𝗧𝗢𝗟 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗦𝗔𝗔𝗙 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔</b></blockquote>",
-    "<blockquote><b>𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗔𝗥 𝗗𝗜𝗬𝗘 𝗛𝗔𝗜𝗡 🤖🙏🤔</b></blockquote>",
-    "<blockquote><b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b></blockquote>",
-    "<blockquote><b>𝗦𝗛𝗢𝗨𝗟𝗗𝗘𝗥𝗜𝗡𝗚 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 😱🤮👺</b></blockquote>",
-    "<blockquote><b>𝗥𝗔𝗡𝗜𝗗𝗜𝗜𝗜</b></blockquote>",
-    "<blockquote><b>𝗜𝗧𝗡𝗔 𝗚𝗛𝗨𝗠𝗔𝗨𝗡𝗚𝗔 𝗞𝗜 𝗖𝗛𝗔𝗞𝗞𝗔𝗥 𝗔𝗔 𝗝𝗔𝗬𝗘𝗚𝗔 💦💋</b></blockquote>",
-    "<blockquote><b>𝗞𝗜𝗧𝗡𝗔 𝗖𝗛𝗔𝗟𝗔𝗨𝗡 𝗔𝗕 𝗢𝗥..</b></blockquote>",
-    "<blockquote><b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b></blockquote>",
-    "<blockquote><b>𝗣𝗨𝗥𝗔 𝗦𝗜𝗦𝗧𝗘𝗠 𝗛𝗜𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝</b></blockquote>",
-    "<blockquote><b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b></blockquote>",
-    "<blockquote><b>𝗨𝗣𝗔𝗥 𝗡𝗜𝗖𝗛𝗘 𝗖𝗛𝗔𝗟 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗦𝗔𝗕 🆙🆒😙</b></blockquote>",
-    "<blockquote><b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b></blockquote>",
-    "<blockquote><b>𝗩𝗜𝗗𝗘𝗢 𝗕𝗔𝗡𝗔 𝗞𝗘 𝗡𝗘𝗘𝗟𝗔𝗠 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 💦💋</b></blockquote>",
-    "<blockquote><b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b></blockquote>",
-    "<blockquote><b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b></blockquote>",
-    "<blockquote><b>𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘𝗜𝗡 𝗦𝗛𝗢𝗥 𝗛𝗔𝗜 𝗔𝗝 🤤🤣</b></blockquote>",
-    "<blockquote><b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b></blockquote>",
-    "<blockquote><b>𝗞𝗢𝗟𝗞𝗔𝗧𝗔 𝗪𝗔𝗟𝗘 𝗝𝗜𝗧𝗨 𝗕𝗛𝗔𝗜𝗬𝗔 𝗞𝗔 𝗦𝗔𝗟𝗔𝗔𝗠 🤩🤩</b></blockquote>",
-    "<blockquote><b>𝗟𝗨𝗗𝗢 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟 𝗞𝗛𝗔𝗧𝗔𝗠 ☝🏻☝🏻😬</b></blockquote>",
-    "<blockquote><b>𝗞𝗔𝗔𝗟𝗔 𝗦𝗜𝗦𝗧𝗘𝗠 𝗖𝗛𝗔𝗟 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗔𝗝</b></blockquote>",
-    "<blockquote><b>𝗨𝗹𝗹𝘂 𝗸𝗲 𝗽𝗮𝘁𝘁𝗵𝗲</b></blockquote>",
-    "<blockquote><b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b></blockquote>",
-    "<blockquote><b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b></blockquote>",
-    "<blockquote><b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b></blockquote>",
-    "<blockquote><b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b></blockquote>",
-    "<blockquote><b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b></blockquote>",
+    "<b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b>",
+    "<b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b>",
+    "<b>𝗦𝗣𝗢𝗧𝗜𝗙𝗬 𝗣𝗘 𝗖𝗛𝗔𝗟𝗔 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗧𝗘𝗥𝗔 𝗕𝗔𝗔𝗣</b>",
+    "<b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b>",
+    "<b>𝗦𝗨𝗔𝗥 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗦𝗘𝗘𝗗𝗛𝗔 𝗕𝗢𝗟 𝗥𝗔𝗛𝗔 𝗛𝗨𝗡</b>",
+    "<b>𝗞𝗜𝗧𝗡𝗜 𝗚𝗔𝗟𝗜𝗬𝗔𝗡 𝗞𝗛𝗔𝗬𝗘𝗚𝗔 𝗔𝗝</b>",
+    "<b>𝗕𝗘𝗦𝗔𝗡 𝗞𝗘 𝗟𝗔𝗗𝗗𝗨 𝗕𝗛𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗕𝗨 🤩🥳🔥😈</b>",
+    "<b>𝗦𝗣𝗘𝗘𝗗 𝗠𝗔𝗧𝗖𝗛 𝗡𝗔𝗛𝗜 𝗛𝗢 𝗥𝗔𝗛𝗜 𝗞𝗬𝗔</b>",
+    "<b>𝗞𝘂𝘁𝘁𝗲 𝗸𝗶 𝗷𝗮𝗮𝘁</b>",
+    "<b>𝗔𝗽𝗻𝗶 𝗷𝗮𝗴𝗮𝗵 𝗽𝗲 𝗯𝗮𝗶𝘁𝗵 𝗷𝗮𝗮</b>",
+    "<b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b>",
+    "<b>𝗦𝗨𝗧𝗟𝗜 𝗕𝗢𝗠𝗕 𝗙𝗢𝗗 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 💣</b>",
+    "<b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b>",
+    "<b>𝗔𝗽𝗻𝗶 𝗷𝗮𝗴𝗮𝗵 𝗽𝗲 𝗯𝗮𝗶𝘁𝗵 𝗷𝗮𝗮</b>",
+    "<b>𝗝𝗵𝗮𝗮𝗻𝘁 𝗸𝗲 𝗽𝗶𝘀𝘀𝘂</b>",
+    "<b>𝗔𝗔𝗚 𝗟𝗔𝗚𝗔 𝗗𝗨𝗡𝗚𝗔 𝗖𝗛𝗔𝗧 𝗠𝗘𝗜𝗡 🔥🔥💦😆😆</b>",
+    "<b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b>",
+    "<b>𝗣𝗨𝗥𝗔 𝗙𝗔𝗔𝗗 𝗞𝗘 𝗥𝗔𝗞𝗛 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 😆💦🤤</b>",
+    "<b>𝗠𝗠𝗦 𝗕𝗔𝗡𝗔 𝗖𝗛𝗨𝗞𝗔 𝗛𝗔𝗜 𝗔𝗕 𝗗𝗘𝗞𝗛</b>",
+    "<b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b>",
+    "<b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b>",
+    "<b>𝗦𝗨𝗗𝗢 𝗟𝗔𝗚𝗔 𝗞𝗘 𝟵𝟵𝟵𝟵 𝗖𝗛𝗔𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 🤩🥳🔥</b>",
+    "<b>𝗧𝗨𝗝𝗛𝗘 𝗔𝗕 𝗧𝗔𝗞 𝗦𝗔𝗠𝗔𝗝𝗛 𝗡𝗔𝗛𝗜 𝗔𝗬𝗔 𝗞𝗬𝗔 🤩👊👤😍</b>",
+    "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
+    "<b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b>",
+    "<b>𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘𝗜𝗡 𝗦𝗛𝗢𝗥 𝗛𝗔𝗜 𝗔𝗝 💋💋💦</b>",
+    "<b>𝗦𝗨𝗡 𝗦𝗨𝗡 𝗦𝗨𝗔𝗥 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗕𝗔𝗔𝗧 𝗦𝗨𝗡</b>",
+    "<b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b>",
+    "<b>𝗖𝗛𝗘𝗘𝗠𝗦 𝗦𝗘 𝗕𝗔𝗝𝗪𝗔 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗕𝗨 💦🤣</b>",
+    "<b>𝗞𝗜𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦</b>",
+    "<b>𝗗𝗘𝗧𝗢𝗟 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗦𝗔𝗔𝗙 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔</b>",
+    "<b>𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗔𝗥 𝗗𝗜𝗬𝗘 𝗛𝗔𝗜𝗡 🤖🙏🤔</b>",
+    "<b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b>",
+    "<b>𝗦𝗛𝗢𝗨𝗟𝗗𝗘𝗥𝗜𝗡𝗚 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 😱🤮👺</b>",
+    "<b>𝗥𝗔𝗡𝗜𝗗𝗜𝗜𝗜</b>",
+    "<b>𝗜𝗧𝗡𝗔 𝗚𝗛𝗨𝗠𝗔𝗨𝗡𝗚𝗔 𝗞𝗜 𝗖𝗛𝗔𝗞𝗞𝗔𝗥 𝗔𝗔 𝗝𝗔𝗬𝗘𝗚𝗔 💦💋</b>",
+    "<b>𝗞𝗜𝗧𝗡𝗔 𝗖𝗛𝗔𝗟𝗔𝗨𝗡 𝗔𝗕 𝗢𝗥..</b>",
+    "<b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b>",
+    "<b>𝗣𝗨𝗥𝗔 𝗦𝗜𝗦𝗧𝗘𝗠 𝗛𝗜𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝</b>",
+    "<b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b>",
+    "<b>𝗨𝗣𝗔𝗥 𝗡𝗜𝗖𝗛𝗘 𝗖𝗛𝗔𝗟 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗦𝗔𝗕 🆙🆒😙</b>",
+    "<b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b>",
+    "<b>𝗩𝗜𝗗𝗘𝗢 𝗕𝗔𝗡𝗔 𝗞𝗘 𝗡𝗘𝗘𝗟𝗔𝗠 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 💦💋</b>",
+    "<b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b>",
+    "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
+    "<b>𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘𝗜𝗡 𝗦𝗛𝗢𝗥 𝗛𝗔𝗜 𝗔𝗝 🤤🤣</b>",
+    "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
+    "<b>𝗞𝗢𝗟𝗞𝗔𝗧𝗔 𝗪𝗔𝗟𝗘 𝗝𝗜𝗧𝗨 𝗕𝗛𝗔𝗜𝗬𝗔 𝗞𝗔 𝗦𝗔𝗟𝗔𝗔𝗠 🤩🤩</b>",
+    "<b>𝗟𝗨𝗗𝗢 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟 𝗞𝗛𝗔𝗧𝗔𝗠 ☝🏻☝🏻😬</b>",
+    "<b>𝗞𝗔𝗔𝗟𝗔 𝗦𝗜𝗦𝗧𝗘𝗠 𝗖𝗛𝗔𝗟 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗔𝗝</b>",
+    "<b>𝗨𝗹𝗹𝘂 𝗸𝗲 𝗽𝗮𝘁𝘁𝗵𝗲</b>",
+    "<b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b>",
+    "<b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b>",
+    "<b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b>",
+    "<b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b>",
+    "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
 ]
 
 ACTIVE_HOSTS = {}
@@ -216,14 +216,13 @@ def _escape_html(text: str) -> str:
 
 
 async def send_first_dm_card(event):
-    msg = f"<blockquote><b>{FIRST_DM_HEADER}</b></blockquote>"
-    await event.reply(msg, parse_mode="html", link_preview=False)
+    await event.reply(FIRST_DM_HEADER, link_preview=False)
 
 
 def pick_random_message(host_state: dict, target_id: int) -> str:
     valid_msgs = [m.strip() for m in RANDOM_MESSAGES if isinstance(m, str) and m.strip()]
     if not valid_msgs:
-        return "<blockquote><b>𝗛𝗲𝗹𝗹𝗼! 👋</b></blockquote>"
+        return "<b>Hello! 👋</b>"
     if len(valid_msgs) == 1:
         return valid_msgs[0]
     last_msg = host_state["last_msg"].get(target_id)
@@ -304,25 +303,17 @@ async def _run_tagall_in_chat(
         total_count = len(targets)
 
         if not targets:
-            await client.send_message(
-                chat_id,
-                "<blockquote>⚠️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴 𝗸𝗮𝗿𝗻𝗲 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗸𝗼𝗶 𝗺𝗲𝗺𝗯𝗲𝗿 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮.</b></blockquote>",
-                parse_mode="html",
-            )
+            await client.send_message(chat_id, "⚠️ Is group mein tag karne ke liye koi member nahi mila.")
             return
 
-        start_text = (
-            f"<blockquote>🚀✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗮𝗿𝘁𝗲𝗱!</b>\n"
-            f"💬 <b>𝗠𝗲𝘀𝘀𝗮𝗴𝗲:</b> <b>{clean_tag_text}</b>\n"
-            f"👥 <b>𝗧𝗼𝘁𝗮𝗹 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{total_count}</code></blockquote>"
-        )
+        start_text = f"🚀✨ Tagall Started! ({total_count}) — {clean_tag_text}"
         if status_event is not None:
             try:
-                await status_event.edit(start_text, parse_mode="html")
+                await status_event.edit(start_text)
             except Exception:
-                await client.send_message(chat_id, start_text, parse_mode="html")
+                await client.send_message(chat_id, start_text)
         else:
-            await client.send_message(chat_id, start_text, parse_mode="html")
+            await client.send_message(chat_id, start_text)
 
         for uid, uname in targets:
             if tagging_tasks.get(chat_id) is not current_task:
@@ -330,25 +321,17 @@ async def _run_tagall_in_chat(
                 break
             await client.send_message(
                 chat_id,
-                f'<blockquote>✨ <b><a href="tg://user?id={uid}">{uname}</a></b> — <b>{clean_tag_text}</b></blockquote>',
+                f'✨ <a href="tg://user?id={uid}">{uname}</a> — {clean_tag_text}',
                 parse_mode="html",
             )
             tagged_count += 1
             await asyncio.sleep(TAG_DELAY_SECONDS + random.uniform(0.2, 0.8))
 
-        status_title = "🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗼𝗽𝗽𝗲𝗱!</b>" if stopped_early else "✅🎉 <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗲𝗱!</b>"
-        await client.send_message(
-            chat_id,
-            f"<blockquote>{status_title}\n📊 <b>𝗧𝗮𝗴𝗴𝗲𝗱 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{tagged_count}</code> / <code>{total_count}</code></blockquote>",
-            parse_mode="html",
-        )
+        status_title = "🛑✨ Tagall Stopped!" if stopped_early else "✅🎉 Tagall Completed!"
+        await client.send_message(chat_id, f"{status_title} ({tagged_count}/{total_count})")
     except asyncio.CancelledError:
         stopped_early = True
-        await client.send_message(
-            chat_id,
-            f"<blockquote>🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗼𝗽𝗽𝗲𝗱!</b>\n📊 <b>𝗧𝗮𝗴𝗴𝗲𝗱 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{tagged_count}</code> / <code>{total_count}</code></blockquote>",
-            parse_mode="html",
-        )
+        await client.send_message(chat_id, f"🛑✨ Tagall Stopped! ({tagged_count}/{total_count})")
         raise
     finally:
         if tagging_tasks.get(chat_id) is current_task:
@@ -383,12 +366,8 @@ async def _is_userbot_mentioned(event, me) -> bool:
 async def _send_quit_alert(client: TelegramClient, chat_id: int, user):
     uname = _clean_mention_name(user)
     uid = getattr(user, "id", None) if user else None
-    mention = f'<b><a href="tg://user?id={uid}">{uname}</a></b>' if uid else f"<b>{uname}</b>"
-    await client.send_message(
-        chat_id,
-        f"<blockquote>{QUIT_MESSAGE}\n👤 {mention}</blockquote>",
-        parse_mode="html",
-    )
+    mention = f'<a href="tg://user?id={uid}">{uname}</a>' if uid else uname
+    await client.send_message(chat_id, f"{QUIT_MESSAGE}\n👤 {mention}", parse_mode="html")
 
 
 async def _attach_handlers(client: TelegramClient, host_state: dict):
@@ -400,16 +379,16 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.ping$"))
     async def ping_cmd(event):
-        await event.edit("<blockquote>🏓 <b>𝗣𝗼𝗻𝗴! 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗶𝘀 𝗮𝗰𝘁𝗶𝘃𝗲.</b></blockquote>", parse_mode="html")
+        await event.edit("🏓 Pong! Userbot is active.")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+([\s\S]+))?$"))
     async def tagall_cmd(event):
         if not event.is_group:
-            await event.edit("<blockquote>⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗰𝗵𝗮𝗹𝗲𝗴𝗮.</b></blockquote>", parse_mode="html")
+            await event.edit("⚠️ Yeh command sirf group mein chalega.")
             return
         existing_task = tagging_tasks.get(event.chat_id)
         if existing_task and not existing_task.done():
-            await event.edit("<blockquote>⏳ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴𝗮𝗹𝗹 𝗽𝗲𝗵𝗹𝗲 𝘀𝗲 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
+            await event.edit("⏳ Is group mein tagall pehle se chal raha hai.")
             return
         tag_text = _extract_tag_text(event.raw_text or "")
         task = asyncio.create_task(
@@ -426,19 +405,19 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
     async def stoptagall_cmd(event):
         if _stop_tagall_task(tagging_tasks, event.chat_id):
-            await event.edit("<blockquote>🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗿𝗼𝗸 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b></blockquote>", parse_mode="html")
+            await event.edit("🛑✨ Tagall rok diya gaya hai!")
         else:
-            await event.edit("<blockquote>ℹ️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝘁𝗮𝗴𝗮𝗹𝗹 𝗻𝗮𝗵𝗶 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮.</b></blockquote>", parse_mode="html")
+            await event.edit("ℹ️ Is group mein koi active tagall nahi chal raha.")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopquit$"))
     async def stopquit_cmd(event):
         host_state["quit_enabled"] = False
-        await event.edit("<blockquote>🛑🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗙𝗙 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
+        await event.edit("🛑🚪 User quit alert OFF kar diya gaya hai.")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.startquit$"))
     async def startquit_cmd(event):
         host_state["quit_enabled"] = True
-        await event.edit("<blockquote>✅🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗡 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
+        await event.edit("✅🚪 User quit alert ON kar diya gaya hai.")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.replyraid\s+(\d+)$"))
     async def replyraid_add_cmd(event):
@@ -450,8 +429,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             pass
         await client.send_message(
             event.chat_id,
-            f"<blockquote>🎯🔥 <b>𝗔𝘂𝘁𝗼-𝗥𝗲𝗽𝗹𝘆 / 𝗥𝗮𝗶𝗱 𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 (𝗗𝗠 + 𝗚𝗿𝗼𝘂𝗽)!</b>\n👤 <b>𝗧𝗮𝗿𝗴𝗲𝘁:</b> <code>{target_id}</code></blockquote>",
-            parse_mode="html",
+            f"🎯🔥 Auto-Reply / Raid ACTIVATED (DM + Group)!\n👤 Target: {target_id}",
         )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dreplyraid\s+(\d+)$"))
@@ -464,8 +442,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             pass
         await client.send_message(
             event.chat_id,
-            f"<blockquote>🎯🛑 <b>𝗔𝘂𝘁𝗼-𝗥𝗲𝗽𝗹𝘆 / 𝗥𝗮𝗶𝗱 𝗗𝗘𝗔𝗖𝗧𝗜𝗩𝗔𝗧𝗘𝗗 (𝗗𝗠 + 𝗚𝗿𝗼𝘂𝗽) 𝗳𝗼𝗿</b> <code>{target_id}</code>!</blockquote>",
-            parse_mode="html",
+            f"🎯🛑 Auto-Reply / Raid DEACTIVATED (DM + Group) for {target_id}!",
         )
 
     @client.on(events.ChatAction)
@@ -477,7 +454,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                 user = await event.get_user()
                 await _send_quit_alert(client, event.chat_id, user)
             except Exception:
-                await client.send_message(event.chat_id, f"<blockquote>{QUIT_MESSAGE}</blockquote>", parse_mode="html")
+                await client.send_message(event.chat_id, QUIT_MESSAGE)
 
     @client.on(events.Raw)
     async def raw_quit_handler(event):
@@ -556,7 +533,7 @@ async def start_client_from_session(
         await client.connect()
         if not await client.is_user_authorized():
             await client.disconnect()
-            return False, "<b>𝗦𝗲𝘀𝘀𝗶𝗼𝗻 𝘃𝗮𝗹𝗶𝗱 𝘆𝗮 𝗮𝘂𝘁𝗵𝗼𝗿𝗶𝘇𝗲𝗱 𝗻𝗮𝗵𝗶 𝗵𝗮𝗶.</b>"
+            return False, "Session valid ya authorized nahi hai."
 
         host_state = {
             "client": client,
@@ -575,14 +552,14 @@ async def start_client_from_session(
             save_session(user_id, cleaned)
 
         if is_restart:
-            return True, "✅ <b>𝗦𝘂𝗰𝗰𝗲𝘀𝘀 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗥𝗲𝘀𝘁𝗮𝗿𝘁𝗲𝗱! 𝗨𝘀𝗲 <code>.ping</code>.</b>"
-        return True, "✅ <b>𝗦𝘂𝗰𝗰𝗲𝘀𝘀 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗛𝗼𝘀𝘁𝗲𝗱! 𝗨𝘀𝗲 <code>.ping</code> 𝘁𝗼 𝗰𝗵𝗲𝗰𝗸.</b>"
+            return True, "<b>Success Userbot Restarted!</b>\nUse .ping."
+        return True, "<b>Success Userbot Hosted!</b>\nUse .ping to check."
     except Exception as e:
         try:
             await client.disconnect()
         except Exception:
             pass
-        return False, f"❌ <b>𝗛𝗼𝘀𝘁 𝗸𝗮𝗿𝗻𝗲 𝗺𝗲𝗶𝗻 𝗲𝗿𝗿𝗼𝗿 𝗮𝗮𝘆𝗮:</b> <code>{e}</code>"
+        return False, f"Host karne mein error aaya: {e}"
 
 
 async def send_login_code(user_id: int, phone: str, api_id: int, api_hash: str) -> tuple[bool, str]:
@@ -616,35 +593,35 @@ async def send_login_code(user_id: int, phone: str, api_id: int, api_hash: str) 
             "phone_code_hash": sent.phone_code_hash,
             "client": client,
         }
-        return True, "🔑 <b>𝗘𝗻𝘁𝗲𝗿 𝗢𝗧𝗣 (𝗲.𝗴., 1 2 3 4 5): 𝗛𝘂𝗿𝗿𝘆, 𝗲𝘅𝗽𝗶𝗿𝗲𝘀 𝗶𝗻 1-2 𝗺𝗶𝗻!</b>"
+        return True, "🔑 Enter OTP (e.g., 1 2 3 4 5): Hurry, expires in 1-2 min!"
     except PhoneNumberInvalidError:
         try:
             await client.disconnect()
         except Exception:
             pass
-        return False, "❌ <b>𝗣𝗵𝗼𝗻𝗲 𝗻𝘂𝗺𝗯𝗲𝗿 𝗶𝗻𝘃𝗮𝗹𝗶𝗱 𝗵𝗮𝗶. 𝗖𝗼𝘂𝗻𝘁𝗿𝘆 𝗰𝗼𝗱𝗲 𝗸𝗲 𝘀𝗮𝗮𝘁𝗵 𝘀𝗮𝗵𝗶 𝗻𝘂𝗺𝗯𝗲𝗿 𝗱𝗮𝗮𝗹𝗲𝗶𝗻 (𝗷𝗮𝗶𝘀𝗲 +919876543210).</b>"
+        return False, "Phone number invalid hai. Country code ke saath sahi number daalein (jaise +919876543210)."
     except FloodWaitError as e:
         try:
             await client.disconnect()
         except Exception:
             pass
-        return False, f"⏳ <b>𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 𝗿𝗮𝘁𝗲 𝗹𝗶𝗺𝗶𝘁 𝗹𝗮𝗴𝗮 𝗵𝗮𝗶.</b> <code>{e.seconds}</code> <b>𝘀𝗲𝗰𝗼𝗻𝗱𝘀 𝗯𝗮𝗮𝗱 𝘁𝗿𝘆 𝗸𝗮𝗿𝗲𝗶𝗻.</b>"
+        return False, f"Telegram rate limit laga hai. {e.seconds} seconds baad try karein."
     except Exception as e:
         try:
             await client.disconnect()
         except Exception:
             pass
-        return False, f"❌ <b>𝗢𝗧𝗣 𝗯𝗵𝗲𝗷𝗻𝗲 𝗺𝗲𝗶𝗻 𝗲𝗿𝗿𝗼𝗿 𝗮𝗮𝘆𝗮:</b> <code>{e}</code>"
+        return False, f"OTP bhejne mein error aaya: {e}"
 
 
 async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: str) -> tuple[str, str]:
     pending = PENDING_LOGINS.get(user_id)
     if not pending or pending.get("step") != "otp":
-        return "error", "❌ <b>𝗞𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝗢𝗧𝗣 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮. 𝗣𝗲𝗵𝗹𝗲 <code>/host</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻.</b>"
+        return "error", "Koi active OTP request nahi mila. Pehle /host likhein."
 
     code = "".join(ch for ch in otp_text if ch.isdigit())
     if not code:
-        return "retry", "⚠️ <b>𝗩𝗮𝗹𝗶𝗱 𝗻𝘂𝗺𝗲𝗿𝗶𝗰 𝗢𝗧𝗣 𝗯𝗵𝗲𝗷𝗲𝗶𝗻.</b>"
+        return "retry", "Valid numeric OTP bhejein."
 
     client = pending["client"]
     phone = pending["phone"]
@@ -660,20 +637,20 @@ async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: st
         return ("done" if ok else "error"), msg
     except SessionPasswordNeededError:
         pending["step"] = "2fa"
-        return "2fa", "🔒 <b>𝗘𝗻𝘁𝗲𝗿 2𝗙𝗔 𝗣𝗮𝘀𝘀𝘄𝗼𝗿𝗱:</b>"
+        return "2fa", "🔒 Enter 2FA Password:"
     except Exception as e:
         try:
             await client.disconnect()
         except Exception:
             pass
         PENDING_LOGINS.pop(user_id, None)
-        return "error", f"❌ <b>𝗟𝗼𝗴𝗶𝗻 𝗳𝗮𝗶𝗹 𝗵𝗼 𝗴𝗮𝘆𝗮:</b> <code>{e}</code>"
+        return "error", f"Login fail ho gaya: {e}"
 
 
 async def submit_2fa_password(user_id: int, password: str, api_id: int, api_hash: str) -> tuple[str, str]:
     pending = PENDING_LOGINS.get(user_id)
     if not pending or pending.get("step") != "2fa":
-        return "error", "❌ <b>𝗞𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 2𝗙𝗔 𝘀𝘁𝗲𝗽 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮. 𝗣𝗲𝗵𝗹𝗲 <code>/host</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻.</b>"
+        return "error", "Koi active 2FA step nahi mila. Pehle /host likhein."
 
     client = pending["client"]
     try:
@@ -690,7 +667,7 @@ async def submit_2fa_password(user_id: int, password: str, api_id: int, api_hash
         except Exception:
             pass
         PENDING_LOGINS.pop(user_id, None)
-        return "error", f"❌ <b>2𝗙𝗔 𝗹𝗼𝗴𝗶𝗻 𝗳𝗮𝗶𝗹 𝗵𝗼 𝗴𝗮𝘆𝗮:</b> <code>{e}</code>"
+        return "error", f"2FA login fail ho gaya: {e}"
 
 
 async def cancel_pending_login(user_id: int):
@@ -715,7 +692,7 @@ async def restart_user_account(user_id: int, api_id: int, api_hash: str) -> tupl
             user_id, saved[user_id], api_id, api_hash, persist=True, is_restart=True
         )
 
-    return False, "ℹ️ <b>𝗔𝗮𝗽𝗸𝗮 𝗸𝗼𝗶 𝗵𝗼𝘀𝘁𝗲𝗱 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮. 𝗣𝗲𝗵𝗹𝗲 <code>/host</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻.</b>"
+    return False, "Aapka koi hosted account nahi mila. Pehle /host likhein."
 
 
 async def logout_user_account(user_id: int) -> tuple[bool, str]:
@@ -724,7 +701,7 @@ async def logout_user_account(user_id: int) -> tuple[bool, str]:
     delete_session(user_id)
 
     if not info:
-        return False, "ℹ️ <b>𝗟𝗼𝗴𝗼𝘂𝘁 𝗸𝗮𝗿𝗻𝗲 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝗵𝗼𝘀𝘁𝗲𝗱 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮.</b>"
+        return False, "Logout karne ke liye koi active hosted account nahi mila."
 
     _cleanup_host_tasks(info)
     try:
@@ -732,7 +709,7 @@ async def logout_user_account(user_id: int) -> tuple[bool, str]:
     except Exception:
         pass
 
-    return True, "🚪✅ <b>𝗔𝗰𝗰𝗼𝘂𝗻𝘁 𝗹𝗼𝗴𝗼𝘂𝘁 𝗮𝘂𝗿 𝗱𝗶𝘀𝗰𝗼𝗻𝗻𝗲𝗰𝘁 𝗵𝗼 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b>"
+    return True, "<b>Success Userbot Logged Out!</b>\nUse /host to re-host."
 
 
 async def restore_all_saved_sessions(api_id: int, api_hash: str):
