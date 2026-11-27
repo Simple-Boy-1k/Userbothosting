@@ -9,17 +9,10 @@ from telethon import TelegramClient, events, functions, types
 from telethon.errors import FloodWaitError, PhoneNumberInvalidError, SessionPasswordNeededError
 from telethon.sessions import StringSession
 
-try:
-    from config import OWNER_ID as CONFIG_OWNER_ID
-except ModuleNotFoundError:
-    CONFIG_OWNER_ID = 0
-
-OWNER_ID = int(os.getenv("OWNER_ID", str(CONFIG_OWNER_ID or "0")).strip() or "0")
-
 STORE_FILE = Path("hoster_data.json")
 
 # ================= FIRST DM TEXT & QUIT ALERT =================
-FIRST_DM_HEADER = "ᴄʜᴀʟ ᴄʜᴀʟ ʜᴡᴀ ᴀɴᴇ ᴅᴇ😴"
+FIRST_DM_HEADER = "✨ 𝗛𝗲𝘆 𝗧𝗵𝗲𝗿𝗲! 👋 — 𝗪𝗲𝗹𝗰𝗼𝗺𝗲 𝘁𝗼 𝗺𝘆 𝗗𝗠, 𝗸𝗮𝗶𝘀𝗲 𝗵𝗼? 😎"
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
 TAG_DELAY_SECONDS = 2.5
@@ -109,6 +102,9 @@ def _default_local_store() -> dict:
         "blocked": [],
         "dp_url": "",
         "secret_mode": False,
+        "force_join_chat_id": 0,
+        "force_join_link": "",
+        "support_group_url": "",
     }
 
 
@@ -175,6 +171,9 @@ def get_meta_state() -> dict:
             "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
             "dp_url": str(doc.get("dp_url") or ""),
             "secret_mode": bool(doc.get("secret_mode", False)),
+            "force_join_chat_id": doc.get("force_join_chat_id", 0),
+            "force_join_link": str(doc.get("force_join_link") or ""),
+            "support_group_url": str(doc.get("support_group_url") or ""),
         }
     data = _load_local()
     return {
@@ -182,6 +181,9 @@ def get_meta_state() -> dict:
         "blocked": list(dict.fromkeys(int(x) for x in data.get("blocked", []) if str(x).isdigit())),
         "dp_url": str(data.get("dp_url") or ""),
         "secret_mode": bool(data.get("secret_mode", False)),
+        "force_join_chat_id": data.get("force_join_chat_id", 0),
+        "force_join_link": str(data.get("force_join_link") or ""),
+        "support_group_url": str(data.get("support_group_url") or ""),
     }
 
 
@@ -191,6 +193,9 @@ def save_meta_state(meta: dict):
         "blocked": list(dict.fromkeys(int(x) for x in meta.get("blocked", []) if str(x).isdigit())),
         "dp_url": str(meta.get("dp_url") or ""),
         "secret_mode": bool(meta.get("secret_mode", False)),
+        "force_join_chat_id": int(meta.get("force_join_chat_id") or 0),
+        "force_join_link": str(meta.get("force_join_link") or ""),
+        "support_group_url": str(meta.get("support_group_url") or ""),
     }
     db = _get_db()
     if db is not None:
@@ -284,14 +289,11 @@ async def _collect_group_targets(client: TelegramClient, chat_id: int) -> list[t
 async def _run_tagall_in_chat(
     client: TelegramClient,
     chat_id: int,
-    tagging_chats: set,
+    tagging_tasks: dict[int, asyncio.Task],
     tag_text: str = "Hii",
     status_event=None,
 ):
-    if chat_id in tagging_chats:
-        return
-    tagging_chats.add(chat_id)
-
+    current_task = asyncio.current_task()
     clean_tag_text = (tag_text or "Hii").strip() or "Hii"
     tagged_count = 0
     total_count = 0
@@ -323,7 +325,7 @@ async def _run_tagall_in_chat(
             await client.send_message(chat_id, start_text, parse_mode="html")
 
         for uid, uname in targets:
-            if chat_id not in tagging_chats:
+            if tagging_tasks.get(chat_id) is not current_task:
                 stopped_early = True
                 break
             await client.send_message(
@@ -332,7 +334,7 @@ async def _run_tagall_in_chat(
                 parse_mode="html",
             )
             tagged_count += 1
-            await asyncio.sleep(TAG_DELAY_SECONDS)
+            await asyncio.sleep(TAG_DELAY_SECONDS + random.uniform(0.2, 0.8))
 
         status_title = "🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗼𝗽𝗽𝗲𝗱!</b>" if stopped_early else "✅🎉 <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗲𝗱!</b>"
         await client.send_message(
@@ -340,8 +342,26 @@ async def _run_tagall_in_chat(
             f"<blockquote>{status_title}\n📊 <b>𝗧𝗮𝗴𝗴𝗲𝗱 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{tagged_count}</code> / <code>{total_count}</code></blockquote>",
             parse_mode="html",
         )
+    except asyncio.CancelledError:
+        stopped_early = True
+        await client.send_message(
+            chat_id,
+            f"<blockquote>🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗼𝗽𝗽𝗲𝗱!</b>\n📊 <b>𝗧𝗮𝗴𝗴𝗲𝗱 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{tagged_count}</code> / <code>{total_count}</code></blockquote>",
+            parse_mode="html",
+        )
+        raise
     finally:
-        tagging_chats.discard(chat_id)
+        if tagging_tasks.get(chat_id) is current_task:
+            tagging_tasks.pop(chat_id, None)
+
+
+def _stop_tagall_task(tagging_tasks: dict[int, asyncio.Task], chat_id: int) -> bool:
+    task = tagging_tasks.pop(chat_id, None)
+    if not task:
+        return False
+    if not task.done():
+        task.cancel()
+    return True
 
 
 async def _is_userbot_mentioned(event, me) -> bool:
@@ -373,9 +393,8 @@ async def _send_quit_alert(client: TelegramClient, chat_id: int, user):
 
 async def _attach_handlers(client: TelegramClient, host_state: dict):
     raid_users = host_state["raid_users"]
-    tagging_chats = host_state["tagging"]
+    tagging_tasks: dict[int, asyncio.Task] = host_state["tagging_tasks"]
     welcomed_users = host_state["welcomed_users"]
-    is_owner_host = bool(host_state.get("is_owner_host", False))
     me = await client.get_me()
     my_id = me.id if me else 0
 
@@ -385,51 +404,44 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+([\s\S]+))?$"))
     async def tagall_cmd(event):
-        if not is_owner_host:
-            return
         if not event.is_group:
             await event.edit("<blockquote>⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗰𝗵𝗮𝗹𝗲𝗴𝗮.</b></blockquote>", parse_mode="html")
             return
-        if event.chat_id in tagging_chats:
+        existing_task = tagging_tasks.get(event.chat_id)
+        if existing_task and not existing_task.done():
             await event.edit("<blockquote>⏳ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴𝗮𝗹𝗹 𝗽𝗲𝗵𝗹𝗲 𝘀𝗲 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
             return
         tag_text = _extract_tag_text(event.raw_text or "")
-        await _run_tagall_in_chat(
-            client,
-            event.chat_id,
-            tagging_chats,
-            tag_text=tag_text,
-            status_event=event,
+        task = asyncio.create_task(
+            _run_tagall_in_chat(
+                client,
+                event.chat_id,
+                tagging_tasks,
+                tag_text=tag_text,
+                status_event=event,
+            )
         )
+        tagging_tasks[event.chat_id] = task
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
     async def stoptagall_cmd(event):
-        if not is_owner_host:
-            return
-        if event.chat_id in tagging_chats:
-            tagging_chats.discard(event.chat_id)
+        if _stop_tagall_task(tagging_tasks, event.chat_id):
             await event.edit("<blockquote>🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗿𝗼𝗸 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b></blockquote>", parse_mode="html")
         else:
             await event.edit("<blockquote>ℹ️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝘁𝗮𝗴𝗮𝗹𝗹 𝗻𝗮𝗵𝗶 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopquit$"))
     async def stopquit_cmd(event):
-        if not is_owner_host:
-            return
         host_state["quit_enabled"] = False
         await event.edit("<blockquote>🛑🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗙𝗙 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.startquit$"))
     async def startquit_cmd(event):
-        if not is_owner_host:
-            return
         host_state["quit_enabled"] = True
         await event.edit("<blockquote>✅🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗡 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.replyraid\s+(\d+)$"))
     async def replyraid_add_cmd(event):
-        if not is_owner_host:
-            return
         target_id = int(event.pattern_match.group(1))
         raid_users.add(target_id)
         try:
@@ -444,8 +456,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dreplyraid\s+(\d+)$"))
     async def replyraid_del_cmd(event):
-        if not is_owner_host:
-            return
         target_id = int(event.pattern_match.group(1))
         raid_users.discard(target_id)
         try:
@@ -460,8 +470,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.ChatAction)
     async def quit_action_handler(event):
-        if not is_owner_host:
-            return
         if not event.is_group or not host_state.get("quit_enabled", True):
             return
         if event.user_left or event.user_kicked:
@@ -473,8 +481,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.Raw)
     async def raw_quit_handler(event):
-        if not is_owner_host:
-            return
         if not host_state.get("quit_enabled", True):
             return
         if isinstance(event, types.UpdateChannelParticipant):
@@ -494,7 +500,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             return
 
         if event.is_group:
-            if is_owner_host and sender_id in raid_users and await _is_userbot_mentioned(event, me):
+            if sender_id in raid_users and await _is_userbot_mentioned(event, me):
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
                 await event.reply(reply_text, parse_mode="html")
@@ -513,6 +519,12 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                 await send_first_dm_card(event)
 
 
+def _cleanup_host_tasks(host_state: dict):
+    tasks: dict[int, asyncio.Task] = host_state.get("tagging_tasks") or {}
+    for cid in list(tasks.keys()):
+        _stop_tagall_task(tasks, cid)
+
+
 async def start_client_from_session(
     user_id: int,
     string_session: str,
@@ -523,6 +535,7 @@ async def start_client_from_session(
 ) -> tuple[bool, str]:
     existing = ACTIVE_HOSTS.pop(user_id, None)
     if existing:
+        _cleanup_host_tasks(existing)
         try:
             await existing["client"].disconnect()
         except Exception:
@@ -545,18 +558,14 @@ async def start_client_from_session(
             await client.disconnect()
             return False, "<b>𝗦𝗲𝘀𝘀𝗶𝗼𝗻 𝘃𝗮𝗹𝗶𝗱 𝘆𝗮 𝗮𝘂𝘁𝗵𝗼𝗿𝗶𝘇𝗲𝗱 𝗻𝗮𝗵𝗶 𝗵𝗮𝗶.</b>"
 
-        me = await client.get_me()
-        is_owner_host = bool(OWNER_ID and me and int(me.id) == int(OWNER_ID))
-
         host_state = {
             "client": client,
             "session": cleaned,
             "raid_users": set(),
-            "tagging": set(),
+            "tagging_tasks": {},
             "welcomed_users": set(),
             "last_msg": {},
             "quit_enabled": True,
-            "is_owner_host": is_owner_host,
         }
         ACTIVE_HOSTS[user_id] = host_state
         await _attach_handlers(client, host_state)
@@ -717,6 +726,7 @@ async def logout_user_account(user_id: int) -> tuple[bool, str]:
     if not info:
         return False, "ℹ️ <b>𝗟𝗼𝗴𝗼𝘂𝘁 𝗸𝗮𝗿𝗻𝗲 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝗵𝗼𝘀𝘁𝗲𝗱 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗻𝗮𝗵𝗶 𝗺𝗶𝗹𝗮.</b>"
 
+    _cleanup_host_tasks(info)
     try:
         await info["client"].disconnect()
     except Exception:
