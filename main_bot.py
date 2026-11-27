@@ -1,223 +1,577 @@
-import asyncio
-import os
-from telethon import TelegramClient, events
-from telethon.sessions import StringSession
-
-from userbot_engine import (
-    ACTIVE_HOSTS,
-    PENDING_LOGINS,
-    BTN_1_TEXT,
-    BTN_2_TEXT,
-    cancel_pending_login,
-    get_active_group_links,
-    logout_user_account,
-    restart_user_account,
-    restore_all_saved_sessions,
-    send_first_dm_card,
-    send_login_code,
-    set_group_links,
-    submit_2fa_password,
-    submit_otp_code,
+import time
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.error import TelegramError
+from telegram.ext import (
+Application,
+CallbackQueryHandler,
+CommandHandler,
+ContextTypes,
+MessageHandler,
+filters,
 )
 
-API_ID = int(os.getenv("API_ID", "0").strip() or "0")
-API_HASH = os.getenv("API_HASH", "").strip()
-BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
-OWNER_ID = int(os.getenv("OWNER_ID", "0").strip() or "0")
-
-if not API_ID or not API_HASH or not BOT_TOKEN:
-    raise RuntimeError("API_ID, API_HASH, aur BOT_TOKEN environment variables set hona zaroori hai.")
-
-bot = TelegramClient(
-    StringSession(),
-    API_ID,
-    API_HASH,
-    device_model="Desktop",
-    system_version="Windows 11",
-    app_version="5.6.3 x64",
+from config import (
+API_HASH,
+API_ID,
+BOT_TOKEN,
+CRAFTED_BY,
+DEFAULT_BANNER_URL,
+DEFAULT_FORCE_JOIN_CHAT_ID,
+DEFAULT_FORCE_JOIN_LINK,
+DEFAULT_SUPPORT_GROUP_URL,
+OWNER_ID,
+)
+from host_engine import (
+ACTIVE_HOSTS,
+PENDING_LOGINS,
+cancel_pending_login,
+get_meta_state,
+load_all_sessions,
+logout_user_account,
+restore_all_saved_sessions,
+restart_user_account,
+save_meta_state,
+send_login_code,
+submit_2fa_password,
+submit_otp_code,
 )
 
-LOGIN_FLOW = {}
+START_TIME = time.time()
 
 
-def _is_admin(user_id: int) -> bool:
-    return bool(OWNER_ID and int(user_id) == int(OWNER_ID))
+def is_owner(uid: int) -> bool:
+return uid == OWNER_ID
 
 
-def _help_text(is_owner: bool) -> str:
-    base = (
-        "<blockquote><b>🤖✨ 𝗨𝗦𝗘𝗥𝗕𝗢𝗧 𝗛𝗢𝗦𝗧𝗘𝗥 𝗕𝗢𝗧</b>\n\n"
-        "• <code>/host</code> — <b>𝗔𝗽𝗻𝗮 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗵𝗼𝘀𝘁 𝗸𝗮𝗿𝗲𝗶𝗻 (𝗣𝗵𝗼𝗻𝗲 + 𝗢𝗧𝗣 + 2𝗙𝗔)</b>\n"
-        "• <code>/restart</code> — <b>𝗛𝗼𝘀𝘁𝗲𝗱 𝘂𝘀𝗲𝗿𝗯𝗼𝘁 𝗿𝗲𝘀𝘁𝗮𝗿𝘁 𝗸𝗮𝗿𝗲𝗶𝗻</b>\n"
-        "• <code>/logout</code> — <b>𝗦𝗲𝘀𝘀𝗶𝗼𝗻 𝗹𝗼𝗴𝗼𝘂𝘁 / 𝗿𝗲𝗺𝗼𝘃𝗲 𝗸𝗮𝗿𝗲𝗶𝗻</b>\n"
-        "• <code>/cancel</code> — <b>𝗖𝗵𝗮𝗹𝘁𝗮 𝗵𝘂𝗮 𝗹𝗼𝗴𝗶𝗻 𝗰𝗮𝗻𝗰𝗲𝗹 𝗸𝗮𝗿𝗲𝗶𝗻</b></blockquote>"
+def is_sudo(uid: int) -> bool:
+meta = get_meta_state()
+return uid == OWNER_ID or uid in meta.get("sudos", [])
+
+
+def is_blocked(uid: int) -> bool:
+if uid == OWNER_ID:
+return False
+meta = get_meta_state()
+return uid in meta.get("blocked", [])
+
+
+def get_force_join_config() -> tuple[int, str, str]:
+meta = get_meta_state()
+chat_id = meta.get("force_join_chat_id", DEFAULT_FORCE_JOIN_CHAT_ID)
+join_link = meta.get("force_join_link") or DEFAULT_FORCE_JOIN_LINK
+support_url = meta.get("support_group_url") or DEFAULT_SUPPORT_GROUP_URL or join_link
+try:
+chat_id = int(chat_id)
+except (TypeError, ValueError):
+chat_id = 0
+return chat_id, join_link, support_url
+
+
+async def is_user_in_force_chat(context: ContextTypes.DEFAULT_TYPE, user_id: int) -> bool:
+chat_id, _, _ = get_force_join_config()
+if not chat_id:
+return True
+try:
+member = await context.bot.get_chat_member(chat_id=chat_id, user_id=user_id)
+return member.status in ("member", "administrator", "creator", "restricted")
+except TelegramError:
+return False
+
+
+def force_join_keyboard() -> InlineKeyboardMarkup:
+_, join_link, support_url = get_force_join_config()
+row1 = []
+if join_link:
+row1.append(InlineKeyboardButton("📢 Join Group", url=join_link))
+if support_url and support_url != join_link:
+row1.append(InlineKeyboardButton("💬 Support", url=support_url))
+buttons = []
+if row1:
+buttons.append(row1)
+buttons.append([InlineKeyboardButton("✅ Joined / Verify", callback_data="verify_force_join")])
+return InlineKeyboardMarkup(buttons)
+
+
+def home_keyboard() -> InlineKeyboardMarkup:
+_, _, support_url = get_force_join_config()
+row1 = [InlineKeyboardButton("📖 Help", callback_data="open_help")]
+if support_url:
+row1.append(InlineKeyboardButton("🌐 Support", url=support_url))
+return InlineKeyboardMarkup([row1])
+
+
+def start_caption_html() -> str:
+return (
+"<b>🏆 WELCOME TO THE PREMIUM USERBOT HOSTER BOT! 🏆</b>\n\n"
+"<b>🚀 UNLEASH THE POWER OF AUTOMATION WITH STYLE! 🚀</b>\n\n"
+f"<b>👑 CRAFTED BY: {CRAFTED_BY} 👑</b>\n\n"
+"<b>🔒 100% SECURE &amp; LIGHTNING FAST! 🔒</b>\n\n"
+"<b>✨ EXPLORE COMMANDS WITH /help OR TAP BELOW! ✨</b>"
+)
+
+
+def help_text_html() -> str:
+return (
+"<b>🌟 PREMIUM HOSTER BOT COMMANDS 🌟</b>\n\n"
+"🔹 /start - LAUNCH THE BOT WITH A GRAND WELCOME\n"
+"🔹 /help - DISCOVER ALL COMMANDS\n"
+"🔹 /commands - EXPLORE USERBOT FEATURES\n"
+"🔹 /host - DEPLOY YOUR OWN USERBOT\n"
+"🔹 /cancel - CANCEL ACTIVE LOGIN PROCESS\n"
+"🔹 /support - REQUEST SUPPORT FROM ADMIN\n"
+"🔹 /restart - REVIVE YOUR HOSTED USERBOT\n"
+"🔹 /supportraid - PRO SUPPORT RAID COMMAND (OWNERS / SUDO)\n"
+"🔹 /restartall - RESTART ALL USERBOTS (OWNERS ONLY)\n"
+"🔹 /refresh - REFRESH BOT STATE (OWNERS ONLY)\n"
+"🔹 /status - CHECK YOUR USERBOT'S PULSE\n"
+"🔹 /logout - SAFELY LOG OUT YOUR USERBOT\n"
+"🔹 /setforce &lt;chat_id&gt; &lt;link&gt; - SET FORCE JOIN (OWNERS ONLY)\n"
+"🔹 /setsupport &lt;link&gt; - SET SUPPORT LINK (OWNERS ONLY)\n"
+"🔹 /sudolist - VIEW SUDO USERS (OWNERS ONLY)\n"
+"🔹 /setdp - SET DISPLAY PHOTO (OWNERS ONLY)\n"
+"🔹 /block - BLOCK A USER (OWNERS ONLY)\n"
+"🔹 /unblock - UNBLOCK A USER (OWNERS ONLY)\n"
+"🔹 /blockeduser - VIEW BLOCKED USERS (OWNERS ONLY)\n"
+"🔹 /stats - VIEW BOT STATISTICS (OWNERS ONLY)\n"
+"🔹 /secretfunction - VIEW SECRET COMMANDS (OWNERS ONLY)"
+)
+
+
+async def send_home_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+meta = get_meta_state()
+photo = meta.get("dp_url") or DEFAULT_BANNER_URL
+caption = start_caption_html()
+target_msg = update.message or (update.callback_query.message if update.callback_query else None)
+if not target_msg:
+return
+
+if photo:
+try:
+await target_msg.reply_photo(
+photo=photo,
+caption=caption,
+parse_mode="HTML",
+reply_markup=home_keyboard(),
+)
+return
+except Exception:
+pass
+
+await target_msg.reply_text(caption, parse_mode="HTML", reply_markup=home_keyboard())
+
+
+async def guard(update: Update, context: ContextTypes.DEFAULT_TYPE, check_force_join: bool = True) -> bool:
+user = update.effective_user
+if not user:
+return False
+if is_blocked(user.id):
+if update.message:
+await update.message.reply_text("Aap is bot ke liye blocked hain.")
+return False
+if check_force_join and not is_owner(user.id):
+joined = await is_user_in_force_chat(context, user.id)
+if not joined:
+text = (
+"<b>🔒 Bot Access Locked!</b>\n\n"
+"Pehle hamara group join karein, uske baad <b>Joined / Verify</b> button dabayein."
+)
+if update.message:
+await update.message.reply_text(text, parse_mode="HTML", reply_markup=force_join_keyboard())
+elif update.callback_query:
+await update.callback_query.message.reply_text(
+text, parse_mode="HTML", reply_markup=force_join_keyboard()
+)
+return False
+return True
+
+
+async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context, check_force_join=True):
+return
+await send_home_screen(update, context)
+
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+await update.message.reply_text(help_text_html(), parse_mode="HTML")
+
+
+async def commands_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+txt = (
+"<b>⚡ USERBOT FEATURES ⚡</b>\n\n"
+"• .ping — Check userbot response\n"
+"• .tagall — Apne hosted account se group members ko tag karein\n"
+"• .stoptagall — Tagall stop karein\n"
+"• .replyraid &lt;user_id&gt; — DM random reply ON\n"
+"• .dreplyraid &lt;user_id&gt; — DM random reply OFF"
+)
+await update.message.reply_text(txt, parse_mode="HTML")
+
+
+async def host_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+uid = update.effective_user.id
+
+if uid in ACTIVE_HOSTS:
+await update.message.reply_text(
+"<b>Error Userbot Already Hosted!</b>\n"
+"Try /restart or /logout.\n"
+"Check /commands.",
+parse_mode="HTML",
+)
+return
+
+    _, _, support_url = get_force_join_config()
+await cancel_pending_login(uid)
+    await update.message.reply_text(
+        f"Warning Join Our Support Group!\nJoin: <a href=\"{support_url}\">Support Group</a>\nYou can still host.",
+        parse_mode="HTML",
     )
-    if is_owner:
-        base += (
-            "\n<blockquote><b>👑 𝗢𝗪𝗡𝗘𝗥 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦:</b>\n"
-            "• <code>/setlinks &lt;link1&gt; &lt;link2&gt;</code> — <b>𝗗𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝗯𝗮𝗱𝗹𝗲𝗶𝗻</b>\n"
-            "• <code>/stats</code> — <b>𝗔𝗰𝘁𝗶𝘃𝗲 𝗵𝗼𝘀𝘁𝘀 𝗰𝗼𝘂𝗻𝘁 𝗱𝗲𝗸𝗵𝗲𝗶𝗻</b></blockquote>"
-        )
-    return base
+PENDING_LOGINS[uid] = {"step": "phone"}
+await update.message.reply_text("📱 Enter Phone Number (+91xxxxxxxxxx):")
 
 
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/start(?:\s+.*)?$"))
-async def start_handler(event):
-    if not event.is_private:
-        return
-    sender_id = event.sender_id
-    if not sender_id:
-        return
-    await event.reply(_help_text(_is_admin(sender_id)), parse_mode="html", link_preview=False)
-    await send_first_dm_card(event)
+async def cancel_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+uid = update.effective_user.id
+if uid in PENDING_LOGINS:
+await cancel_pending_login(uid)
+await update.message.reply_text("Host login process cancel kar diya gaya hai.")
+else:
+await update.message.reply_text("Koi active login process nahi hai.")
 
 
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/help$"))
-async def help_handler(event):
-    if not event.is_private:
-        return
-    await event.reply(_help_text(_is_admin(event.sender_id or 0)), parse_mode="html", link_preview=False)
+async def text_step_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not update.message or not update.message.text:
+return
+if not await guard(update, context):
+return
+
+uid = update.effective_user.id
+pending = PENDING_LOGINS.get(uid)
+if not pending:
+return
+
+text = update.message.text.strip()
+step = pending.get("step")
+
+if step == "phone":
+ok, res = await send_login_code(uid, text, API_ID, API_HASH)
+await update.message.reply_text(res)
+if not ok:
+PENDING_LOGINS.pop(uid, None)
+
+elif step == "otp":
+status, res = await submit_otp_code(uid, text, API_ID, API_HASH)
+if status == "done":
+wait_msg = await update.message.reply_text("🛸 Hosting userbot, please wait...")
+await wait_msg.edit_text(res)
+else:
+await update.message.reply_text(res)
+
+elif step == "2fa":
+wait_msg = await update.message.reply_text("🛸 Hosting userbot, please wait...")
+status, res = await submit_2fa_password(uid, text, API_ID, API_HASH)
+await wait_msg.edit_text(res)
+try:
+await update.message.delete()
+except Exception:
+pass
 
 
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/cancel$"))
-async def cancel_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-    LOGIN_FLOW.pop(uid, None)
-    await cancel_pending_login(uid)
-    await event.reply("<blockquote>🛑 <b>𝗟𝗼𝗴𝗶𝗻 / 𝗵𝗼𝘀𝘁𝗶𝗻𝗴 𝗽𝗿𝗼𝗰𝗲𝘀𝘀 𝗰𝗮𝗻𝗰𝗲𝗹 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
+async def support_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+_, _, support_url = get_force_join_config()
+await update.message.reply_text(
+f"Support ke liye Owner ID <code>{OWNER_ID}</code> par contact karein ya group join karein: {support_url}",
+parse_mode="HTML",
+)
 
 
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/host$"))
-async def host_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-
-    LOGIN_FLOW[uid] = {"step": "phone"}
-    await event.reply(
-        "<blockquote>📱✨ <b>𝗔𝗽𝗻𝗮 𝗣𝗵𝗼𝗻𝗲 𝗡𝘂𝗺𝗯𝗲𝗿 𝗯𝗵𝗲𝗷𝗲𝗶𝗻 (𝗰𝗼𝘂𝗻𝘁𝗿𝘆 𝗰𝗼𝗱𝗲 𝗸𝗲 𝘀𝗮𝗮𝘁𝗵, 𝗷𝗮𝗶𝘀𝗲 <code>+919876543210</code>):</b></blockquote>",
-        parse_mode="html",
+async def setforce_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+if len(context.args) < 2:
+await update.message.reply_text("Usage: /setforce -1001234567890 https://t.me/yourgroup")
+return
+try:
+chat_id = int(context.args[0].strip())
+except ValueError:
+await update.message.reply_text("Chat ID numeric hona chahiye (jaise -1001234567890).")
+return
+link = context.args[1].strip()
+meta = get_meta_state()
+meta["force_join_chat_id"] = chat_id
+meta["force_join_link"] = link
+save_meta_state(meta)
+    await update.message.reply_text(f"Force-Join updated:\n• Chat ID: <code>{chat_id}</code>\n• Link: {link}", parse_mode="HTML")
+    await update.message.reply_text(
+        f"Force-Join updated:\n• Chat ID: <code>{chat_id}</code>\n• Link: {link}",
+        parse_mode="HTML",
     )
 
 
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/restart$"))
-async def restart_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-
-    ok, msg = await restart_user_account(uid, API_ID, API_HASH)
-    await event.reply(f"<blockquote>{msg}</blockquote>", parse_mode="html")
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/logout$"))
-async def logout_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-
-    LOGIN_FLOW.pop(uid, None)
-    _, msg = await logout_user_account(uid)
-    await event.reply(f"<blockquote>{msg}</blockquote>", parse_mode="html")
+async def setsupport_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+if not context.args:
+await update.message.reply_text("Usage: /setsupport https://t.me/yoursupport")
+return
+link = context.args[0].strip()
+meta = get_meta_state()
+meta["support_group_url"] = link
+save_meta_state(meta)
+await update.message.reply_text(f"Support link updated: {link}")
 
 
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/setlinks\s+(\S+)\s+(\S+)$"))
-async def setlinks_handler(event):
-    if not event.is_private:
-        return
-    if not _is_admin(event.sender_id or 0):
-        await event.reply("<blockquote>⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗢𝘄𝗻𝗲𝗿 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
-        return
+async def restart_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+uid = update.effective_user.id
+saved = load_all_sessions()
+if uid not in ACTIVE_HOSTS and uid not in saved:
+await update.message.reply_text("Aapka koi hosted account nahi mila. Pehle /host likhein.")
+return
 
-    l1 = event.pattern_match.group(1)
-    l2 = event.pattern_match.group(2)
-    set_group_links(l1, l2)
-    await event.reply(
-        f"<blockquote>✅🔗 <b>𝗚𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝘂𝗽𝗱𝗮𝘁𝗲 𝗵𝗼 𝗴𝗮𝘆𝗲!</b>\n"
-        f"1️⃣ {BTN_1_TEXT}\n"
-        f"2️⃣ {BTN_2_TEXT}</blockquote>",
-        parse_mode="html",
-        link_preview=False,
-    )
+msg = await update.message.reply_text("Processing Restarting Userbot...")
+_, res = await restart_user_account(uid, API_ID, API_HASH)
+await msg.edit_text(res)
 
 
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/stats$"))
-async def stats_handler(event):
-    if not event.is_private or not _is_admin(event.sender_id or 0):
-        return
-    active_cnt = len(ACTIVE_HOSTS)
-    pending_cnt = len(PENDING_LOGINS)
-    l1, l2 = get_active_group_links()
-    await event.reply(
-        f"<blockquote>📊✨ <b>𝗕𝗢𝗧 𝗦𝗧𝗔𝗧𝗦</b>\n"
-        f"🟢 <b>𝗔𝗰𝘁𝗶𝘃𝗲 𝗛𝗼𝘀𝘁𝘀:</b> <code>{active_cnt}</code>\n"
-        f"⏳ <b>𝗣𝗲𝗻𝗱𝗶𝗻𝗴 𝗟𝗼𝗴𝗶𝗻𝘀:</b> <code>{pending_cnt}</code>\n"
-        f"🔗 <b>𝗟𝗶𝗻𝗸 𝟭:</b> <code>{l1}</code>\n"
-        f"🔗 <b>𝗟𝗶𝗻𝗸 𝟮:</b> <code>{l2}</code></blockquote>",
-        parse_mode="html",
-        link_preview=False,
-    )
+async def supportraid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+if not is_sudo(update.effective_user.id):
+await update.message.reply_text("Yeh command sirf Owner ya Sudo users ke liye hai.")
+return
+await update.message.reply_text("Support raid module ready (authorized access).")
 
 
-@bot.on(events.NewMessage(incoming=True))
-async def private_flow_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-
-    text = (event.raw_text or "").strip()
-    if not text or text.startswith("/"):
-        return
-
-    flow = LOGIN_FLOW.get(uid)
-    if not flow:
-        return
-
-    step = flow.get("step")
-
-    if step == "phone":
-        ok, reply_msg = await send_login_code(uid, text, API_ID, API_HASH)
-        await event.reply(f"<blockquote>{reply_msg}</blockquote>", parse_mode="html")
-        if ok:
-            flow["step"] = "otp"
-        else:
-            LOGIN_FLOW.pop(uid, None)
-        return
-
-    if step == "otp":
-        status, reply_msg = await submit_otp_code(uid, text, API_ID, API_HASH)
-        await event.reply(f"<blockquote>{reply_msg}</blockquote>", parse_mode="html")
-        if status == "2fa":
-            flow["step"] = "2fa"
-        elif status in {"done", "error"}:
-            LOGIN_FLOW.pop(uid, None)
-        return
-
-    if step == "2fa":
-        status, reply_msg = await submit_2fa_password(uid, text, API_ID, API_HASH)
-        await event.reply(f"<blockquote>{reply_msg}</blockquote>", parse_mode="html")
-        if status in {"done", "error"}:
-            LOGIN_FLOW.pop(uid, None)
-        return
+async def restartall_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+saved_ids = list(load_all_sessions().keys())
+all_ids = list(set(ACTIVE_HOSTS.keys()) | set(saved_ids))
+done = 0
+for uid in all_ids:
+ok, _ = await restart_user_account(uid, API_ID, API_HASH)
+if ok:
+done += 1
+await update.message.reply_text(f"Restarted {done}/{len(all_ids)} hosted accounts.")
 
 
-async def main():
-    await bot.start(bot_token=BOT_TOKEN)
-    await restore_all_saved_sessions(API_ID, API_HASH)
-    await bot.run_until_disconnected()
+async def refresh_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+_ = get_meta_state()
+await update.message.reply_text("Bot state refreshed.")
+
+
+async def status_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+uid = update.effective_user.id
+uptime = int(time.time() - START_TIME)
+await update.message.reply_text(
+f"<b>Status</b>\n"
+f"• Uptime: {uptime}s\n"
+f"• Your Slot: {'Running' if uid in ACTIVE_HOSTS else 'Not Hosted'}\n"
+f"• Active Hosts: {len(ACTIVE_HOSTS)}",
+parse_mode="HTML",
+)
+
+
+async def logout_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not await guard(update, context):
+return
+ok, res = await logout_user_account(update.effective_user.id)
+await update.message.reply_text(res)
+
+
+async def sudolist_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+sudos = get_meta_state().get("sudos", [])
+if not sudos:
+await update.message.reply_text("Sudo list khali hai.")
+return
+lines = "\n".join(f"• {u}" for u in sudos)
+await update.message.reply_text(f"<b>Sudo Users:</b>\n{lines}", parse_mode="HTML")
+
+
+async def setdp_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+meta = get_meta_state()
+if update.message.reply_to_message and update.message.reply_to_message.photo:
+file_id = update.message.reply_to_message.photo[-1].file_id
+meta["dp_url"] = file_id
+save_meta_state(meta)
+await update.message.reply_text("Display photo update ho gaya.")
+return
+if context.args:
+meta["dp_url"] = context.args[0].strip()
+save_meta_state(meta)
+await update.message.reply_text("Display photo URL save ho gaya.")
+return
+await update.message.reply_text("Photo reply karke /setdp likhein ya image URL dein.")
+
+
+async def block_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+if not context.args or not context.args[0].isdigit():
+await update.message.reply_text("Usage: /block 123456789")
+return
+target = int(context.args[0])
+if target == OWNER_ID:
+await update.message.reply_text("Owner ko block nahi kiya ja sakta.")
+return
+meta = get_meta_state()
+blocked = meta.setdefault("blocked", [])
+if target not in blocked:
+blocked.append(target)
+save_meta_state(meta)
+await update.message.reply_text(f"User {target} blocked.")
+
+
+async def unblock_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+if not context.args or not context.args[0].isdigit():
+await update.message.reply_text("Usage: /unblock 123456789")
+return
+target = int(context.args[0])
+meta = get_meta_state()
+blocked = meta.setdefault("blocked", [])
+if target in blocked:
+blocked.remove(target)
+save_meta_state(meta)
+await update.message.reply_text(f"User {target} unblocked.")
+
+
+async def blockeduser_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+blocked = get_meta_state().get("blocked", [])
+if not blocked:
+await update.message.reply_text("Koi blocked user nahi hai.")
+return
+lines = "\n".join(f"• {u}" for u in blocked)
+await update.message.reply_text(f"<b>Blocked Users:</b>\n{lines}", parse_mode="HTML")
+
+
+async def stats_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_owner(update.effective_user.id):
+await update.message.reply_text("Sirf Owner is command ka use kar sakte hain.")
+return
+meta = get_meta_state()
+await update.message.reply_text(
+f"<b>Bot Stats</b>\n"
+f"• Active Hosts: {len(ACTIVE_HOSTS)}\n"
+f"• Sudo Users: {len(meta.get('sudos', []))}\n"
+f"• Blocked Users: {len(meta.get('blocked', []))}",
+parse_mode="HTML",
+)
+
+
+async def secretfunction_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+if not is_sudo(update.effective_user.id):
+await update.message.reply_text("Access denied.")
+return
+meta = get_meta_state()
+meta["secret_mode"] = not meta.get("secret_mode", False)
+save_meta_state(meta)
+state_label = "ENABLED" if meta["secret_mode"] else "DISABLED"
+await update.message.reply_text(f"Secret mode: {state_label}")
+
+
+async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+query = update.callback_query
+if not query:
+return
+user = query.from_user
+if user and is_blocked(user.id):
+await query.answer("Aap blocked hain.", show_alert=True)
+return
+
+if query.data == "verify_force_join":
+joined = await is_user_in_force_chat(context, user.id)
+if not joined:
+await query.answer("Pehle group join karein, phir dobara try karein!", show_alert=True)
+return
+await query.answer("Verified! Access unlocked.")
+try:
+await query.message.delete()
+except Exception:
+pass
+await send_home_screen(update, context)
+return
+
+await query.answer()
+if query.data == "open_help":
+await query.message.reply_text(help_text_html(), parse_mode="HTML")
+
+
+async def post_init(application: Application):
+if API_ID and API_HASH:
+await restore_all_saved_sessions(API_ID, API_HASH)
+
+
+def main():
+if not BOT_TOKEN or not API_ID or not API_HASH:
+raise ValueError("BOT_TOKEN, API_ID, aur API_HASH environment variables set karein.")
+
+app = Application.builder().token(BOT_TOKEN).post_init(post_init).build()
+
+handlers = [
+("start", start_cmd),
+("help", help_cmd),
+("commands", commands_cmd),
+("host", host_cmd),
+("cancel", cancel_cmd),
+("support", support_cmd),
+("setforce", setforce_cmd),
+("setsupport", setsupport_cmd),
+("restart", restart_cmd),
+("supportraid", supportraid_cmd),
+("restartall", restartall_cmd),
+("refresh", refresh_cmd),
+("status", status_cmd),
+("logout", logout_cmd),
+("sudolist", sudolist_cmd),
+("setdp", setdp_cmd),
+("block", block_cmd),
+("unblock", unblock_cmd),
+("blockeduser", blockeduser_cmd),
+("stats", stats_cmd),
+("secretfunction", secretfunction_cmd),
+]
+
+for cmd, fn in handlers:
+app.add_handler(CommandHandler(cmd, fn))
+
+app.add_handler(CallbackQueryHandler(callback_handler))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_step_handler))
+
+print("Hoster Bot running...")
+app.run_polling()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+main()
