@@ -7,20 +7,23 @@ from pymongo import MongoClient
 from telethon import TelegramClient, events
 from telethon.errors import FloodWaitError, PhoneNumberInvalidError, SessionPasswordNeededError
 from telethon.sessions import StringSession
-from telethon.tl.types import ChatAction
 
 STORE_FILE = Path("hoster_data.json")
 
 # ================= GROUP LINKS & FIRST DM TEXT =================
-GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
-GROUP_LINK_2 = "https://t.me/+rWodwEmUoKA0M2Nl"
+GROUP_LINK_1 = "https://t.me/your_group_link_1"
+GROUP_LINK_2 = "https://t.me/your_group_link_2"
 
-FIRST_DM_WELCOME = (
-    "✨ Join my GC & be respectful! No 18+ allowed 🚫\n\n"
-    f"💬 Join Group 1: {GROUP_LINK_1}\n"
-    f"🔥 Join Group 2: {GROUP_LINK_2}"
-)
 
+def build_first_dm_welcome(link_1: str = GROUP_LINK_1, link_2: str = GROUP_LINK_2) -> str:
+    return (
+        "✨ Join my GC & be respectful! No 18+ allowed 🚫\n\n"
+        f"💬 Join Group 1: {link_1}\n"
+        f"🔥 Join Group 2: {link_2}"
+    )
+
+
+FIRST_DM_WELCOME = build_first_dm_welcome()
 QUIT_MESSAGE = "🚪👋 Member group se quit kar gaya hai!"
 
 RANDOM_MESSAGES = [
@@ -107,6 +110,7 @@ def _default_local_store() -> dict:
         "blocked": [],
         "dp_url": "",
         "secret_mode": False,
+        "group_links": [GROUP_LINK_1, GROUP_LINK_2],
     }
 
 
@@ -168,27 +172,39 @@ def get_meta_state() -> dict:
     db = _get_db()
     if db is not None:
         doc = db["meta"].find_one({"_id": "config"}) or {}
+        links = list(doc.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
+        while len(links) < 2:
+            links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
         return {
             "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
             "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
             "dp_url": str(doc.get("dp_url") or ""),
             "secret_mode": bool(doc.get("secret_mode", False)),
+            "group_links": [str(links[0]), str(links[1])],
         }
     data = _load_local()
+    links = list(data.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
+    while len(links) < 2:
+        links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
     return {
         "sudos": list(dict.fromkeys(int(x) for x in data.get("sudos", []) if str(x).isdigit())),
         "blocked": list(dict.fromkeys(int(x) for x in data.get("blocked", []) if str(x).isdigit())),
         "dp_url": str(data.get("dp_url") or ""),
         "secret_mode": bool(data.get("secret_mode", False)),
+        "group_links": [str(links[0]), str(links[1])],
     }
 
 
 def save_meta_state(meta: dict):
+    links = list(meta.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
+    while len(links) < 2:
+        links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
     clean = {
         "sudos": list(dict.fromkeys(int(x) for x in meta.get("sudos", []) if str(x).isdigit())),
         "blocked": list(dict.fromkeys(int(x) for x in meta.get("blocked", []) if str(x).isdigit())),
         "dp_url": str(meta.get("dp_url") or ""),
         "secret_mode": bool(meta.get("secret_mode", False)),
+        "group_links": [str(links[0]), str(links[1])],
     }
     db = _get_db()
     if db is not None:
@@ -199,10 +215,26 @@ def save_meta_state(meta: dict):
     _save_local(data)
 
 
+def set_group_links(link_1: str, link_2: str):
+    global GROUP_LINK_1, GROUP_LINK_2, FIRST_DM_WELCOME
+    GROUP_LINK_1 = link_1.strip()
+    GROUP_LINK_2 = link_2.strip()
+    FIRST_DM_WELCOME = build_first_dm_welcome(GROUP_LINK_1, GROUP_LINK_2)
+    meta = get_meta_state()
+    meta["group_links"] = [GROUP_LINK_1, GROUP_LINK_2]
+    save_meta_state(meta)
+
+
+def get_active_first_dm_message() -> str:
+    meta = get_meta_state()
+    l1, l2 = meta["group_links"][0], meta["group_links"][1]
+    return build_first_dm_welcome(l1, l2)
+
+
 def pick_random_message(host_state: dict, target_id: int) -> str:
     valid_msgs = [m.strip() for m in RANDOM_MESSAGES if isinstance(m, str) and m.strip()]
     if not valid_msgs:
-        return "Hello!"
+        return "Hello! 👋"
     if len(valid_msgs) == 1:
         return valid_msgs[0]
     last_msg = host_state["last_msg"].get(target_id)
@@ -296,10 +328,22 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     tagging_chats = host_state["tagging"]
     welcomed_users = host_state["welcomed_users"]
     me = await client.get_me()
+    my_id = me.id if me else 0
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.ping$"))
     async def ping_cmd(event):
         await event.edit("🏓 Pong! Userbot is active.")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.setlinks\s+(\S+)\s+(\S+)$"))
+    async def setlinks_cmd(event):
+        l1 = event.pattern_match.group(1)
+        l2 = event.pattern_match.group(2)
+        set_group_links(l1, l2)
+        await event.edit(
+            f"✅🔗 Group links update ho gaye!\n"
+            f"💬 Group 1: {l1}\n"
+            f"🔥 Group 2: {l2}"
+        )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall$"))
     async def tagall_cmd(event):
@@ -319,9 +363,19 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     async def stoptagall_cmd(event):
         if event.chat_id in tagging_chats:
             tagging_chats.discard(event.chat_id)
-            await event.edit("🛑 Tagall rok diya gaya hai.")
+            await event.edit("🛑✨ Tagall rok diya gaya hai!")
         else:
             await event.edit("ℹ️ Is group mein koi active tagall nahi chal raha.")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopquit$"))
+    async def stopquit_cmd(event):
+        host_state["quit_enabled"] = False
+        await event.edit("🛑🚪 User quit alert OFF kar diya gaya hai.")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.startquit$"))
+    async def startquit_cmd(event):
+        host_state["quit_enabled"] = True
+        await event.edit("✅🚪 User quit alert ON kar diya gaya hai.")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.replyraid\s+(\d+)$"))
     async def replyraid_add_cmd(event):
@@ -333,7 +387,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             pass
         await client.send_message(
             event.chat_id,
-            f"🎯🔥 Reply raid ACTIVATED!\n👤 Target: {target_id}\n📝 Type: DEFAULT",
+            f"🎯🔥 Auto-Reply / Raid ACTIVATED (DM + Group)!\n👤 Target: {target_id}",
         )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dreplyraid\s+(\d+)$"))
@@ -346,12 +400,12 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             pass
         await client.send_message(
             event.chat_id,
-            f"🎯🛑 Reply raid DEACTIVATED for {target_id}!",
+            f"🎯🛑 Auto-Reply / Raid DEACTIVATED (DM + Group) for {target_id}!",
         )
 
     @client.on(events.ChatAction)
     async def quit_handler(event):
-        if not event.is_group:
+        if not event.is_group or not host_state.get("quit_enabled", True):
             return
         if event.user_left or event.user_kicked:
             try:
@@ -370,15 +424,21 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     @client.on(events.NewMessage(incoming=True))
     async def dm_and_group_handler(event):
         sender_id = event.sender_id
-        if not sender_id:
+        if not sender_id or sender_id == my_id:
             return
 
         if event.is_group:
             txt = (event.raw_text or "").strip().lower()
+            if txt == "stop tagall":
+                tagging_chats.discard(event.chat_id)
+                await event.reply("🛑✨ Tagall rok diya gaya hai!")
+                return
+
             if txt == "tagall hii" or txt.startswith("tagall "):
                 await _run_tagall_in_chat(client, event.chat_id, tagging_chats)
                 return
 
+            # Linked to DM active auto-reply/raid list: if deactivated in DM, stops here too
             if sender_id in raid_users and await _is_userbot_mentioned(event, me):
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
@@ -395,7 +455,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             if sender_id not in welcomed_users:
                 welcomed_users.add(sender_id)
                 await asyncio.sleep(0.5)
-                await event.reply(FIRST_DM_WELCOME)
+                await event.reply(get_active_first_dm_message())
 
 
 async def start_client_from_session(
@@ -430,6 +490,9 @@ async def start_client_from_session(
             await client.disconnect()
             return False, "Session valid ya authorized nahi hai."
 
+        meta = get_meta_state()
+        set_group_links(meta["group_links"][0], meta["group_links"][1])
+
         host_state = {
             "client": client,
             "session": cleaned,
@@ -437,6 +500,7 @@ async def start_client_from_session(
             "tagging": set(),
             "welcomed_users": set(),
             "last_msg": {},
+            "quit_enabled": True,
         }
         ACTIVE_HOSTS[user_id] = host_state
         await _attach_handlers(client, host_state)
