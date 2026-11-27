@@ -15,10 +15,10 @@ STORE_FILE = Path("hoster_data.json")
 GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
 GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
 
-BTN_1_TEXT = "💬 𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟭"
-BTN_2_TEXT = "🔥 𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮"
+BTN_1_TEXT = "𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟭"
+BTN_2_TEXT = "𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮"
 
-FIRST_DM_HEADER = "🖤 𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖 — Good Vibes, Crazy People &amp; Unlimited Fun! 😎"
+FIRST_DM_HEADER = ""
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
 TAG_DELAY_SECONDS = 1.2
