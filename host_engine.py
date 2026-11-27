@@ -18,14 +18,8 @@ OWNER_ID = int(os.getenv("OWNER_ID", str(CONFIG_OWNER_ID or "0")).strip() or "0"
 
 STORE_FILE = Path("hoster_data.json")
 
-# ================= GROUP LINKS & FIRST DM TEXT =================
-GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
-GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
-
-BTN_1_TEXT = "💬 𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟭"
-BTN_2_TEXT = "🔥 𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮"
-
-FIRST_DM_HEADER = "🖤 𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖 — Good Vibes, Crazy People &amp; Unlimited Fun! 😎"
+# ================= FIRST DM TEXT & QUIT ALERT =================
+FIRST_DM_HEADER = "ᴄʜᴀʟ ᴄʜᴀʟ ʜᴡᴀ ᴀɴᴇ ᴅᴇ😴"
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
 TAG_DELAY_SECONDS = 2.5
@@ -115,7 +109,6 @@ def _default_local_store() -> dict:
         "blocked": [],
         "dp_url": "",
         "secret_mode": False,
-        "group_links": [GROUP_LINK_1, GROUP_LINK_2],
     }
 
 
@@ -177,39 +170,27 @@ def get_meta_state() -> dict:
     db = _get_db()
     if db is not None:
         doc = db["meta"].find_one({"_id": "config"}) or {}
-        links = list(doc.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
-        while len(links) < 2:
-            links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
         return {
             "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
             "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
             "dp_url": str(doc.get("dp_url") or ""),
             "secret_mode": bool(doc.get("secret_mode", False)),
-            "group_links": [str(links[0]), str(links[1])],
         }
     data = _load_local()
-    links = list(data.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
-    while len(links) < 2:
-        links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
     return {
         "sudos": list(dict.fromkeys(int(x) for x in data.get("sudos", []) if str(x).isdigit())),
         "blocked": list(dict.fromkeys(int(x) for x in data.get("blocked", []) if str(x).isdigit())),
         "dp_url": str(data.get("dp_url") or ""),
         "secret_mode": bool(data.get("secret_mode", False)),
-        "group_links": [str(links[0]), str(links[1])],
     }
 
 
 def save_meta_state(meta: dict):
-    links = list(meta.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
-    while len(links) < 2:
-        links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
     clean = {
         "sudos": list(dict.fromkeys(int(x) for x in meta.get("sudos", []) if str(x).isdigit())),
         "blocked": list(dict.fromkeys(int(x) for x in meta.get("blocked", []) if str(x).isdigit())),
         "dp_url": str(meta.get("dp_url") or ""),
         "secret_mode": bool(meta.get("secret_mode", False)),
-        "group_links": [str(links[0]), str(links[1])],
     }
     db = _get_db()
     if db is not None:
@@ -218,20 +199,6 @@ def save_meta_state(meta: dict):
     data = _load_local()
     data.update(clean)
     _save_local(data)
-
-
-def set_group_links(link_1: str, link_2: str):
-    global GROUP_LINK_1, GROUP_LINK_2
-    GROUP_LINK_1 = link_1.strip()
-    GROUP_LINK_2 = link_2.strip()
-    meta = get_meta_state()
-    meta["group_links"] = [GROUP_LINK_1, GROUP_LINK_2]
-    save_meta_state(meta)
-
-
-def get_active_group_links() -> tuple[str, str]:
-    meta = get_meta_state()
-    return meta["group_links"][0], meta["group_links"][1]
 
 
 def _escape_html(text: str) -> str:
@@ -244,15 +211,7 @@ def _escape_html(text: str) -> str:
 
 
 async def send_first_dm_card(event):
-    link_1, link_2 = get_active_group_links()
-    safe_l1 = _escape_html(link_1)
-    safe_l2 = _escape_html(link_2)
-
-    msg = (
-        f"<blockquote><b>{FIRST_DM_HEADER}</b>\n\n"
-        f'• <a href="{safe_l1}"><b>{BTN_1_TEXT}</b></a>\n'
-        f'• <a href="{safe_l2}"><b>{BTN_2_TEXT}</b></a></blockquote>'
-    )
+    msg = f"<blockquote><b>{FIRST_DM_HEADER}</b></blockquote>"
     await event.reply(msg, parse_mode="html", link_preview=False)
 
 
@@ -424,20 +383,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     async def ping_cmd(event):
         await event.edit("<blockquote>🏓 <b>𝗣𝗼𝗻𝗴! 𝗨𝘀𝗲𝗿𝗯𝗼𝘁 𝗶𝘀 𝗮𝗰𝘁𝗶𝘃𝗲.</b></blockquote>", parse_mode="html")
 
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.setlinks\s+(\S+)\s+(\S+)$"))
-    async def setlinks_cmd(event):
-        if not is_owner_host:
-            return
-        l1 = event.pattern_match.group(1)
-        l2 = event.pattern_match.group(2)
-        set_group_links(l1, l2)
-        await event.edit(
-            f"<blockquote>✅🔗 <b>𝗚𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝘂𝗽𝗱𝗮𝘁𝗲 𝗵𝗼 𝗴𝗮𝘆𝗲!</b>\n"
-            f"1️⃣ <b>{BTN_1_TEXT}</b>\n"
-            f"2️⃣ <b>{BTN_2_TEXT}</b></blockquote>",
-            parse_mode="html",
-        )
-
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+([\s\S]+))?$"))
     async def tagall_cmd(event):
         if not is_owner_host:
@@ -599,9 +544,6 @@ async def start_client_from_session(
         if not await client.is_user_authorized():
             await client.disconnect()
             return False, "<b>𝗦𝗲𝘀𝘀𝗶𝗼𝗻 𝘃𝗮𝗹𝗶𝗱 𝘆𝗮 𝗮𝘂𝘁𝗵𝗼𝗿𝗶𝘇𝗲𝗱 𝗻𝗮𝗵𝗶 𝗵𝗮𝗶.</b>"
-
-        meta = get_meta_state()
-        set_group_links(meta["group_links"][0], meta["group_links"][1])
 
         me = await client.get_me()
         is_owner_host = bool(OWNER_ID and me and int(me.id) == int(OWNER_ID))
