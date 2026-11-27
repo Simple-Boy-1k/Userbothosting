@@ -1,20 +1,22 @@
 import asyncio
-import json
-import os
+import io
+import math
 import random
 import re
-from pathlib import Path
-from pymongo import MongoClient
+import time
 from telethon import TelegramClient, events, functions, types
-from telethon.errors import FloodWaitError, PhoneNumberInvalidError, SessionPasswordNeededError
-from telethon.sessions import StringSession
+from telethon.tl.functions.account import UpdateProfileRequest
+from telethon.tl.functions.channels import (
+    EditBannedRequest,
+    InviteToChannelRequest,
+    LeaveChannelRequest,
+)
+from telethon.tl.functions.messages import EditChatDefaultBannedRightsRequest
+from telethon.tl.functions.photos import DeletePhotosRequest, UploadProfilePhotoRequest
+from telethon.tl.functions.users import GetFullUserRequest
 
-STORE_FILE = Path("hoster_data.json")
-
-# ================= FIRST DM TEXT & QUIT ALERT =================
 FIRST_DM_HEADER = "Hey welcome to my dm! How are you...? 😊"
 QUIT_MESSAGE = "🚪👋 Member group se quit kar gaya hai!"
-
 TAG_DELAY_SECONDS = 2.5
 
 RANDOM_MESSAGES = [
@@ -76,160 +78,33 @@ RANDOM_MESSAGES = [
     "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
 ]
 
-ACTIVE_HOSTS = {}
-PENDING_LOGINS = {}
-LOGIN_FLOW = {}
+SHAYARI_MESSAGES = [
+    "<b>✨ Dil ki baatein lafzon mein dhal rahi hain, aapki entry se mehfil chamak rahi hai!</b>",
+    "<b>🌙 Chaand taaron ki roshni mein ek baat khaas hai, aapka andaaz sabse behtareen aur khaas hai!</b>",
+    "<b>🔥 Khamoshiyon mein bhi ek shor hota hai, jab apna banda मैदान mein zor hota hai!</b>",
+    "<b>💫 Waqt badalta hai, rang badalte hain, par asli attitude kabhi nahi badalta!</b>",
+]
 
-_db = None
+HINDI_JOKES = [
+    "😂 Teacher: Tum homework kyon nahi laaye?\nStudent: Sir, battery low thi, kal subah charge karke launga!",
+    "🤣 Doctor: Aapko bhoolne ki bimari hai.\nPatient: Kab se doctor?\nDoctor: Kya kab se?",
+    "😆 Dost: Bhai aaj kal kya chal raha hai?\nDosti: Bas alarm baj raha hai aur main snooze daba raha hoon!",
+]
 
-
-def _get_db():
-    global _db
-    if _db is not None:
-        return _db
-    uri = os.getenv("MONGO_URI", "").strip()
-    if not uri:
-        return None
-    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-    _db = client["zudo_hoster_db"]
-    return _db
-
-
-def _default_local_store() -> dict:
-    return {
-        "sessions": {},
-        "sudos": [],
-        "blocked": [],
-        "dp_url": "",
-        "secret_mode": False,
-        "force_join_chat_id": 0,
-        "force_join_link": "",
-        "support_group_url": "",
-    }
-
-
-def _load_local() -> dict:
-    base = _default_local_store()
-    if STORE_FILE.exists():
-        try:
-            loaded = json.loads(STORE_FILE.read_text(encoding="utf-8"))
-            if isinstance(loaded, dict):
-                base.update(loaded)
-        except Exception:
-            pass
-    return base
-
-
-def _save_local(data: dict):
-    STORE_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
-
-
-def save_session(user_id: int, string_session: str):
-    db = _get_db()
-    if db is not None:
-        db["sessions"].update_one(
-            {"_id": str(user_id)},
-            {"$set": {"user_id": int(user_id), "session": string_session}},
-            upsert=True,
-        )
-        return
-    data = _load_local()
-    data["sessions"][str(user_id)] = string_session
-    _save_local(data)
-
-
-def delete_session(user_id: int):
-    db = _get_db()
-    if db is not None:
-        db["sessions"].delete_one({"_id": str(user_id)})
-        return
-    data = _load_local()
-    data["sessions"].pop(str(user_id), None)
-    _save_local(data)
-
-
-def load_all_sessions() -> dict[int, str]:
-    db = _get_db()
-    if db is not None:
-        out = {}
-        for doc in db["sessions"].find({}):
-            uid = doc.get("user_id") or doc.get("_id")
-            sess = doc.get("session")
-            if uid and sess and str(uid).isdigit():
-                out[int(uid)] = sess
-        return out
-    data = _load_local()
-    return {int(k): v for k, v in data.get("sessions", {}).items() if str(k).isdigit() and v}
-
-
-def get_meta_state() -> dict:
-    db = _get_db()
-    if db is not None:
-        doc = db["meta"].find_one({"_id": "config"}) or {}
-        return {
-            "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
-            "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
-            "dp_url": str(doc.get("dp_url") or ""),
-            "secret_mode": bool(doc.get("secret_mode", False)),
-            "force_join_chat_id": doc.get("force_join_chat_id", 0),
-            "force_join_link": str(doc.get("force_join_link") or ""),
-            "support_group_url": str(doc.get("support_group_url") or ""),
-        }
-    data = _load_local()
-    return {
-        "sudos": list(dict.fromkeys(int(x) for x in data.get("sudos", []) if str(x).isdigit())),
-        "blocked": list(dict.fromkeys(int(x) for x in data.get("blocked", []) if str(x).isdigit())),
-        "dp_url": str(data.get("dp_url") or ""),
-        "secret_mode": bool(data.get("secret_mode", False)),
-        "force_join_chat_id": data.get("force_join_chat_id", 0),
-        "force_join_link": str(data.get("force_join_link") or ""),
-        "support_group_url": str(data.get("support_group_url") or ""),
-    }
-
-
-def save_meta_state(meta: dict):
-    clean = {
-        "sudos": list(dict.fromkeys(int(x) for x in meta.get("sudos", []) if str(x).isdigit())),
-        "blocked": list(dict.fromkeys(int(x) for x in meta.get("blocked", []) if str(x).isdigit())),
-        "dp_url": str(meta.get("dp_url") or ""),
-        "secret_mode": bool(meta.get("secret_mode", False)),
-        "force_join_chat_id": int(meta.get("force_join_chat_id") or 0),
-        "force_join_link": str(meta.get("force_join_link") or ""),
-        "support_group_url": str(meta.get("support_group_url") or ""),
-    }
-    db = _get_db()
-    if db is not None:
-        db["meta"].update_one({"_id": "config"}, {"$set": clean}, upsert=True)
-        return
-    data = _load_local()
-    data.update(clean)
-    _save_local(data)
+_BOLD_SANS_MAP = str.maketrans(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+    "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵",
+)
 
 
 def _escape_html(text: str) -> str:
     return (
-        text.replace("&", "&amp;")
+        (text or "")
+        .replace("&", "&amp;")
         .replace("<", "&lt;")
         .replace(">", "&gt;")
         .replace('"', "&quot;")
     )
-
-
-async def send_first_dm_card(event):
-    await event.reply(FIRST_DM_HEADER, link_preview=False)
-
-
-def pick_random_message(host_state: dict, target_id: int) -> str:
-    valid_msgs = [m.strip() for m in RANDOM_MESSAGES if isinstance(m, str) and m.strip()]
-    if not valid_msgs:
-        return "<b>Hello! 👋</b>"
-    if len(valid_msgs) == 1:
-        return valid_msgs[0]
-    last_msg = host_state["last_msg"].get(target_id)
-    pool = [m for m in valid_msgs if m != last_msg]
-    chosen = random.choice(pool or valid_msgs)
-    host_state["last_msg"][target_id] = chosen
-    return chosen
 
 
 def _clean_mention_name(user) -> str:
@@ -242,6 +117,92 @@ def _clean_mention_name(user) -> str:
     if uname:
         return f"@{uname}"
     return "Member"
+
+
+def _format_duration(seconds: int) -> str:
+    days, rem = divmod(max(0, int(seconds)), 86400)
+    hours, rem = divmod(rem, 3600)
+    mins, secs = divmod(rem, 60)
+    parts = []
+    if days:
+        parts.append(f"{days}d")
+    if hours:
+        parts.append(f"{hours}h")
+    if mins:
+        parts.append(f"{mins}m")
+    parts.append(f"{secs}s")
+    return " ".join(parts)
+
+
+def _parse_duration_seconds(raw: str | None) -> int | None:
+    if not raw:
+        return None
+    m = re.match(r"^(\d+)([smhd])$", raw.strip().lower())
+    if not m:
+        return None
+    val = int(m.group(1))
+    unit = m.group(2)
+    mult = {"s": 1, "m": 60, "h": 3600, "d": 86400}[unit]
+    return val * mult
+
+
+def _safe_calc(expr: str) -> str:
+    clean = (expr or "").strip()
+    if not re.fullmatch(r"[0-9+\-*/().%\s^]+", clean):
+        return "Invalid expression. Sirf numbers aur + - * / % ( ) allow hain."
+    clean = clean.replace("^", "**")
+    allowed_names = {
+        "sqrt": math.sqrt,
+        "sin": math.sin,
+        "cos": math.cos,
+        "tan": math.tan,
+        "abs": abs,
+        "round": round,
+    }
+    val = eval(clean, {"__builtins__": {}}, allowed_names)
+    return str(val)
+
+
+def _format_target_prefix(target_user) -> str:
+    if not target_user:
+        return ""
+    uid = getattr(target_user, "id", None)
+    uname = _clean_mention_name(target_user)
+    if uid:
+        return f'<a href="tg://user?id={uid}">{uname}</a> '
+    return ""
+
+
+async def _resolve_target_user(client: TelegramClient, event, token: str | None):
+    if event.is_reply:
+        try:
+            rep = await event.get_reply_message()
+            if rep and rep.sender_id:
+                return await client.get_entity(rep.sender_id)
+        except Exception:
+            pass
+    if token:
+        cleaned = token.strip().lstrip("@")
+        try:
+            if cleaned.isdigit():
+                return await client.get_entity(int(cleaned))
+            return await client.get_entity(cleaned)
+        except Exception:
+            return None
+    return None
+
+
+def _pick_random_message(host_state: dict, target_id: int) -> str:
+    valid_msgs = [m.strip() for m in RANDOM_MESSAGES if isinstance(m, str) and m.strip()]
+    if not valid_msgs:
+        return "<b>Hello! 👋</b>"
+    if len(valid_msgs) == 1:
+        return valid_msgs[0]
+    last_msg = host_state["last_msg"].get(target_id)
+    pool = [m for m in valid_msgs if m != last_msg]
+    chosen = random.choice(pool or valid_msgs)
+    host_state["last_msg"][target_id] = chosen
+    return chosen
 
 
 def _extract_tag_text(raw_text: str) -> str:
@@ -283,6 +244,35 @@ async def _collect_group_targets(client: TelegramClient, chat_id: int) -> list[t
             pass
 
     return targets
+
+
+def _register_background_task(host_state: dict, task: asyncio.Task) -> int:
+    seq = host_state.get("task_seq", 100) + 1
+    host_state["task_seq"] = seq
+    host_state["background_tasks"][seq] = task
+
+    def _on_done(_t):
+        host_state["background_tasks"].pop(seq, None)
+
+    task.add_done_callback(_on_done)
+    return seq
+
+
+def _cancel_background_task(host_state: dict, task_id: int | None = None) -> int:
+    bg = host_state.get("background_tasks") or {}
+    if task_id is not None:
+        t = bg.pop(task_id, None)
+        if t and not t.done():
+            t.cancel()
+            return 1
+        return 0
+    count = 0
+    for tid in list(bg.keys()):
+        t = bg.pop(tid, None)
+        if t and not t.done():
+            t.cancel()
+            count += 1
+    return count
 
 
 async def _run_tagall_in_chat(
@@ -370,17 +360,72 @@ async def _send_quit_alert(client: TelegramClient, chat_id: int, user):
     await client.send_message(chat_id, f"{QUIT_MESSAGE}\n👤 {mention}", parse_mode="html")
 
 
-async def _attach_handlers(client: TelegramClient, host_state: dict):
-    raid_users = host_state["raid_users"]
+async def attach_userbot_handlers(client: TelegramClient, host_state: dict, active_hosts_ref: dict):
+    raid_users: set[int] = host_state["raid_users"]
+    sraid_users: set[int] = host_state.setdefault("sraid_users", set())
+    approved_users: set[int] = host_state.setdefault("approved_users", set())
+    host_state.setdefault("background_tasks", {})
+    host_state.setdefault("task_seq", 100)
+    host_state.setdefault("ping_owner", None)
+    host_state.setdefault("ping_emoji", "⚡")
+    host_state.setdefault("custom_welcome", None)
+    host_state.setdefault("welcome_enabled", True)
+    host_state.setdefault("autoreply_msg", None)
+    host_state.setdefault("raid_channel", None)
+    host_state.setdefault("antisafe_enabled", False)
+    host_state.setdefault("pending_clearall", False)
+    host_state.setdefault("profile_backup", None)
+
     tagging_tasks: dict[int, asyncio.Task] = host_state["tagging_tasks"]
-    welcomed_users = host_state["welcomed_users"]
+    welcomed_users: set[int] = host_state["welcomed_users"]
     me = await client.get_me()
     my_id = me.id if me else 0
 
+    # ================= GENERAL =================
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.ping$"))
     async def ping_cmd(event):
-        await event.edit("🏓 Pong! Userbot is active.")
+        start_ts = time.perf_counter()
+        emoji = host_state.get("ping_emoji") or "⚡"
+        owner_tag = host_state.get("ping_owner")
+        elapsed_ms = int((time.perf_counter() - start_ts) * 1000)
+        extra = f"\n👑 Owner: {_escape_html(owner_tag)}" if owner_tag else ""
+        await event.edit(f"🏓 Pong! {emoji} <code>{max(1, elapsed_ms)}ms</code>{extra}", parse_mode="html")
 
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.uptime$"))
+    async def uptime_cmd(event):
+        up = _format_duration(int(time.time() - host_state.get("started_at", time.time())))
+        await event.edit(f"⏱️ Uptime: <b>{up}</b>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.info(?:\s+(.+))?$"))
+    async def info_cmd(event):
+        arg = (event.pattern_match.group(1) or "").strip()
+        target = await _resolve_target_user(client, event, arg or None)
+        if not target and not arg:
+            target = await event.get_chat()
+        if not target:
+            await event.edit("⚠️ User ya chat nahi mila.")
+            return
+        uid = getattr(target, "id", "N/A")
+        title = getattr(target, "title", None) or _clean_mention_name(target)
+        uname = getattr(target, "username", None)
+        uname_str = f"@{uname}" if uname else "None"
+        await event.edit(
+            f"ℹ️ <b>Info</b>\n"
+            f"• Name/Title: <b>{_escape_html(str(title))}</b>\n"
+            f"• ID: <code>{uid}</code>\n"
+            f"• Username: {uname_str}",
+            parse_mode="html",
+        )
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.logout$"))
+    async def logout_userbot_cmd(event):
+        await event.edit("🚪 Logging out userbot...")
+        try:
+            await client.log_out()
+        except Exception:
+            await client.disconnect()
+
+    # ================= TAGGING =================
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+([\s\S]+))?$"))
     async def tagall_cmd(event):
         if not event.is_group:
@@ -402,13 +447,14 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         )
         tagging_tasks[event.chat_id] = task
 
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall(?:\s+\d+)?$"))
     async def stoptagall_cmd(event):
         if _stop_tagall_task(tagging_tasks, event.chat_id):
             await event.edit("🛑✨ Tagall rok diya gaya hai!")
         else:
             await event.edit("ℹ️ Is group mein koi active tagall nahi chal raha.")
 
+    # ================= QUIT ALERT =================
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopquit$"))
     async def stopquit_cmd(event):
         host_state["quit_enabled"] = False
@@ -419,42 +465,609 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         host_state["quit_enabled"] = True
         await event.edit("✅🚪 User quit alert ON kar diya gaya hai.")
 
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.replyraid\s+(\d+)$"))
+    # ================= REPLY RAID & SHAYARI RAID =================
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.replyraid(?:\s+(.+))?$"))
     async def replyraid_add_cmd(event):
-        target_id = int(event.pattern_match.group(1))
-        raid_users.add(target_id)
-        try:
-            await event.delete()
-        except Exception:
-            pass
-        await client.send_message(
-            event.chat_id,
-            f"🎯🔥 Auto-Reply / Raid ACTIVATED (DM + Group)!\n👤 Target: {target_id}",
-        )
-
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dreplyraid\s+(\d+)$"))
-    async def replyraid_del_cmd(event):
-        target_id = int(event.pattern_match.group(1))
-        raid_users.discard(target_id)
-        try:
-            await event.delete()
-        except Exception:
-            pass
-        await client.send_message(
-            event.chat_id,
-            f"🎯🛑 Auto-Reply / Raid DEACTIVATED (DM + Group) for {target_id}!",
-        )
-
-    @client.on(events.ChatAction)
-    async def quit_action_handler(event):
-        if not event.is_group or not host_state.get("quit_enabled", True):
+        arg = (event.pattern_match.group(1) or "").strip()
+        target = await _resolve_target_user(client, event, arg or None)
+        if not target:
+            await event.edit("⚠️ Target user ka username/ID dein ya message par reply karein.")
             return
-        if event.user_left or event.user_kicked:
+        raid_users.add(target.id)
+        try:
+            await event.delete()
+        except Exception:
+            pass
+        await client.send_message(
+            event.chat_id,
+            f"🎯🔥 Auto-Reply / Raid ACTIVATED (DM + Group)!\n👤 Target: <code>{target.id}</code>",
+            parse_mode="html",
+        )
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dreplyraid(?:\s+(.+))?$"))
+    async def replyraid_del_cmd(event):
+        arg = (event.pattern_match.group(1) or "").strip()
+        target = await _resolve_target_user(client, event, arg or None)
+        if not target:
+            await event.edit("⚠️ Target user ka username/ID dein ya message par reply karein.")
+            return
+        raid_users.discard(target.id)
+        try:
+            await event.delete()
+        except Exception:
+            pass
+        await client.send_message(
+            event.chat_id,
+            f"🎯🛑 Auto-Reply / Raid DEACTIVATED (DM + Group) for <code>{target.id}</code>!",
+            parse_mode="html",
+        )
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.sraid\s+(\d+)(?:\s+(.+))?$"))
+    async def sraid_cmd(event):
+        count = max(1, min(50, int(event.pattern_match.group(1))))
+        arg = (event.pattern_match.group(2) or "").strip()
+        target = await _resolve_target_user(client, event, arg or None)
+        prefix = _format_target_prefix(target)
+
+        async def _worker():
+            for _ in range(count):
+                msg = random.choice(SHAYARI_MESSAGES)
+                await client.send_message(event.chat_id, f"{prefix}{msg}", parse_mode="html")
+                await asyncio.sleep(1.2)
+
+        task_id = _register_background_task(host_state, asyncio.create_task(_worker()))
+        await event.edit(f"💌 Shayari raid started ({count} msgs) — Task ID: <code>{task_id}</code>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopsraid$"))
+    async def stopsraid_cmd(event):
+        stopped = _cancel_background_task(host_state)
+        await event.edit(f"🛑 Shayari task stopped ({stopped}).")
+
+    # ================= SPAM, TIMED SPAM & RAID =================
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.spam\s+(\d+)\s+([\s\S]+)$"))
+    async def spam_cmd(event):
+        count = max(1, min(100, int(event.pattern_match.group(1))))
+        rest = event.pattern_match.group(2).strip()
+        parts = rest.split(maxsplit=1)
+        dest = event.chat_id
+        msg_text = rest
+        if parts and (parts[0].startswith("@") or re.fullmatch(r"-?\d{5,}", parts[0])):
+            try:
+                ent = await client.get_entity(int(parts[0]) if parts[0].lstrip("-").isdigit() else parts[0])
+                dest = getattr(ent, "id", dest)
+                msg_text = parts[1] if len(parts) > 1 else "Hello!"
+            except Exception:
+                pass
+
+        async def _worker():
+            for _ in range(count):
+                await client.send_message(dest, msg_text)
+                await asyncio.sleep(0.6)
+
+        task_id = _register_background_task(host_state, asyncio.create_task(_worker()))
+        await event.edit(f"✉️ Spam started ({count}x) — Task ID: <code>{task_id}</code>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tspam\s+([0-9.]+)\s+([\s\S]+)$"))
+    async def tspam_cmd(event):
+        delay = max(0.2, min(60.0, float(event.pattern_match.group(1))))
+        rest = event.pattern_match.group(2).strip()
+        tokens = rest.split()
+        dest = event.chat_id
+        idx = 0
+        if tokens and (tokens[0].startswith("@") or re.fullmatch(r"-?\d{5,}", tokens[0])):
+            try:
+                ent = await client.get_entity(int(tokens[0]) if tokens[0].lstrip("-").isdigit() else tokens[0])
+                dest = getattr(ent, "id", dest)
+                idx += 1
+            except Exception:
+                pass
+        count = 5
+        if idx < len(tokens) and tokens[idx].isdigit():
+            count = max(1, min(100, int(tokens[idx])))
+            idx += 1
+        msg_text = " ".join(tokens[idx:]).strip() or "Test"
+
+        async def _worker():
+            for _ in range(count):
+                await client.send_message(dest, msg_text)
+                await asyncio.sleep(delay)
+
+        task_id = _register_background_task(host_state, asyncio.create_task(_worker()))
+        await event.edit(f"⏱️ Timed spam started ({count}x, {delay}s) — Task ID: <code>{task_id}</code>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopspam(?:\s+(\d+))?$"))
+    async def stopspam_cmd(event):
+        tid = int(event.pattern_match.group(1)) if event.pattern_match.group(1) else None
+        stopped = _cancel_background_task(host_state, tid)
+        await event.edit(f"🛑 Spam task stopped ({stopped}).")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.raid\s+(\d+)(?:\s+([\s\S]+))?$"))
+    async def raid_cmd(event):
+        count = max(1, min(100, int(event.pattern_match.group(1))))
+        extra = (event.pattern_match.group(2) or "").strip()
+        dest = event.chat_id
+        target_user = None
+        for tok in extra.split():
+            if tok.startswith("@"):
+                target_user = await _resolve_target_user(client, event, tok)
+            elif re.fullmatch(r"-?\d{5,}", tok):
+                try:
+                    ent = await client.get_entity(int(tok))
+                    dest = getattr(ent, "id", dest)
+                except Exception:
+                    pass
+        if not target_user and event.is_reply:
+            target_user = await _resolve_target_user(client, event, None)
+
+        prefix = _format_target_prefix(target_user)
+
+        async def _worker():
+            for _ in range(count):
+                line = _pick_random_message(host_state, my_id)
+                await client.send_message(dest, f"{prefix}{line}", parse_mode="html")
+                await asyncio.sleep(0.8)
+
+        task_id = _register_background_task(host_state, asyncio.create_task(_worker()))
+        await event.edit(f"💥 Raid started ({count}x) — Task ID: <code>{task_id}</code>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopraid(?:\s+(\d+))?$"))
+    async def stopraid_cmd(event):
+        tid = int(event.pattern_match.group(1)) if event.pattern_match.group(1) else None
+        stopped = _cancel_background_task(host_state, tid)
+        await event.edit(f"🛑 Raid task stopped ({stopped}).")
+
+    # ================= CRAID & BROADCAST =================
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.setraid\s+(\S+)$"))
+    async def setraid_cmd(event):
+        link = event.pattern_match.group(1).strip()
+        try:
+            ent = await client.get_entity(link)
+            host_state["raid_channel"] = getattr(ent, "id", link)
+            await event.edit(f"✅ CRAID source channel set: <code>{host_state['raid_channel']}</code>", parse_mode="html")
+        except Exception as e:
+            await event.edit(f"⚠️ Channel set nahi ho saka: {e}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.craid\s+(\d+)$"))
+    async def craid_cmd(event):
+        count = max(1, min(100, int(event.pattern_match.group(1))))
+        src = host_state.get("raid_channel")
+        if not src:
+            await event.edit("⚠️ Pehle <code>.setraid &lt;channel_link&gt;</code> se source channel set karein.", parse_mode="html")
+            return
+        rep = await event.get_reply_message() if event.is_reply else None
+
+        async def _worker():
+            msgs = []
+            async for m in client.iter_messages(src, limit=50):
+                if m.text or m.media:
+                    msgs.append(m)
+            if not msgs:
+                return
+            for i in range(count):
+                src_msg = msgs[i % len(msgs)]
+                await client.send_message(
+                    event.chat_id,
+                    src_msg.text or "⚡",
+                    file=src_msg.media,
+                    reply_to=rep.id if rep else None,
+                )
+                await asyncio.sleep(0.9)
+
+        task_id = _register_background_task(host_state, asyncio.create_task(_worker()))
+        await event.edit(f"⚡ CRAID started ({count}x) — Task ID: <code>{task_id}</code>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.broadcast\s+([\s\S]+)$"))
+    async def broadcast_cmd(event):
+        text = event.pattern_match.group(1).strip()
+        sent_ok = 0
+        async for dlg in client.iter_dialogs():
+            if dlg.is_group or dlg.is_channel:
+                try:
+                    await client.send_message(dlg.id, text)
+                    sent_ok += 1
+                    await asyncio.sleep(0.5)
+                except Exception:
+                    pass
+        await event.edit(f"📢 Broadcast sent to <b>{sent_ok}</b> chats.", parse_mode="html")
+
+    # ================= AUTOREPLY, ANTISAFE, APPROVE & SAVE DISAPPEARING =================
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.autoreply\s+([\s\S]+)$"))
+    async def autoreply_on_cmd(event):
+        host_state["autoreply_msg"] = event.pattern_match.group(1).strip()
+        await event.edit("🤖 Mention auto-reply <b>ON</b> kar diya gaya hai.", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dautoreply$"))
+    async def autoreply_off_cmd(event):
+        host_state["autoreply_msg"] = None
+        await event.edit("🤖 Mention auto-reply <b>OFF</b> kar diya gaya hai.", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.antisafe\s+(on|off)$", flags=re.IGNORECASE))
+    async def antisafe_cmd(event):
+        mode = event.pattern_match.group(1).lower()
+        host_state["antisafe_enabled"] = mode == "on"
+        await event.edit(f"🛡️ AntiSafe <b>{mode.upper()}</b>.", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.approve$"))
+    async def approve_cmd(event):
+        if event.is_private and event.chat_id:
+            approved_users.add(event.chat_id)
+            await event.edit("✅ User approved for AntiSafe.")
+        else:
+            await event.edit("⚠️ Yeh command private DM mein use karein.")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.sd$"))
+    async def sd_cmd(event):
+        if not event.is_reply:
+            await event.edit("⚠️ Jis message/media ko save karna hai uspar reply karein.")
+            return
+        rep = await event.get_reply_message()
+        try:
+            if rep.media:
+                bio = io.BytesIO()
+                await client.download_media(rep, file=bio)
+                bio.seek(0)
+                bio.name = getattr(rep.file, "name", None) or "saved_media"
+                await client.send_file("me", bio, caption=rep.text or "")
+            else:
+                await client.send_message("me", rep.text or "")
+            await event.edit("💾 Saved Messages mein save ho gaya.")
+        except Exception as e:
+            await event.edit(f"⚠️ Save nahi ho saka: {e}")
+
+    # ================= WELCOME =================
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.setwlcm\s+([\s\S]+)$"))
+    async def setwlcm_cmd(event):
+        host_state["custom_welcome"] = event.pattern_match.group(1).strip()
+        host_state["welcome_enabled"] = True
+        await event.edit("✅ Custom welcome message set ho gaya.")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopwlcm$"))
+    async def stopwlcm_cmd(event):
+        host_state["welcome_enabled"] = False
+        await event.edit("🛑 Welcome messages disable kar diye gaye hain.")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.wlcmmssg$"))
+    async def wlcmmssg_cmd(event):
+        host_state["custom_welcome"] = None
+        host_state["welcome_enabled"] = True
+        await event.edit("♻️ Welcome configuration default par restore ho gayi.")
+
+    # ================= CUSTOMIZATION, CLONE & FUN =================
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stylish\s+([\s\S]+)$"))
+    async def stylish_cmd(event):
+        name = event.pattern_match.group(1).strip()
+        b_txt = name.translate(_BOLD_SANS_MAP)
+        await event.edit(
+            f"✨ <b>Stylish Variations</b>\n"
+            f"1. <code>{b_txt}</code>\n"
+            f"2. <code>★ {b_txt} ★</code>\n"
+            f"3. <code>꧁ {b_txt} ꧂</code>",
+            parse_mode="html",
+        )
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.changeowner\s+(\S+)$"))
+    async def changeowner_cmd(event):
+        host_state["ping_owner"] = event.pattern_match.group(1).strip()
+        await event.edit(f"✅ Ping owner updated: {_escape_html(host_state['ping_owner'])}", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.setemoji\s+(.+)$"))
+    async def setemoji_cmd(event):
+        val = event.pattern_match.group(1).strip()
+        if val.lower() == "off":
+            host_state["ping_emoji"] = ""
+            await event.edit("✅ Custom ping emoji removed.")
+        else:
+            host_state["ping_emoji"] = val
+            await event.edit(f"✅ Custom ping emoji set: {val}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.clone(?:\s+(\S+))?$"))
+    async def clone_cmd(event):
+        arg = (event.pattern_match.group(1) or "").strip()
+        target = await _resolve_target_user(client, event, arg or None)
+        if not target:
+            await event.edit("⚠️ Target user dein ya reply karein.")
+            return
+        try:
+            me_full = await client(GetFullUserRequest("me"))
+            if host_state.get("profile_backup") is None:
+                host_state["profile_backup"] = {
+                    "first_name": me.first_name or "",
+                    "last_name": me.last_name or "",
+                    "about": getattr(me_full.full_user, "about", "") or "",
+                }
+            t_full = await client(GetFullUserRequest(target))
+            await client(
+                UpdateProfileRequest(
+                    first_name=getattr(target, "first_name", "") or "User",
+                    last_name=getattr(target, "last_name", "") or "",
+                    about=(getattr(t_full.full_user, "about", "") or "")[:70],
+                )
+            )
+            photos = await client.get_profile_photos(target, limit=1)
+            if photos:
+                bio = io.BytesIO()
+                await client.download_media(photos[0], file=bio)
+                bio.seek(0)
+                uploaded = await client.upload_file(bio)
+                await client(UploadProfilePhotoRequest(file=uploaded))
+            await event.edit(f"👤 Profile cloned: <b>{_clean_mention_name(target)}</b>", parse_mode="html")
+        except Exception as e:
+            await event.edit(f"⚠️ Clone error: {e}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dclone$"))
+    async def dclone_cmd(event):
+        backup = host_state.get("profile_backup")
+        if not backup:
+            await event.edit("⚠️ Koi saved profile backup nahi mila.")
+            return
+        try:
+            await client(
+                UpdateProfileRequest(
+                    first_name=backup.get("first_name", ""),
+                    last_name=backup.get("last_name", ""),
+                    about=backup.get("about", ""),
+                )
+            )
+            my_photos = await client.get_profile_photos("me", limit=1)
+            if my_photos:
+                await client(DeletePhotosRequest([types.InputPhoto(id=my_photos[0].id, access_hash=my_photos[0].access_hash, file_reference=my_photos[0].file_reference)]))
+            await event.edit("✅ Original profile restore ho gayi.")
+        except Exception as e:
+            await event.edit(f"⚠️ Restore error: {e}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.joke$"))
+    async def joke_cmd(event):
+        await event.edit(random.choice(HINDI_JOKES))
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.flip$"))
+    async def flip_cmd(event):
+        await event.edit(f"🪙 Coin Flip: <b>{random.choice(['Heads', 'Tails'])}</b>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.roll\s+(\d+)$"))
+    async def roll_cmd(event):
+        upper = max(1, int(event.pattern_match.group(1)))
+        await event.edit(f"🎲 Roll (1-{upper}): <b>{random.randint(1, upper)}</b>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.rps\s+(rock|paper|scissors)$", flags=re.IGNORECASE))
+    async def rps_cmd(event):
+        user_choice = event.pattern_match.group(1).lower()
+        bot_choice = random.choice(["rock", "paper", "scissors"])
+        wins = {("rock", "scissors"), ("paper", "rock"), ("scissors", "paper")}
+        if user_choice == bot_choice:
+            res = "Draw!"
+        elif (user_choice, bot_choice) in wins:
+            res = "You Win!"
+        else:
+            res = "Bot Wins!"
+        await event.edit(f"✊✋✌️ You: <b>{user_choice}</b> vs <b>{bot_choice}</b> — <b>{res}</b>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.calc\s+([\s\S]+)$"))
+    async def calc_cmd(event):
+        expr = event.pattern_match.group(1).strip()
+        try:
+            ans = _safe_calc(expr)
+            await event.edit(f"🧮 <code>{_escape_html(expr)}</code> = <b>{_escape_html(ans)}</b>", parse_mode="html")
+        except Exception as e:
+            await event.edit(f"⚠️ Calc error: {e}")
+
+    # ================= MODERATION & ADMIN =================
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.ban(?:\s+(\S+)(?:\s+([\s\S]+))?)?$"))
+    async def ban_cmd(event):
+        if not event.is_group:
+            await event.edit("⚠️ Sirf group mein chalega.")
+            return
+        target = await _resolve_target_user(client, event, event.pattern_match.group(1))
+        if not target:
+            await event.edit("⚠️ Target user dein ya reply karein.")
+            return
+        rights = types.ChatBannedRights(until_date=None, view_messages=True)
+        await client(EditBannedRequest(event.chat_id, target.id, rights))
+        reason = (event.pattern_match.group(2) or "").strip()
+        await event.edit(f"🚫 Banned {_clean_mention_name(target)}" + (f" — {reason}" if reason else ""))
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.unban(?:\s+(\S+))?$"))
+    async def unban_cmd(event):
+        if not event.is_group:
+            await event.edit("⚠️ Sirf group mein chalega.")
+            return
+        target = await _resolve_target_user(client, event, event.pattern_match.group(1))
+        if not target:
+            await event.edit("⚠️ Target user dein ya reply karein.")
+            return
+        rights = types.ChatBannedRights(until_date=None, view_messages=False)
+        await client(EditBannedRequest(event.chat_id, target.id, rights))
+        await event.edit(f"✅ Unbanned {_clean_mention_name(target)}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.mute(?:\s+(\S+)(?:\s+(\d+[smhd]))?(?:\s+([\s\S]+))?)?$"))
+    async def mute_cmd(event):
+        if not event.is_group:
+            await event.edit("⚠️ Sirf group mein chalega.")
+            return
+        target = await _resolve_target_user(client, event, event.pattern_match.group(1))
+        if not target:
+            await event.edit("⚠️ Target user dein ya reply karein.")
+            return
+        dur_secs = _parse_duration_seconds(event.pattern_match.group(2))
+        until = int(time.time()) + dur_secs if dur_secs else None
+        rights = types.ChatBannedRights(until_date=until, send_messages=True)
+        await client(EditBannedRequest(event.chat_id, target.id, rights))
+        await event.edit(f"🔇 Muted {_clean_mention_name(target)}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.unmute(?:\s+(\S+))?$"))
+    async def unmute_cmd(event):
+        if not event.is_group:
+            await event.edit("⚠️ Sirf group mein chalega.")
+            return
+        target = await _resolve_target_user(client, event, event.pattern_match.group(1))
+        if not target:
+            await event.edit("⚠️ Target user dein ya reply karein.")
+            return
+        rights = types.ChatBannedRights(until_date=None, send_messages=False)
+        await client(EditBannedRequest(event.chat_id, target.id, rights))
+        await event.edit(f"🔊 Unmuted {_clean_mention_name(target)}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.kick(?:\s+(\S+)(?:\s+([\s\S]+))?)?$"))
+    async def kick_cmd(event):
+        if not event.is_group:
+            await event.edit("⚠️ Sirf group mein chalega.")
+            return
+        target = await _resolve_target_user(client, event, event.pattern_match.group(1))
+        if not target:
+            await event.edit("⚠️ Target user dein ya reply karein.")
+            return
+        ban_r = types.ChatBannedRights(until_date=None, view_messages=True)
+        unban_r = types.ChatBannedRights(until_date=None, view_messages=False)
+        await client(EditBannedRequest(event.chat_id, target.id, ban_r))
+        await client(EditBannedRequest(event.chat_id, target.id, unban_r))
+        await event.edit(f"👢 Kicked {_clean_mention_name(target)}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.clear\s+(\d+)$"))
+    async def clear_cmd(event):
+        cnt = max(1, min(100, int(event.pattern_match.group(1))))
+        msg_ids = []
+        async for m in client.iter_messages(event.chat_id, limit=cnt + 1):
+            if m.id != event.id:
+                msg_ids.append(m.id)
+        if msg_ids:
+            await client.delete_messages(event.chat_id, msg_ids)
+        await event.edit(f"🧹 Deleted {len(msg_ids)} messages.")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.rmall$"))
+    async def rmall_cmd(event):
+        if not event.is_group:
+            await event.edit("⚠️ Sirf group mein chalega.")
+            return
+        removed = 0
+        ban_r = types.ChatBannedRights(until_date=None, view_messages=True)
+        async for p in client.iter_participants(event.chat_id):
+            if p.id != my_id and not getattr(p, "bot", False):
+                try:
+                    await client(EditBannedRequest(event.chat_id, p.id, ban_r))
+                    removed += 1
+                    await asyncio.sleep(0.3)
+                except Exception:
+                    pass
+        await event.edit(f"🗑️ Removed {removed} members.")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.add(?:\s+([\s\S]+))?$"))
+    async def add_cmd(event):
+        if not event.is_group:
+            await event.edit("⚠️ Sirf group mein chalega.")
+            return
+        raw = (event.pattern_match.group(1) or "").strip()
+        if not raw:
+            await event.edit("⚠️ Kam se kam ek @username dein.")
+            return
+        users = []
+        for tok in raw.split():
+            u = await _resolve_target_user(client, event, tok)
+            if u:
+                users.append(u)
+        if not users:
+            await event.edit("⚠️ Valid users nahi mile.")
+            return
+        try:
+            await client(InviteToChannelRequest(event.chat_id, users))
+            await event.edit(f"✅ Invited {len(users)} user(s).")
+        except Exception as e:
+            await event.edit(f"⚠️ Add error: {e}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^/invall(?:\s+(\S+))?$"))
+    async def invall_cmd(event):
+        if not event.is_group:
+            await event.edit("⚠️ Sirf group mein chalega.")
+            return
+        src_tok = (event.pattern_match.group(1) or "").strip()
+        if not src_tok:
+            await event.edit("⚠️ Usage: /invall @PublicGroup")
+            return
+        added = 0
+        try:
+            src_ent = await client.get_entity(int(src_tok) if src_tok.lstrip("-").isdigit() else src_tok)
+            async for p in client.iter_participants(src_ent, limit=50):
+                if p.id != my_id and not getattr(p, "bot", False):
+                    try:
+                        await client(InviteToChannelRequest(event.chat_id, [p]))
+                        added += 1
+                        await asyncio.sleep(1.0)
+                    except Exception:
+                        pass
+            await event.edit(f"👥 Invall attempted/added: {added}")
+        except Exception as e:
+            await event.edit(f"⚠️ Invall error: {e}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.clearall(?:\s+(confirm))?$", flags=re.IGNORECASE))
+    async def clearall_cmd(event):
+        conf = (event.pattern_match.group(1) or "").lower()
+        if conf != "confirm":
+            host_state["pending_clearall"] = True
+            await event.edit(
+                "☢️ <b>Nuclear Clear Confirmation</b>\n"
+                "Current chat ki history clear karne ke liye <code>.clearall confirm</code> bhejein.",
+                parse_mode="html",
+            )
+            return
+        if not host_state.get("pending_clearall"):
+            await event.edit("⚠️ Pehle <code>.clearall</code> likhein.", parse_mode="html")
+            return
+        host_state["pending_clearall"] = False
+        try:
+            await client(functions.messages.DeleteHistoryRequest(peer=event.chat_id, max_id=0, just_clear=True, revoke=True))
+            await event.edit("☢️ Chat history cleared.")
+        except Exception as e:
+            await event.edit(f"⚠️ Clearall error: {e}")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.addsudo\s+(\S+)$"))
+    async def addsudo_cmd(event):
+        target = await _resolve_target_user(client, event, event.pattern_match.group(1))
+        if not target:
+            await event.edit("⚠️ User nahi mila.")
+            return
+        sudos = host_state.setdefault("ub_sudos", set())
+        sudos.add(target.id)
+        await event.edit(f"✅ Sudo added: <code>{target.id}</code>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.rmsudo\s+(\S+)$"))
+    async def rmsudo_cmd(event):
+        target = await _resolve_target_user(client, event, event.pattern_match.group(1))
+        if not target:
+            await event.edit("⚠️ User nahi mila.")
+            return
+        sudos = host_state.setdefault("ub_sudos", set())
+        sudos.discard(target.id)
+        await event.edit(f"🗑️ Sudo removed: <code>{target.id}</code>", parse_mode="html")
+
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\.activeusers$"))
+    async def activeusers_cmd(event):
+        ids = list(active_hosts_ref.keys())
+        if not ids:
+            await event.edit("ℹ️ Koi active hosted user nahi hai.")
+            return
+        lines = "\n".join(f"• <code>{u}</code>" for u in ids)
+        await event.edit(f"👥 <b>Active Hosted Users ({len(ids)}):</b>\n{lines}", parse_mode="html")
+
+    # ================= CHAT ACTION & INCOMING HANDLERS =================
+    @client.on(events.ChatAction)
+    async def chat_action_handler(event):
+        if not event.is_group:
+            return
+        if (event.user_left or event.user_kicked) and host_state.get("quit_enabled", True):
             try:
                 user = await event.get_user()
                 await _send_quit_alert(client, event.chat_id, user)
             except Exception:
                 await client.send_message(event.chat_id, QUIT_MESSAGE)
+            return
+
+        if (event.user_joined or event.user_added) and host_state.get("welcome_enabled", True):
+            custom = host_state.get("custom_welcome")
+            if custom:
+                try:
+                    u = await event.get_user()
+                    uname = _clean_mention_name(u)
+                    await client.send_message(event.chat_id, custom.replace("{name}", uname))
+                except Exception:
+                    await client.send_message(event.chat_id, custom)
 
     @client.on(events.Raw)
     async def raw_quit_handler(event):
@@ -477,15 +1090,29 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             return
 
         if event.is_group:
-            if sender_id in raid_users and await _is_userbot_mentioned(event, me):
-                reply_text = pick_random_message(host_state, sender_id)
+            mentioned = await _is_userbot_mentioned(event, me)
+            if sender_id in raid_users and mentioned:
+                reply_text = _pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
                 await event.reply(reply_text, parse_mode="html")
+                return
+
+            ar_msg = host_state.get("autoreply_msg")
+            if ar_msg and mentioned:
+                await asyncio.sleep(0.5)
+                await event.reply(ar_msg)
             return
 
         if event.is_private:
+            if host_state.get("antisafe_enabled") and sender_id not in approved_users:
+                try:
+                    await event.delete()
+                except Exception:
+                    pass
+                return
+
             if sender_id in raid_users:
-                reply_text = pick_random_message(host_state, sender_id)
+                reply_text = _pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
                 await event.reply(reply_text, parse_mode="html")
                 return
@@ -493,226 +1120,4 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             if sender_id not in welcomed_users:
                 welcomed_users.add(sender_id)
                 await asyncio.sleep(0.5)
-                await send_first_dm_card(event)
-
-
-def _cleanup_host_tasks(host_state: dict):
-    tasks: dict[int, asyncio.Task] = host_state.get("tagging_tasks") or {}
-    for cid in list(tasks.keys()):
-        _stop_tagall_task(tasks, cid)
-
-
-async def start_client_from_session(
-    user_id: int,
-    string_session: str,
-    api_id: int,
-    api_hash: str,
-    persist: bool = True,
-    is_restart: bool = False,
-) -> tuple[bool, str]:
-    existing = ACTIVE_HOSTS.pop(user_id, None)
-    if existing:
-        _cleanup_host_tasks(existing)
-        try:
-            await existing["client"].disconnect()
-        except Exception:
-            pass
-
-    cleaned = string_session.strip()
-    client = TelegramClient(
-        StringSession(cleaned),
-        api_id,
-        api_hash,
-        device_model="Desktop",
-        system_version="Windows 11",
-        app_version="5.6.3 x64",
-        lang_code="en",
-        system_lang_code="en-US",
-    )
-    try:
-        await client.connect()
-        if not await client.is_user_authorized():
-            await client.disconnect()
-            return False, "Session valid ya authorized nahi hai."
-
-        host_state = {
-            "client": client,
-            "session": cleaned,
-            "raid_users": set(),
-            "tagging_tasks": {},
-            "welcomed_users": set(),
-            "last_msg": {},
-            "quit_enabled": True,
-        }
-        ACTIVE_HOSTS[user_id] = host_state
-        await _attach_handlers(client, host_state)
-        asyncio.create_task(client.run_until_disconnected())
-
-        if persist:
-            save_session(user_id, cleaned)
-
-        if is_restart:
-            return True, "<b>Success Userbot Restarted!</b>\nUse .ping."
-        return True, "<b>Success Userbot Hosted!</b>\nUse .ping to check."
-    except Exception as e:
-        try:
-            await client.disconnect()
-        except Exception:
-            pass
-        return False, f"Host karne mein error aaya: {e}"
-
-
-async def send_login_code(user_id: int, phone: str, api_id: int, api_hash: str) -> tuple[bool, str]:
-    old = PENDING_LOGINS.pop(user_id, None)
-    if old and old.get("client"):
-        try:
-            await old["client"].disconnect()
-        except Exception:
-            pass
-
-    cleaned_phone = "".join(ch for ch in phone.strip() if ch.isdigit() or ch == "+")
-    if not cleaned_phone.startswith("+"):
-        cleaned_phone = f"+{cleaned_phone}"
-
-    client = TelegramClient(
-        StringSession(),
-        api_id,
-        api_hash,
-        device_model="Desktop",
-        system_version="Windows 11",
-        app_version="5.6.3 x64",
-        lang_code="en",
-        system_lang_code="en-US",
-    )
-    try:
-        await client.connect()
-        sent = await client.send_code_request(cleaned_phone)
-        PENDING_LOGINS[user_id] = {
-            "step": "otp",
-            "phone": cleaned_phone,
-            "phone_code_hash": sent.phone_code_hash,
-            "client": client,
-        }
-        return True, "🔑 Enter OTP (e.g., 1 2 3 4 5): Hurry, expires in 1-2 min!"
-    except PhoneNumberInvalidError:
-        try:
-            await client.disconnect()
-        except Exception:
-            pass
-        return False, "Phone number invalid hai. Country code ke saath sahi number daalein (jaise +919876543210)."
-    except FloodWaitError as e:
-        try:
-            await client.disconnect()
-        except Exception:
-            pass
-        return False, f"Telegram rate limit laga hai. {e.seconds} seconds baad try karein."
-    except Exception as e:
-        try:
-            await client.disconnect()
-        except Exception:
-            pass
-        return False, f"OTP bhejne mein error aaya: {e}"
-
-
-async def submit_otp_code(user_id: int, otp_text: str, api_id: int, api_hash: str) -> tuple[str, str]:
-    pending = PENDING_LOGINS.get(user_id)
-    if not pending or pending.get("step") != "otp":
-        return "error", "Koi active OTP request nahi mila. Pehle /host likhein."
-
-    code = "".join(ch for ch in otp_text if ch.isdigit())
-    if not code:
-        return "retry", "Valid numeric OTP bhejein."
-
-    client = pending["client"]
-    phone = pending["phone"]
-    phone_code_hash = pending["phone_code_hash"]
-
-    try:
-        await client.sign_in(phone=phone, code=code, phone_code_hash=phone_code_hash)
-        session_str = client.session.save()
-        await client.disconnect()
-        PENDING_LOGINS.pop(user_id, None)
-
-        ok, msg = await start_client_from_session(user_id, session_str, api_id, api_hash, persist=True)
-        return ("done" if ok else "error"), msg
-    except SessionPasswordNeededError:
-        pending["step"] = "2fa"
-        return "2fa", "🔒 Enter 2FA Password:"
-    except Exception as e:
-        try:
-            await client.disconnect()
-        except Exception:
-            pass
-        PENDING_LOGINS.pop(user_id, None)
-        return "error", f"Login fail ho gaya: {e}"
-
-
-async def submit_2fa_password(user_id: int, password: str, api_id: int, api_hash: str) -> tuple[str, str]:
-    pending = PENDING_LOGINS.get(user_id)
-    if not pending or pending.get("step") != "2fa":
-        return "error", "Koi active 2FA step nahi mila. Pehle /host likhein."
-
-    client = pending["client"]
-    try:
-        await client.sign_in(password=password.strip())
-        session_str = client.session.save()
-        await client.disconnect()
-        PENDING_LOGINS.pop(user_id, None)
-
-        ok, msg = await start_client_from_session(user_id, session_str, api_id, api_hash, persist=True)
-        return ("done" if ok else "error"), msg
-    except Exception as e:
-        try:
-            await client.disconnect()
-        except Exception:
-            pass
-        PENDING_LOGINS.pop(user_id, None)
-        return "error", f"2FA login fail ho gaya: {e}"
-
-
-async def cancel_pending_login(user_id: int):
-    pending = PENDING_LOGINS.pop(user_id, None)
-    if pending and pending.get("client"):
-        try:
-            await pending["client"].disconnect()
-        except Exception:
-            pass
-
-
-async def restart_user_account(user_id: int, api_id: int, api_hash: str) -> tuple[bool, str]:
-    info = ACTIVE_HOSTS.get(user_id)
-    if info:
-        return await start_client_from_session(
-            user_id, info["session"], api_id, api_hash, persist=True, is_restart=True
-        )
-
-    saved = load_all_sessions()
-    if user_id in saved:
-        return await start_client_from_session(
-            user_id, saved[user_id], api_id, api_hash, persist=True, is_restart=True
-        )
-
-    return False, "Aapka koi hosted account nahi mila. Pehle /host likhein."
-
-
-async def logout_user_account(user_id: int) -> tuple[bool, str]:
-    await cancel_pending_login(user_id)
-    info = ACTIVE_HOSTS.pop(user_id, None)
-    delete_session(user_id)
-
-    if not info:
-        return False, "Logout karne ke liye koi active hosted account nahi mila."
-
-    _cleanup_host_tasks(info)
-    try:
-        await info["client"].disconnect()
-    except Exception:
-        pass
-
-    return True, "<b>Success Userbot Logged Out!</b>\nUse /host to re-host."
-
-
-async def restore_all_saved_sessions(api_id: int, api_hash: str):
-    saved = load_all_sessions()
-    for uid, session_str in saved.items():
-        await start_client_from_session(uid, session_str, api_id, api_hash, persist=False)
+                await event.reply(FIRST_DM_HEADER, link_preview=False)
