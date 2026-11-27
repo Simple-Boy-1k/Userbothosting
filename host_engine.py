@@ -10,20 +10,14 @@ from telethon.sessions import StringSession
 
 STORE_FILE = Path("hoster_data.json")
 
-# ================= GROUP LINKS & FIRST DM TEXT =================
+# ================= GROUP LINKS, INLINE BOT & FIRST DM TEXT =================
 GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
 GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
 
+# Jis @bot ke inline query se 2 buttons wala card bhejna hai (optional, par buttons ke liye zaroori)
+INLINE_BOT_USERNAME = os.getenv("INLINE_BOT_USERNAME", "").strip().lstrip("@")
 
-def build_first_dm_welcome(link_1: str = GROUP_LINK_1, link_2: str = GROUP_LINK_2) -> str:
-    return (
-        "✨ Join my GC & be respectful! No 18+ allowed 🚫\n\n"
-        f"💬 Join Group 1: {link_1}\n"
-        f"🔥 Join Group 2: {link_2}"
-    )
-
-
-FIRST_DM_WELCOME = build_first_dm_welcome()
+FIRST_DM_HEADER = "✨ Join my GC & be respectful! No 18+ allowed 🚫"
 QUIT_MESSAGE = "🚪👋 Member group se quit kar gaya hai!"
 
 RANDOM_MESSAGES = [
@@ -216,19 +210,39 @@ def save_meta_state(meta: dict):
 
 
 def set_group_links(link_1: str, link_2: str):
-    global GROUP_LINK_1, GROUP_LINK_2, FIRST_DM_WELCOME
+    global GROUP_LINK_1, GROUP_LINK_2
     GROUP_LINK_1 = link_1.strip()
     GROUP_LINK_2 = link_2.strip()
-    FIRST_DM_WELCOME = build_first_dm_welcome(GROUP_LINK_1, GROUP_LINK_2)
     meta = get_meta_state()
     meta["group_links"] = [GROUP_LINK_1, GROUP_LINK_2]
     save_meta_state(meta)
 
 
-def get_active_first_dm_message() -> str:
+def get_active_group_links() -> tuple[str, str]:
     meta = get_meta_state()
-    l1, l2 = meta["group_links"][0], meta["group_links"][1]
-    return build_first_dm_welcome(l1, l2)
+    return meta["group_links"][0], meta["group_links"][1]
+
+
+async def send_first_dm_card(client: TelegramClient, event):
+    link_1, link_2 = get_active_group_links()
+    if INLINE_BOT_USERNAME:
+        try:
+            results = await client.inline_query(
+                INLINE_BOT_USERNAME,
+                f"gc_buttons|{link_1}|{link_2}"
+            )
+            if results:
+                await results[0].click(event.chat_id)
+                return
+        except Exception:
+            pass
+
+    # Fallback agar INLINE_BOT_USERNAME set nahi hai (link text ke andar)
+    await event.reply(
+        f"{FIRST_DM_HEADER}\n\n"
+        f"💬 Join Group 1: {link_1}\n"
+        f"🔥 Join Group 2: {link_2}"
+    )
 
 
 def pick_random_message(host_state: dict, target_id: int) -> str:
@@ -438,7 +452,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                 await _run_tagall_in_chat(client, event.chat_id, tagging_chats)
                 return
 
-            # Linked to DM active auto-reply/raid list: if deactivated in DM, stops here too
             if sender_id in raid_users and await _is_userbot_mentioned(event, me):
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
@@ -455,7 +468,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             if sender_id not in welcomed_users:
                 welcomed_users.add(sender_id)
                 await asyncio.sleep(0.5)
-                await event.reply(get_active_first_dm_message())
+                await send_first_dm_card(client, event)
 
 
 async def start_client_from_session(
