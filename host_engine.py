@@ -16,7 +16,7 @@ STORE_FILE = Path("hoster_data.json")
 FIRST_DM_HEADER = "Hey welcome to my dm! How are you...?  😊"
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
-TAG_DELAY_SECONDS = 1.2
+TAG_DELAY_SECONDS = 2.0
 
 RANDOM_MESSAGES = [
     "<blockquote><b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b></blockquote>",
