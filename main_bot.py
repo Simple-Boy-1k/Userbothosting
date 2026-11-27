@@ -1,3 +1,4 @@
+import asyncio
 import time
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import TelegramError
@@ -594,6 +595,9 @@ def main():
     if not BOT_TOKEN or not API_ID or not API_HASH:
         raise ValueError("BOT_TOKEN, API_ID, aur API_HASH environment variables set karein.")
 
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
     app = Application.builder().token(BOT_TOKEN).post_init(post_init).build()
 
     handlers = [
@@ -627,7 +631,13 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_step_handler))
 
     print("Hoster Bot running...")
-    app.run_polling()
+    try:
+        app.run_polling(stop_signals=None)
+    finally:
+        try:
+            loop.run_until_complete(loop.shutdown_asyncgens())
+        finally:
+            loop.close()
 
 
 if __name__ == "__main__":
