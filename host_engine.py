@@ -15,71 +15,71 @@ STORE_FILE = Path("hoster_data.json")
 GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
 GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
 
-BTN_1_TEXT = "💬 <b>𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟭</b>"
-BTN_2_TEXT = "🔥 <b>𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮</b>"
+BTN_1_TEXT = "💬 𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟭"
+BTN_2_TEXT = "🔥 𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮"
 
-FIRST_DM_HEADER = "🖤 <b>𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖</b> — <b>𝗚𝗼𝗼𝗱 𝗩𝗶𝗯𝗲𝘀, 𝗖𝗿𝗮𝘇𝘆 𝗣𝗲𝗼𝗽𝗹𝗲 &amp; 𝗨𝗻𝗹𝗶𝗺𝗶𝘁𝗲𝗱 𝗙𝘂𝗻!</b> 😎"
+FIRST_DM_HEADER = "🖤 𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖 — Good Vibes, Crazy People &amp; Unlimited Fun! 😎"
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
 TAG_DELAY_SECONDS = 1.2
 
 RANDOM_MESSAGES = [
-    "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄𝐈 𝐒𝐏𝐎𝐓𝐈𝐅𝐘 𝐃𝐀𝐋 𝐊𝐄</b>",
-    "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
-    "<b>𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐒𝐔𝐀𝐑 𝐊𝐀 𝐋𝐎𝐔𝐃𝐀 𝐎𝐑 𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐎𝐃𝐀</b>",
-    "<b>𝐊𝐈𝐓𝐍𝐈 𝐆𝐋𝐈𝐘𝐀 𝐏𝐃𝐖𝐄𝐆𝐀 𝐀𝐏𝐍𝐈 𝐌𝐀 𝐊𝐎</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 𝐌𝐄𝐈 𝐁𝐄𝐒𝐀𝐍 𝐊𝐄 𝐋𝐀𝐃𝐃𝐔 𝐁𝐇𝐀𝐑 𝐃𝐔𝐍𝐆𝐀 🤩🥳🔥😈</b>",
-    "<b>𝐏𝐀𝐏𝐀 𝐊𝐈 𝐒𝐏𝐄𝐄𝐃 𝐌𝐓𝐂𝐇 𝐍𝐇𝐈 𝐇𝐎 𝐑𝐇𝐈 𝐊𝐘𝐀</b>",
-    "<b>𝐊𝐮𝐭𝐭𝐞 𝐤𝐢 𝐣𝐚𝐭</b>",
-    "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
-    "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐒𝐔𝐓𝐋𝐈 𝐁𝐎𝐌𝐁 𝐅𝐎𝐃 𝐃𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐉𝐇𝐀𝐀𝐓𝐄 𝐉𝐀𝐋 𝐊𝐄 𝐊𝐇𝐀𝐀𝐊 𝐇𝐎 𝐉𝐀𝐘𝐄𝐆𝐈 💣</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
-    "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
-    "<b>𝐉𝐡𝐚𝐚𝐧𝐭 𝐤𝐞 𝐩𝐢𝐬𝐬𝐮-</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄 𝐀𝐀𝐀𝐆 𝐋𝐀𝐆𝐀𝐃𝐈𝐀 𝐌𝐄𝐑𝐀 𝐌𝐎𝐓𝐀 𝐋𝐔𝐍𝐃 𝐃𝐀𝐋𝐊𝐄 🔥🔥💦😆😆</b>",
-    "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎𝐓𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐏𝐔𝐑𝐀 𝐅𝐀𝐀𝐃 𝐃𝐈𝐀 𝐂𝐇𝐔𝐓𝐇 𝐀𝐁𝐁 𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊𝐎 𝐁𝐇𝐄𝐉 😆💦🤤</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊 𝐒𝐀𝐀𝐓𝐇 𝐌𝐌𝐒 𝐁𝐀𝐍𝐀𝐀 𝐂𝐇𝐔𝐊𝐀 𝐇𝐔</b>",
-    "<b>𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥</b>",
-    "<b>𝐓𝐔𝐉𝐇𝐄 𝐀𝐁 𝐓𝐀𝐊 𝐍𝐀𝐇𝐈 𝐒𝐌𝐉𝐇 𝐀𝐘𝐀 𝐊𝐈 𝐌𝐀𝐈 𝐇𝐈 𝐇𝐔 𝐓𝐔𝐉𝐇𝐄 𝐏𝐀𝐈𝐃𝐀 𝐊𝐀𝐑𝐍𝐄 𝐖𝐀𝐋𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄𝐄 𝐀𝐏𝐍𝐈 𝐌𝐀𝐀 𝐒𝐄 𝐏𝐔𝐂𝐇 𝐑𝐀𝐍𝐃𝐈 𝐊𝐄 𝐁𝐀𝐂𝐇𝐄𝐄𝐄𝐄 🤩👊👤😍</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 30𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎</b>",
-    "<b>𝐆𝐀𝐋𝐈 𝐆𝐀𝐋𝐈 𝐍𝐄 𝐒𝐇𝐎𝐑 𝐇𝐄 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐑𝐀𝐍𝐃𝐈 𝐂𝐇𝐎𝐑 𝐇𝐄 💋💋💦</b>",
-    "<b>𝐒𝐔𝐍 𝐒𝐔𝐍 𝐒𝐔𝐀𝐑 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 𝐉𝐇𝐀𝐍𝐓𝐎 𝐊𝐄 𝐒𝐎𝐔𝐃𝐀𝐆𝐀𝐑 𝐀𝐏𝐍𝐈 𝐌𝐔𝐌𝐌𝐘 𝐊𝐈 𝐍𝐔𝐃𝐄𝐒 𝐁𝐇𝐄𝐉</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 𝟑𝟎𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐂𝐇𝐄𝐄𝐌𝐒 𝐒𝐄 𝐂𝐇𝐔𝐃𝐖𝐀𝐕𝐔𝐍𝐆𝐀 𝐌𝐀𝐃𝐄𝐑𝐂𝐇𝐎𝐎𝐃 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 💦🤣</b>",
-    "<b>𝐊𝐈𝐅𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒𝐒</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐄 𝐆𝐀𝐍𝐃 𝐌𝐄 𝐃𝐄𝐓𝐎𝐋 𝐃𝐀𝐀𝐋 𝐃𝐔𝐍𝐆𝐀</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐂𝐇𝐀𝐍𝐆𝐄𝐒 𝐂𝐎𝐌𝐌𝐈𝐓 𝐊𝐑𝐔𝐆𝐀 𝐅𝐈𝐑 𝐓𝐄𝐑𝐈 𝐁𝐇𝐄𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐀𝐔𝐓𝐎𝐌𝐀𝐓𝐈𝐂𝐀𝐋𝐋𝐘 𝐔𝐏𝐃𝐀𝐓𝐄 𝐇𝐎𝐉𝐀𝐀𝐘𝐄𝐆𝐈 🤖🙏🤔</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐂𝐇𝐔𝐔𝐓 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐒𝐇𝐎𝐔𝐋𝐃𝐄𝐑𝐈𝐍𝐆 𝐊𝐀𝐑 𝐃𝐔𝐍𝐆𝐀𝐀 𝐇𝐈𝐋𝐀𝐓𝐄 𝐇𝐔𝐘𝐄 𝐁𝐇𝐈 𝐃𝐀𝐑𝐃 𝐇𝐎𝐆𝐀𝐀𝐀 😱🤮👺</b>",
-    "<b>𝐑𝐀𝐍𝐈𝐃𝐈𝐈𝐈</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐄𝐍 𝐊𝐎 𝐀𝐏𝐍𝐄 𝐋𝐔𝐍𝐃 𝐏𝐑 𝐈𝐓𝐍𝐀 𝐉𝐇𝐔𝐋𝐀𝐀𝐔𝐍𝐆𝐀 𝐊𝐈 𝐉𝐇𝐔𝐋𝐓𝐄 𝐉𝐇𝐔𝐋𝐓𝐄 𝐇𝐈 𝐁𝐀𝐂𝐇𝐀 𝐏𝐀𝐈𝐃𝐀 𝐊𝐑 𝐃𝐄𝐆𝐈 💦💋</b>",
-    "<b>𝐊𝐈𝐓𝐍𝐈 𝐂𝐇𝐎𝐃𝐔 𝐓𝐄𝐑𝐈 𝐌𝐀 𝐀𝐁 𝐎𝐑..</b>",
-    "<b>𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑</b>",
-    "<b>𝐓𝐄𝐑𝐈𝐈𝐈 𝐌𝐀𝐀 𝐊𝐀𝐀 𝐁𝐉𝐒𝐎𝐃𝐀𝐀𝐀</b>",
-    "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
-    "<b>𝐃𝐔𝐃𝐇 𝐇𝐈𝐋𝐀𝐀𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐕𝐀𝐇𝐄𝐄𝐍 𝐊𝐄 𝐔𝐏𝐑 𝐍𝐈𝐂𝐇𝐄 🆙🆒😙</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 30𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐕𝐈𝐃𝐄𝐎 𝐁𝐀𝐍𝐀𝐊𝐄 𝐗𝐍𝐗𝐗.𝐂𝐎𝐌 𝐏𝐄 𝐍𝐄𝐄𝐋𝐀𝐌 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐊𝐔𝐓𝐓𝐄 𝐊𝐄 𝐏𝐈𝐋𝐋𝐄 💦💋</b>",
-    "<b>𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
-    "<b>𝐆𝐀𝐋𝐈 𝐆𝐀𝐋𝐈 𝐌𝐄 𝐑𝐄𝐇𝐓𝐀 𝐇𝐄 𝐒𝐀𝐍𝐃 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 𝐎𝐑 𝐁𝐀𝐍 𝐃𝐈𝐀 𝐑𝐀𝐍𝐃 🤤🤣</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐎 𝐊𝐎𝐋𝐊𝐀𝐓𝐀 𝐕𝐀𝐀𝐋𝐄 𝐉𝐈𝐓𝐔 𝐁𝐇𝐀𝐈𝐘𝐀 𝐊𝐀 𝐋𝐔𝐍𝐃 𝐌𝐔𝐁𝐀𝐑𝐀𝐊 🤩🤩</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐔𝐌𝐌𝐘 𝐊𝐄 𝐒𝐀𝐀𝐓𝐇 𝐋𝐔𝐃𝐎 𝐊𝐇𝐄𝐋𝐓𝐄 𝐊𝐇𝐄𝐋𝐓𝐄 𝐔𝐒𝐊𝐄 𝐌𝐔𝐇 𝐌𝐄 𝐀𝐏𝐍𝐀 𝐋𝐎𝐃𝐀 𝐃𝐄 𝐃𝐔𝐍𝐆𝐀 ☝🏻☝🏻😬</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐈 𝐂𝐇𝐔𝐓𝐇 𝐌𝐄 𝐌𝐄𝐑𝐀 𝐋𝐔𝐍𝐃 𝐊𝐀𝐀𝐋𝐀</b>",
-    "<b>Ullu ke pathe</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐀𝐊𝐄 𝐍𝐔𝐃𝐄𝐒 𝐆𝐎𝐎𝐆𝐋𝐄 𝐏𝐄 𝐔𝐏𝐋𝐎𝐀𝐃 𝐊𝐀𝐑𝐃𝐔𝐍𝐆𝐀 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐋𝐀𝐄𝐖𝐃𝐄 👻🔥</b>",
-    "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
-    "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
+    "<blockquote><b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b></blockquote>",
+    "<blockquote><b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b></blockquote>",
+    "<blockquote><b>𝗦𝗣𝗢𝗧𝗜𝗙𝗬 𝗣𝗘 𝗖𝗛𝗔𝗟𝗔 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗧𝗘𝗥𝗔 𝗕𝗔𝗔𝗣</b></blockquote>",
+    "<blockquote><b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b></blockquote>",
+    "<blockquote><b>𝗦𝗨𝗔𝗥 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗦𝗘𝗘𝗗𝗛𝗔 𝗕𝗢𝗟 𝗥𝗔𝗛𝗔 𝗛𝗨𝗡</b></blockquote>",
+    "<blockquote><b>𝗞𝗜𝗧𝗡𝗜 𝗚𝗔𝗟𝗜𝗬𝗔𝗡 𝗞𝗛𝗔𝗬𝗘𝗚𝗔 𝗔𝗝</b></blockquote>",
+    "<blockquote><b>𝗕𝗘𝗦𝗔𝗡 𝗞𝗘 𝗟𝗔𝗗𝗗𝗨 𝗕𝗛𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗕𝗨 🤩🥳🔥😈</b></blockquote>",
+    "<blockquote><b>𝗦𝗣𝗘𝗘𝗗 𝗠𝗔𝗧𝗖𝗛 𝗡𝗔𝗛𝗜 𝗛𝗢 𝗥𝗔𝗛𝗜 𝗞𝗬𝗔</b></blockquote>",
+    "<blockquote><b>𝗞𝘂𝘁𝘁𝗲 𝗸𝗶 𝗷𝗮𝗮𝘁</b></blockquote>",
+    "<blockquote><b>𝗔𝗽𝗻𝗶 𝗷𝗮𝗴𝗮𝗵 𝗽𝗲 𝗯𝗮𝗶𝘁𝗵 𝗷𝗮𝗮</b></blockquote>",
+    "<blockquote><b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b></blockquote>",
+    "<blockquote><b>𝗦𝗨𝗧𝗟𝗜 𝗕𝗢𝗠𝗕 𝗙𝗢𝗗 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 💣</b></blockquote>",
+    "<blockquote><b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b></blockquote>",
+    "<blockquote><b>𝗔𝗽𝗻𝗶 𝗷𝗮𝗴𝗮𝗵 𝗽𝗲 𝗯𝗮𝗶𝘁𝗵 𝗷𝗮𝗮</b></blockquote>",
+    "<blockquote><b>𝗝𝗵𝗮𝗮𝗻𝘁 𝗸𝗲 𝗽𝗶𝘀𝘀𝘂</b></blockquote>",
+    "<blockquote><b>𝗔𝗔𝗚 𝗟𝗔𝗚𝗔 𝗗𝗨𝗡𝗚𝗔 𝗖𝗛𝗔𝗧 𝗠𝗘𝗜𝗡 🔥🔥💦😆😆</b></blockquote>",
+    "<blockquote><b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b></blockquote>",
+    "<blockquote><b>𝗣𝗨𝗥𝗔 𝗙𝗔𝗔𝗗 𝗞𝗘 𝗥𝗔𝗞𝗛 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 😆💦🤤</b></blockquote>",
+    "<blockquote><b>𝗠𝗠𝗦 𝗕𝗔𝗡𝗔 𝗖𝗛𝗨𝗞𝗔 𝗛𝗔𝗜 𝗔𝗕 𝗗𝗘𝗞𝗛</b></blockquote>",
+    "<blockquote><b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b></blockquote>",
+    "<blockquote><b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b></blockquote>",
+    "<blockquote><b>𝗦𝗨𝗗𝗢 𝗟𝗔𝗚𝗔 𝗞𝗘 𝟵𝟵𝟵𝟵 𝗖𝗛𝗔𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 🤩🥳🔥</b></blockquote>",
+    "<blockquote><b>𝗧𝗨𝗝𝗛𝗘 𝗔𝗕 𝗧𝗔𝗞 𝗦𝗔𝗠𝗔𝗝𝗛 𝗡𝗔𝗛𝗜 𝗔𝗬𝗔 𝗞𝗬𝗔 🤩👊👤😍</b></blockquote>",
+    "<blockquote><b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b></blockquote>",
+    "<blockquote><b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b></blockquote>",
+    "<blockquote><b>𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘𝗜𝗡 𝗦𝗛𝗢𝗥 𝗛𝗔𝗜 𝗔𝗝 💋💋💦</b></blockquote>",
+    "<blockquote><b>𝗦𝗨𝗡 𝗦𝗨𝗡 𝗦𝗨𝗔𝗥 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗕𝗔𝗔𝗧 𝗦𝗨𝗡</b></blockquote>",
+    "<blockquote><b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b></blockquote>",
+    "<blockquote><b>𝗖𝗛𝗘𝗘𝗠𝗦 𝗦𝗘 𝗕𝗔𝗝𝗪𝗔 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗕𝗨 💦🤣</b></blockquote>",
+    "<blockquote><b>𝗞𝗜𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦</b></blockquote>",
+    "<blockquote><b>𝗗𝗘𝗧𝗢𝗟 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗦𝗔𝗔𝗙 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔</b></blockquote>",
+    "<blockquote><b>𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗔𝗥 𝗗𝗜𝗬𝗘 𝗛𝗔𝗜𝗡 🤖🙏🤔</b></blockquote>",
+    "<blockquote><b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b></blockquote>",
+    "<blockquote><b>𝗦𝗛𝗢𝗨𝗟𝗗𝗘𝗥𝗜𝗡𝗚 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 😱🤮👺</b></blockquote>",
+    "<blockquote><b>𝗥𝗔𝗡𝗜𝗗𝗜𝗜𝗜</b></blockquote>",
+    "<blockquote><b>𝗜𝗧𝗡𝗔 𝗚𝗛𝗨𝗠𝗔𝗨𝗡𝗚𝗔 𝗞𝗜 𝗖𝗛𝗔𝗞𝗞𝗔𝗥 𝗔𝗔 𝗝𝗔𝗬𝗘𝗚𝗔 💦💋</b></blockquote>",
+    "<blockquote><b>𝗞𝗜𝗧𝗡𝗔 𝗖𝗛𝗔𝗟𝗔𝗨𝗡 𝗔𝗕 𝗢𝗥..</b></blockquote>",
+    "<blockquote><b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b></blockquote>",
+    "<blockquote><b>𝗣𝗨𝗥𝗔 𝗦𝗜𝗦𝗧𝗘𝗠 𝗛𝗜𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝</b></blockquote>",
+    "<blockquote><b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b></blockquote>",
+    "<blockquote><b>𝗨𝗣𝗔𝗥 𝗡𝗜𝗖𝗛𝗘 𝗖𝗛𝗔𝗟 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗦𝗔𝗕 🆙🆒😙</b></blockquote>",
+    "<blockquote><b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b></blockquote>",
+    "<blockquote><b>𝗩𝗜𝗗𝗘𝗢 𝗕𝗔𝗡𝗔 𝗞𝗘 𝗡𝗘𝗘𝗟𝗔𝗠 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 💦💋</b></blockquote>",
+    "<blockquote><b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b></blockquote>",
+    "<blockquote><b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b></blockquote>",
+    "<blockquote><b>𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘𝗜𝗡 𝗦𝗛𝗢𝗥 𝗛𝗔𝗜 𝗔𝗝 🤤🤣</b></blockquote>",
+    "<blockquote><b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b></blockquote>",
+    "<blockquote><b>𝗞𝗢𝗟𝗞𝗔𝗧𝗔 𝗪𝗔𝗟𝗘 𝗝𝗜𝗧𝗨 𝗕𝗛𝗔𝗜𝗬𝗔 𝗞𝗔 𝗦𝗔𝗟𝗔𝗔𝗠 🤩🤩</b></blockquote>",
+    "<blockquote><b>𝗟𝗨𝗗𝗢 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟 𝗞𝗛𝗔𝗧𝗔𝗠 ☝🏻☝🏻😬</b></blockquote>",
+    "<blockquote><b>𝗞𝗔𝗔𝗟𝗔 𝗦𝗜𝗦𝗧𝗘𝗠 𝗖𝗛𝗔𝗟 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗔𝗝</b></blockquote>",
+    "<blockquote><b>𝗨𝗹𝗹𝘂 𝗸𝗲 𝗽𝗮𝘁𝘁𝗵𝗲</b></blockquote>",
+    "<blockquote><b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b></blockquote>",
+    "<blockquote><b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b></blockquote>",
+    "<blockquote><b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b></blockquote>",
+    "<blockquote><b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b></blockquote>",
+    "<blockquote><b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b></blockquote>",
 ]
 
 ACTIVE_HOSTS = {}
@@ -243,8 +243,8 @@ async def send_first_dm_card(event):
 
     msg = (
         f"<blockquote><b>{FIRST_DM_HEADER}</b>\n\n"
-        f'• <a href="{safe_l1}">{BTN_1_TEXT}</a>\n'
-        f'• <a href="{safe_l2}">{BTN_2_TEXT}</a></blockquote>'
+        f'• <a href="{safe_l1}"><b>{BTN_1_TEXT}</b></a>\n'
+        f'• <a href="{safe_l2}"><b>{BTN_2_TEXT}</b></a></blockquote>'
     )
     await event.reply(msg, parse_mode="html", link_preview=False)
 
@@ -423,8 +423,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
         set_group_links(l1, l2)
         await event.edit(
             f"<blockquote>✅🔗 <b>𝗚𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝘂𝗽𝗱𝗮𝘁𝗲 𝗵𝗼 𝗴𝗮𝘆𝗲!</b>\n"
-            f"1️⃣ {BTN_1_TEXT}\n"
-            f"2️⃣ {BTN_2_TEXT}</blockquote>",
+            f"1️⃣ <b>{BTN_1_TEXT}</b>\n"
+            f"2️⃣ <b>{BTN_2_TEXT}</b></blockquote>",
             parse_mode="html",
         )
 
@@ -536,14 +536,14 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             if sender_id in raid_users and await _is_userbot_mentioned(event, me):
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
-                await event.reply(f"<blockquote>{reply_text}</blockquote>", parse_mode="html")
+                await event.reply(reply_text, parse_mode="html")
             return
 
         if event.is_private:
             if sender_id in raid_users:
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
-                await event.reply(f"<blockquote>{reply_text}</blockquote>", parse_mode="html")
+                await event.reply(reply_text, parse_mode="html")
                 return
 
             if sender_id not in welcomed_users:
@@ -892,8 +892,8 @@ async def setlinks_handler(event):
     set_group_links(l1, l2)
     await event.reply(
         f"<blockquote>✅🔗 <b>𝗚𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝘂𝗽𝗱𝗮𝘁𝗲 𝗵𝗼 𝗴𝗮𝘆𝗲!</b>\n"
-        f"1️⃣ {BTN_1_TEXT}\n"
-        f"2️⃣ {BTN_2_TEXT}</blockquote>",
+        f"1️⃣ <b>{BTN_1_TEXT}</b>\n"
+        f"2️⃣ <b>{BTN_2_TEXT}</b></blockquote>",
         parse_mode="html",
         link_preview=False,
     )
