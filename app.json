@@ -1,0 +1,61 @@
+{
+  "name": "Premium Userbot Hoster Bot",
+  "description": "Telegram Userbot Hoster with Force-Join Gate, Session Management, and Tagall Engine",
+  "keywords": ["telegram", "userbot", "hoster", "python", "tagall"],
+  "repository": "https://github.com/Simple-Boy-1k/userbot-hoster",
+  "stack": "container",
+  "env": {
+    "BOT_TOKEN": {
+      "description": "BotFather se mila hua Telegram Bot Token",
+      "required": true
+    },
+    "API_ID": {
+      "description": "my.telegram.org se mila hua API_ID",
+      "required": true
+    },
+    "API_HASH": {
+      "description": "my.telegram.org se mila hua API_HASH",
+      "required": true
+    },
+    "OWNER_ID": {
+      "description": "Bot Owner ka numeric Telegram User ID",
+      "required": true
+    },
+    "FORCE_JOIN_CHAT_ID": {
+      "description": "Jis group/channel ka force-join check karna hai uska chat ID (jaise -1001234567890). Khali chhodne par force-join off rahega.",
+      "required": false,
+      "value": ""
+    },
+    "FORCE_JOIN_LINK": {
+      "description": "Force-join group/channel ka invite link (jaise https://t.me/+AbCdEfGhIjK)",
+      "required": false,
+      "value": ""
+    },
+    "SUPPORT_GROUP_URL": {
+      "description": "Support / My Network group ka link",
+      "required": false,
+      "value": "https://t.me/your_support_group"
+    },
+    "START_BANNER_URL": {
+      "description": "Start message ki banner image URL ya Telegram file_id",
+      "required": false,
+      "value": ""
+    },
+    "CRAFTED_BY": {
+      "description": "Start caption mein dikhne wala creator tag",
+      "required": false,
+      "value": "•𝄞⃝𝀈 Ｓ⋏ ᰻⃪᱂ །༨ ⋏ ᰻⃪᱂ ꯭꯭᪳𝆺𝅥⍣❘꯭"
+    },
+    "MONGO_URI": {
+      "description": "Optional MongoDB connection string agar aap persistent DB use kar rahe hain",
+      "required": false,
+      "value": ""
+    }
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  }
+}
