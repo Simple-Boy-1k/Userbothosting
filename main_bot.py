@@ -98,6 +98,15 @@ except ModuleNotFoundError:
 START_TIME = time.time()
 
 
+def _normalize_tg_link(url: str) -> str:
+    clean = (url or "").strip()
+    if not clean:
+        return ""
+    if clean.startswith("t.me/") or clean.startswith("telegram.me/"):
+        return f"https://{clean}"
+    return clean
+
+
 def is_owner(uid: int) -> bool:
     return uid == OWNER_ID
 
@@ -117,8 +126,8 @@ def is_blocked(uid: int) -> bool:
 def get_force_join_config() -> tuple[int, str, str]:
     meta = get_meta_state()
     chat_id = meta.get("force_join_chat_id", DEFAULT_FORCE_JOIN_CHAT_ID)
-    join_link = meta.get("force_join_link") or DEFAULT_FORCE_JOIN_LINK
-    support_url = meta.get("support_group_url") or DEFAULT_SUPPORT_GROUP_URL or join_link
+    join_link = _normalize_tg_link(meta.get("force_join_link") or DEFAULT_FORCE_JOIN_LINK)
+    support_url = _normalize_tg_link(meta.get("support_group_url") or DEFAULT_SUPPORT_GROUP_URL or join_link)
     try:
         chat_id = int(chat_id)
     except (TypeError, ValueError):
@@ -286,10 +295,19 @@ async def host_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     _, _, support_url = get_force_join_config()
     await cancel_pending_login(uid)
-    await update.message.reply_text(
-        f'Warning Join Our Support Group!\nJoin: <a href="{support_url}">Support Group</a>\nYou can still host.',
-        parse_mode="HTML",
-    )
+
+    if support_url:
+        await update.message.reply_text(
+            f'Warning Join Our Support Group!\nJoin: <a href="{support_url}">Support Group</a>\nYou can still host.',
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💬 Support Group", url=support_url)]]),
+        )
+    else:
+        await update.message.reply_text(
+            "Warning Join Our Support Group!\nYou can still host.",
+            parse_mode="HTML",
+        )
+
     PENDING_LOGINS[uid] = {"step": "phone"}
     await update.message.reply_text("📱 Enter Phone Number (+91xxxxxxxxxx):")
 
@@ -347,8 +365,9 @@ async def support_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await guard(update, context):
         return
     _, _, support_url = get_force_join_config()
+    link_line = f"\nSupport Link: {support_url}" if support_url else ""
     await update.message.reply_text(
-        f"Support ke liye Owner ID <code>{OWNER_ID}</code> par contact karein ya group join karein: {support_url}",
+        f"Support ke liye Owner ID <code>{OWNER_ID}</code> par contact karein.{link_line}",
         parse_mode="HTML",
     )
 
@@ -365,7 +384,7 @@ async def setforce_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except ValueError:
         await update.message.reply_text("Chat ID numeric hona chahiye (jaise -1001234567890).")
         return
-    link = context.args[1].strip()
+    link = _normalize_tg_link(context.args[1])
     meta = get_meta_state()
     meta["force_join_chat_id"] = chat_id
     meta["force_join_link"] = link
@@ -383,7 +402,7 @@ async def setsupport_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text("Usage: /setsupport https://t.me/yoursupport")
         return
-    link = context.args[0].strip()
+    link = _normalize_tg_link(context.args[0])
     meta = get_meta_state()
     meta["support_group_url"] = link
     save_meta_state(meta)
