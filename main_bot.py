@@ -33,8 +33,8 @@ API_ID = int(os.getenv("API_ID", "0"))
 API_HASH = os.getenv("API_HASH", "")
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
 DEFAULT_BANNER_URL = os.getenv("START_BANNER_URL", "")
-SUPPORT_GROUP_URL = os.getenv("SUPPORT_GROUP_URL", "https://t.me/+CBnAUbPjGdlmYzBk")
-CRAFTED_BY = os.getenv("CRAFTED_BY", "@Simple_Boy_1k")
+SUPPORT_GROUP_URL = os.getenv("SUPPORT_GROUP_URL", "")
+CRAFTED_BY = os.getenv("CRAFTED_BY", "•𝄞⃝𝀈 Ｓ⋏ ᰻⃪᱂ །༨ ⋏ ᰻⃪᱂ ꯭꯭᪳𝆺𝅥⍣❘꯭")
 START_TIME = time.time()
 
 
