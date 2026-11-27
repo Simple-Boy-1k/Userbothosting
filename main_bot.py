@@ -75,7 +75,7 @@ except ModuleNotFoundError:
 
     async def logout_user_account(user_id: int):
         ACTIVE_HOSTS.pop(user_id, None)
-        return True, "Logged out."
+        return True, "<b>Success Userbot Logged Out!</b>\nUse /host to re-host."
 
     async def restore_all_saved_sessions(api_id: int, api_hash: str):
         return None
@@ -298,13 +298,13 @@ async def host_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if support_url:
         await update.message.reply_text(
-            f'Warning Join Our Support Group!\nJoin: <a href="{support_url}">Support Group</a>\nYou can still host.',
+            f'<b>Warning Join Our Support Group!</b>\nJoin: <a href="{support_url}">Support Group</a>\nYou can still host.',
             parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💬 Support Group", url=support_url)]]),
+            disable_web_page_preview=True,
         )
     else:
         await update.message.reply_text(
-            "Warning Join Our Support Group!\nYou can still host.",
+            "<b>Warning Join Our Support Group!</b>\nYou can still host.",
             parse_mode="HTML",
         )
 
@@ -339,7 +339,7 @@ async def text_step_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if step == "phone":
         ok, res = await send_login_code(uid, text, API_ID, API_HASH)
-        await update.message.reply_text(res)
+        await update.message.reply_text(res, parse_mode="HTML")
         if not ok:
             PENDING_LOGINS.pop(uid, None)
 
@@ -347,14 +347,14 @@ async def text_step_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         status, res = await submit_otp_code(uid, text, API_ID, API_HASH)
         if status == "done":
             wait_msg = await update.message.reply_text("🛸 Hosting userbot, please wait...")
-            await wait_msg.edit_text(res)
+            await wait_msg.edit_text(res, parse_mode="HTML")
         else:
-            await update.message.reply_text(res)
+            await update.message.reply_text(res, parse_mode="HTML")
 
     elif step == "2fa":
         wait_msg = await update.message.reply_text("🛸 Hosting userbot, please wait...")
         status, res = await submit_2fa_password(uid, text, API_ID, API_HASH)
-        await wait_msg.edit_text(res)
+        await wait_msg.edit_text(res, parse_mode="HTML")
         try:
             await update.message.delete()
         except Exception:
@@ -365,10 +365,11 @@ async def support_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await guard(update, context):
         return
     _, _, support_url = get_force_join_config()
-    link_line = f"\nSupport Link: {support_url}" if support_url else ""
+    link_line = f'\nJoin: <a href="{support_url}">Support Group</a>' if support_url else ""
     await update.message.reply_text(
-        f"Support ke liye Owner ID <code>{OWNER_ID}</code> par contact karein.{link_line}",
+        f"Support ke liye Owner ID {OWNER_ID} par contact karein.{link_line}",
         parse_mode="HTML",
+        disable_web_page_preview=True,
     )
 
 
@@ -390,8 +391,9 @@ async def setforce_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     meta["force_join_link"] = link
     save_meta_state(meta)
     await update.message.reply_text(
-        f"Force-Join updated:\n• Chat ID: <code>{chat_id}</code>\n• Link: {link}",
+        f'Force-Join updated:\n• Chat ID: {chat_id}\n• Link: <a href="{link}">Support Group</a>',
         parse_mode="HTML",
+        disable_web_page_preview=True,
     )
 
 
@@ -406,7 +408,11 @@ async def setsupport_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     meta = get_meta_state()
     meta["support_group_url"] = link
     save_meta_state(meta)
-    await update.message.reply_text(f"Support link updated: {link}")
+    await update.message.reply_text(
+        f'Support link updated: <a href="{link}">Support Group</a>',
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+    )
 
 
 async def restart_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -420,7 +426,7 @@ async def restart_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     msg = await update.message.reply_text("Processing Restarting Userbot...")
     _, res = await restart_user_account(uid, API_ID, API_HASH)
-    await msg.edit_text(res)
+    await msg.edit_text(res, parse_mode="HTML")
 
 
 async def supportraid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -472,7 +478,7 @@ async def logout_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await guard(update, context):
         return
     ok, res = await logout_user_account(update.effective_user.id)
-    await update.message.reply_text(res)
+    await update.message.reply_text(res, parse_mode="HTML")
 
 
 async def sudolist_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
