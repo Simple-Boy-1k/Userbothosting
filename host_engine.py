@@ -21,7 +21,7 @@ BTN_2_TEXT = "🔥 <b>𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮</b>"
 FIRST_DM_HEADER = "🖤 <b>𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖</b> — <b>𝗚𝗼𝗼𝗱 𝗩𝗶𝗯𝗲𝘀, 𝗖𝗿𝗮𝘇𝘆 𝗣𝗲𝗼𝗽𝗹𝗲 &amp; 𝗨𝗻𝗹𝗶𝗺𝗶𝘁𝗲𝗱 𝗙𝘂𝗻!</b> 😎"
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
-TAG_DELAY_SECONDS = 1.2
+TAG_DELAY_SECONDS = 0.35
 
 RANDOM_MESSAGES = [
     "<b>𝐓𝐄𝐑𝐀 𝐏𝐄𝐇𝐋𝐀 𝐁𝐀𝐀𝐏 𝐇𝐔 𝐌𝐀𝐃𝐀𝐑𝐂𝐇𝐎𝐃</b>",
@@ -407,6 +407,7 @@ async def _run_tagall_in_chat(
     chat_id: int,
     tagging_chats: set,
     tag_text: str = "Hii",
+    status_event=None,
 ):
     if chat_id in tagging_chats:
         return
@@ -429,13 +430,20 @@ async def _run_tagall_in_chat(
             )
             return
 
-        await client.send_message(
-            chat_id,
-            f"<blockquote>🚀✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗮𝗿𝘁𝗲𝗱!</b>\n💬 <b>𝗠𝗲𝘀𝘀𝗮𝗴𝗲:</b> <b>{clean_tag_text}</b>\n👥 <b>𝗧𝗼𝘁𝗮𝗹 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{total_count}</code></blockquote>",
-            parse_mode="html",
+        start_text = (
+            f"<blockquote>🚀✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗮𝗿𝘁𝗲𝗱!</b>\n"
+            f"💬 <b>𝗠𝗲𝘀𝘀𝗮𝗴𝗲:</b> <b>{clean_tag_text}</b>\n"
+            f"👥 <b>𝗧𝗼𝘁𝗮𝗹 𝗠𝗲𝗺𝗯𝗲𝗿𝘀:</b> <code>{total_count}</code></blockquote>"
         )
+        if status_event is not None:
+            try:
+                await status_event.edit(start_text, parse_mode="html")
+            except Exception:
+                await client.send_message(chat_id, start_text, parse_mode="html")
+        else:
+            await client.send_message(chat_id, start_text, parse_mode="html")
 
-        # Ek-ek karke (1 member per message) custom text ke saath tag karega
+        # Turant ek-ek karke (1 member per message) custom text ke saath tag karega
         for uid, uname in targets:
             if chat_id not in tagging_chats:
                 stopped_early = True
@@ -517,20 +525,20 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             await event.edit("<blockquote>⏳ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴𝗮𝗹𝗹 𝗽𝗲𝗵𝗹𝗲 𝘀𝗲 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
             return
         tag_text = _extract_tag_text(event.raw_text or "")
-        try:
-            await event.delete()
-        except Exception:
-            pass
-        await _run_tagall_in_chat(client, event.chat_id, tagging_chats, tag_text=tag_text)
+        # Command message delete nahi hoga; turant start karke aage tag chalega
+        await _run_tagall_in_chat(
+            client,
+            event.chat_id,
+            tagging_chats,
+            tag_text=tag_text,
+            status_event=event,
+        )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
     async def stoptagall_cmd(event):
         if event.chat_id in tagging_chats:
             tagging_chats.discard(event.chat_id)
-            try:
-                await event.delete()
-            except Exception:
-                pass
+            await event.edit("<blockquote>🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗿𝗼𝗸 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b></blockquote>", parse_mode="html")
         else:
             await event.edit("<blockquote>ℹ️ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗸𝗼𝗶 𝗮𝗰𝘁𝗶𝘃𝗲 𝘁𝗮𝗴𝗮𝗹𝗹 𝗻𝗮𝗵𝗶 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮.</b></blockquote>", parse_mode="html")
 
