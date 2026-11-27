@@ -6,7 +6,13 @@ import re
 from pathlib import Path
 from pymongo import MongoClient
 from telethon import TelegramClient, events, functions, types
-from telethon.errors import FloodWaitError, PhoneNumberInvalidError, SessionPasswordNeededError
+from telethon.errors import (
+    FloodWaitError,
+    PeerIdInvalidError,
+    PhoneNumberInvalidError,
+    SessionPasswordNeededError,
+    UserDeactivatedBanError,
+)
 from telethon.sessions import StringSession
 
 STORE_FILE = Path("hoster_data.json")
@@ -96,9 +102,13 @@ def _get_db():
     uri = os.getenv("MONGO_URI", "").strip()
     if not uri:
         return None
-    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-    _db = client["zudo_hoster_db"]
-    return _db
+    try:
+        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        client.admin.command("ping")
+        _db = client["zudo_hoster_db"]
+        return _db
+    except Exception:
+        return None
 
 
 def _default_local_store() -> dict:
@@ -132,12 +142,15 @@ def _save_local(data: dict):
 def save_session(user_id: int, string_session: str):
     db = _get_db()
     if db is not None:
-        db["sessions"].update_one(
-            {"_id": str(user_id)},
-            {"$set": {"user_id": int(user_id), "session": string_session}},
-            upsert=True,
-        )
-        return
+        try:
+            db["sessions"].update_one(
+                {"_id": str(user_id)},
+                {"$set": {"user_id": int(user_id), "session": string_session}},
+                upsert=True,
+            )
+            return
+        except Exception:
+            pass
     data = _load_local()
     data["sessions"][str(user_id)] = string_session
     _save_local(data)
@@ -146,8 +159,11 @@ def save_session(user_id: int, string_session: str):
 def delete_session(user_id: int):
     db = _get_db()
     if db is not None:
-        db["sessions"].delete_one({"_id": str(user_id)})
-        return
+        try:
+            db["sessions"].delete_one({"_id": str(user_id)})
+            return
+        except Exception:
+            pass
     data = _load_local()
     data["sessions"].pop(str(user_id), None)
     _save_local(data)
@@ -156,13 +172,17 @@ def delete_session(user_id: int):
 def load_all_sessions() -> dict[int, str]:
     db = _get_db()
     if db is not None:
-        out = {}
-        for doc in db["sessions"].find({}):
-            uid = doc.get("user_id") or doc.get("_id")
-            sess = doc.get("session")
-            if uid and sess and str(uid).isdigit():
-                out[int(uid)] = sess
-        return out
+        try:
+            out = {}
+            for doc in db["sessions"].find({}):
+                uid = doc.get("user_id") or doc.get("_id")
+                sess = doc.get("session")
+                if uid and sess and str(uid).isdigit():
+                    out[int(uid)] = sess
+            if out:
+                return out
+        except Exception:
+            pass
     data = _load_local()
     return {int(k): v for k, v in data.get("sessions", {}).items() if str(k).isdigit() and v}
 
@@ -170,18 +190,21 @@ def load_all_sessions() -> dict[int, str]:
 def get_meta_state() -> dict:
     db = _get_db()
     if db is not None:
-        doc = db["meta"].find_one({"_id": "config"}) or {}
-        links = list(doc.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
-        while len(links) < 2:
-            links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
-        return {
-            "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
-            "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
-            "dp_url": str(doc.get("dp_url") or ""),
-            "secret_mode": bool(doc.get("secret_mode", False)),
-            "group_links": [str(links[0]), str(links[1])],
-            "verified_users": list(dict.fromkeys(int(x) for x in doc.get("verified_users", []) if str(x).isdigit())),
-        }
+        try:
+            doc = db["meta"].find_one({"_id": "config"}) or {}
+            links = list(doc.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
+            while len(links) < 2:
+                links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
+            return {
+                "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
+                "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
+                "dp_url": str(doc.get("dp_url") or ""),
+                "secret_mode": bool(doc.get("secret_mode", False)),
+                "group_links": [str(links[0]), str(links[1])],
+                "verified_users": list(dict.fromkeys(int(x) for x in doc.get("verified_users", []) if str(x).isdigit())),
+            }
+        except Exception:
+            pass
     data = _load_local()
     links = list(data.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
     while len(links) < 2:
@@ -210,8 +233,10 @@ def save_meta_state(meta: dict):
     }
     db = _get_db()
     if db is not None:
-        db["meta"].update_one({"_id": "config"}, {"$set": clean}, upsert=True)
-        return
+        try:
+            db["meta"].update_one({"_id": "config"}, {"$set": clean}, upsert=True)
+        except Exception:
+            pass
     data = _load_local()
     data.update(clean)
     _save_local(data)
@@ -387,17 +412,16 @@ async def _collect_group_targets(client: TelegramClient, chat_id: int) -> list[t
     except Exception:
         pass
 
-    if not targets:
-        try:
-            async for msg in client.iter_messages(chat_id, limit=200):
-                sender = msg.sender
-                if not sender or getattr(sender, "bot", False) or getattr(sender, "deleted", False):
-                    continue
-                if sender.id and sender.id != my_id and sender.id not in seen_ids:
-                    seen_ids.add(sender.id)
-                    targets.append((sender.id, _clean_mention_name(sender)))
-        except Exception:
-            pass
+    try:
+        async for msg in client.iter_messages(chat_id, limit=500):
+            sender = msg.sender
+            if not sender or getattr(sender, "bot", False) or getattr(sender, "deleted", False):
+                continue
+            if sender.id and sender.id != my_id and sender.id not in seen_ids:
+                seen_ids.add(sender.id)
+                targets.append((sender.id, _clean_mention_name(sender)))
+    except Exception:
+        pass
 
     return targets
 
@@ -408,6 +432,7 @@ async def _run_tagall_in_chat(
     tagging_chats: set,
     tag_text: str = "Hii",
     status_event=None,
+    owner_user_id: int | None = None,
 ):
     if chat_id in tagging_chats:
         return
@@ -443,17 +468,36 @@ async def _run_tagall_in_chat(
         else:
             await client.send_message(chat_id, start_text, parse_mode="html")
 
-        # Turant ek-ek karke (1 member per message) custom text ke saath tag karega
+        # Hosted userbot apne hi account se 1-by-1 poore GC ko tag karega; errors par loop nahi rukega
         for uid, uname in targets:
             if chat_id not in tagging_chats:
                 stopped_early = True
                 break
-            await client.send_message(
-                chat_id,
-                f'<blockquote>✨ <b><a href="tg://user?id={uid}">{uname}</a></b> — <b>{clean_tag_text}</b></blockquote>',
-                parse_mode="html",
-            )
-            tagged_count += 1
+
+            payload = f'<blockquote>✨ <b><a href="tg://user?id={uid}">{uname}</a></b> — <b>{clean_tag_text}</b></blockquote>'
+            while True:
+                if chat_id not in tagging_chats:
+                    stopped_early = True
+                    break
+                try:
+                    await client.send_message(chat_id, payload, parse_mode="html")
+                    tagged_count += 1
+                    break
+                except FloodWaitError as fw:
+                    await asyncio.sleep(int(fw.seconds) + 2)
+                except UserDeactivatedBanError:
+                    tagging_chats.discard(chat_id)
+                    if owner_user_id is not None:
+                        ACTIVE_HOSTS.pop(owner_user_id, None)
+                    return
+                except PeerIdInvalidError:
+                    break
+                except Exception:
+                    await asyncio.sleep(0.5)
+                    break
+
+            if stopped_early:
+                break
             await asyncio.sleep(TAG_DELAY_SECONDS)
 
         status_title = "🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗼𝗽𝗽𝗲𝗱!</b>" if stopped_early else "✅🎉 <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗲𝗱!</b>"
@@ -497,6 +541,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     raid_users = host_state["raid_users"]
     tagging_chats = host_state["tagging"]
     welcomed_users = host_state["welcomed_users"]
+    owner_user_id = host_state.get("owner_user_id")
     me = await client.get_me()
     my_id = me.id if me else 0
 
@@ -525,13 +570,13 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             await event.edit("<blockquote>⏳ <b>𝗜𝘀 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝘁𝗮𝗴𝗮𝗹𝗹 𝗽𝗲𝗵𝗹𝗲 𝘀𝗲 𝗰𝗵𝗮𝗹 𝗿𝗮𝗵𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
             return
         tag_text = _extract_tag_text(event.raw_text or "")
-        # Command message delete nahi hoga; turant start karke aage tag chalega
         await _run_tagall_in_chat(
             client,
             event.chat_id,
             tagging_chats,
             tag_text=tag_text,
             status_event=event,
+            owner_user_id=owner_user_id,
         )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
@@ -615,11 +660,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             txt = (event.raw_text or "").strip().lower()
             if txt == "stop tagall":
                 tagging_chats.discard(event.chat_id)
-                return
-
-            if re.match(r"^[.]?tagall(?:\s+.*)?$", (event.raw_text or "").strip(), flags=re.IGNORECASE):
-                tag_text = _extract_tag_text(event.raw_text or "")
-                await _run_tagall_in_chat(client, event.chat_id, tagging_chats, tag_text=tag_text)
                 return
 
             if sender_id in raid_users and await _is_userbot_mentioned(event, me):
@@ -706,6 +746,7 @@ async def start_client_from_session(
         VERIFIED_JOIN_USERS.update(meta.get("verified_users", []))
 
         host_state = {
+            "owner_user_id": int(user_id),
             "client": client,
             "session": cleaned,
             "raid_users": set(),
