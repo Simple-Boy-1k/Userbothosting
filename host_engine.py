@@ -6,13 +6,7 @@ import re
 from pathlib import Path
 from pymongo import MongoClient
 from telethon import TelegramClient, events, functions, types
-from telethon.errors import (
-    FloodWaitError,
-    PeerIdInvalidError,
-    PhoneNumberInvalidError,
-    SessionPasswordNeededError,
-    UserDeactivatedBanError,
-)
+from telethon.errors import FloodWaitError, PhoneNumberInvalidError, SessionPasswordNeededError
 from telethon.sessions import StringSession
 
 STORE_FILE = Path("hoster_data.json")
@@ -42,7 +36,7 @@ RANDOM_MESSAGES = [
     "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
     "<b>𝐒𝐀𝐁 𝐁𝐎𝐋𝐓𝐄 𝐌𝐔𝐉𝐇𝐊𝐎 𝐏𝐀𝐏𝐀 𝐊𝐘𝐎𝐔𝐍𝐊𝐈 𝐌𝐄𝐍𝐄 𝐁𝐀𝐍𝐀𝐃𝐈𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐏𝐑𝐄𝐆𝐍𝐄𝐍𝐓 🤣🤣</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄 𝐒𝐔𝐓𝐋𝐈 𝐁𝐎𝐌𝐁 𝐅𝐎𝐃 𝐃𝐔𝐍𝐆𝐀 𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐉𝐇𝐀𝐀𝐓𝐄 𝐉𝐀𝐋 𝐊𝐄 𝐊𝐇𝐀𝐀𝐊 𝐇𝐎 𝐉𝐀𝐘𝐄𝐆𝐈 💣</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
     "<b>𝐀𝐩𝐧𝐢 𝐠𝐚𝐚𝐧𝐝 𝐦𝐞𝐢𝐧 𝐦𝐮𝐭𝐡𝐢 𝐝𝐚𝐚𝐥</b>",
     "<b>𝐉𝐡𝐚𝐚𝐧𝐭 𝐤𝐞 𝐩𝐢𝐬𝐬𝐮-</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐄 𝐁𝐇𝐎𝐒𝐃𝐄 𝐌𝐄 𝐀𝐀𝐀𝐆 𝐋𝐀𝐆𝐀𝐃𝐈𝐀 𝐌𝐄𝐑𝐀 𝐌𝐎𝐓𝐀 𝐋𝐔𝐍𝐃 𝐃𝐀𝐋𝐊𝐄 🔥🔥💦😆😆</b>",
@@ -50,8 +44,8 @@ RANDOM_MESSAGES = [
     "<b>𝐓𝐄𝐑𝐈 𝐁𝐄𝐇𝐄𝐍 𝐊𝐎𝐓𝐎 𝐂𝐇𝐎𝐃 𝐂𝐇𝐎𝐃𝐊𝐄 𝐏𝐔𝐑𝐀 𝐅𝐀𝐀𝐃 𝐃𝐈𝐀 𝐂𝐇𝐔𝐓𝐇 𝐀𝐁𝐁 𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊𝐎 𝐁𝐇𝐄𝐉 😆💦🤤</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐆𝐅 𝐊 𝐒𝐀𝐀𝐓𝐇 𝐌𝐌𝐒 𝐁𝐀𝐍𝐀𝐀 𝐂𝐇𝐔𝐊𝐀 𝐇𝐔</b>",
     "<b>𝐊𝐈𝐒𝐀𝐍 𝐊𝐎 𝐊𝐇𝐎𝐃𝐍𝐀 𝐎𝐑</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
-    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐂𝐑𝐄𝐃𝐈𝐓 𝐂𝐀𝐑𝐃 𝐃𝐀𝐋 𝐊𝐄 𝐀𝐆𝐄 𝐒𝐄 500 𝐊𝐄 𝐊𝐀𝐀𝐑𝐄 𝐍𝐎𝐓𝐄 𝐍𝐈𝐊𝐀𝐋𝐔𝐍𝐆𝐀𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄 💰💰🤩</b>",
+    "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀 𝐊𝐈 𝐂𝐇𝐔𝐓 𝐌𝐄𝐈 𝐒𝐔𝐃𝐎 𝐋𝐀𝐆𝐀 𝐊𝐄 𝐁𝐈𝐆𝐒𝐏𝐀𝐌 𝐋𝐀𝐆𝐀 𝐊𝐄 𝟗𝟗𝟗𝟗 𝐅𝐔𝐂𝐊 𝐋𝐀𝐆𝐀𝐀 𝐃𝐔 🤩🥳🔥</b>",
     "<b>𝐓𝐔𝐉𝐇𝐄 𝐀𝐁 𝐓𝐀𝐊 𝐍𝐀𝐇𝐈 𝐒𝐌𝐉𝐇 𝐀𝐘𝐀 𝐊𝐈 𝐌𝐀𝐈 𝐇𝐈 𝐇𝐔 𝐓𝐔𝐉𝐇𝐄 𝐏𝐀𝐈𝐃𝐀 𝐊𝐀𝐑𝐍𝐄 𝐖𝐀𝐋𝐀 𝐁𝐇𝐎𝐒𝐃𝐈𝐊𝐄𝐄 𝐀𝐏𝐍𝐈 𝐌𝐀𝐀 𝐒𝐄 𝐏𝐔𝐂𝐇 𝐑𝐀𝐍𝐃𝐈 𝐊𝐄 𝐁𝐀𝐂𝐇𝐄𝐄𝐄𝐄 🤩👊👤😍</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐌𝐀𝐀𝐊𝐎 𝐊𝐇𝐔𝐋𝐄 𝐁𝐀𝐉𝐀𝐑 𝐌𝐄 𝐂𝐇𝐎𝐃 𝐃𝐀𝐋𝐀 🤣🤣💋</b>",
     "<b>𝐓𝐄𝐑𝐈 𝐁𝐀𝐇𝐄𝐍 𝐊𝐈 𝐆𝐀𝐀𝐍𝐃 𝐌𝐄𝐈 𝐎𝐍𝐄𝐏𝐋𝐔𝐒 𝐊𝐀 𝐖𝐑𝐀𝐏 𝐂𝐇𝐀𝐑𝐆𝐄𝐑 30𝐖 𝐇𝐈𝐆𝐇 𝐏𝐎𝐖𝐄𝐑 💥😂😎</b>",
@@ -90,7 +84,6 @@ RANDOM_MESSAGES = [
 
 ACTIVE_HOSTS = {}
 PENDING_LOGINS = {}
-VERIFIED_JOIN_USERS = set()
 
 _db = None
 
@@ -102,13 +95,9 @@ def _get_db():
     uri = os.getenv("MONGO_URI", "").strip()
     if not uri:
         return None
-    try:
-        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-        client.admin.command("ping")
-        _db = client["zudo_hoster_db"]
-        return _db
-    except Exception:
-        return None
+    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+    _db = client["zudo_hoster_db"]
+    return _db
 
 
 def _default_local_store() -> dict:
@@ -119,7 +108,6 @@ def _default_local_store() -> dict:
         "dp_url": "",
         "secret_mode": False,
         "group_links": [GROUP_LINK_1, GROUP_LINK_2],
-        "verified_users": [],
     }
 
 
@@ -142,15 +130,12 @@ def _save_local(data: dict):
 def save_session(user_id: int, string_session: str):
     db = _get_db()
     if db is not None:
-        try:
-            db["sessions"].update_one(
-                {"_id": str(user_id)},
-                {"$set": {"user_id": int(user_id), "session": string_session}},
-                upsert=True,
-            )
-            return
-        except Exception:
-            pass
+        db["sessions"].update_one(
+            {"_id": str(user_id)},
+            {"$set": {"user_id": int(user_id), "session": string_session}},
+            upsert=True,
+        )
+        return
     data = _load_local()
     data["sessions"][str(user_id)] = string_session
     _save_local(data)
@@ -159,11 +144,8 @@ def save_session(user_id: int, string_session: str):
 def delete_session(user_id: int):
     db = _get_db()
     if db is not None:
-        try:
-            db["sessions"].delete_one({"_id": str(user_id)})
-            return
-        except Exception:
-            pass
+        db["sessions"].delete_one({"_id": str(user_id)})
+        return
     data = _load_local()
     data["sessions"].pop(str(user_id), None)
     _save_local(data)
@@ -172,17 +154,13 @@ def delete_session(user_id: int):
 def load_all_sessions() -> dict[int, str]:
     db = _get_db()
     if db is not None:
-        try:
-            out = {}
-            for doc in db["sessions"].find({}):
-                uid = doc.get("user_id") or doc.get("_id")
-                sess = doc.get("session")
-                if uid and sess and str(uid).isdigit():
-                    out[int(uid)] = sess
-            if out:
-                return out
-        except Exception:
-            pass
+        out = {}
+        for doc in db["sessions"].find({}):
+            uid = doc.get("user_id") or doc.get("_id")
+            sess = doc.get("session")
+            if uid and sess and str(uid).isdigit():
+                out[int(uid)] = sess
+        return out
     data = _load_local()
     return {int(k): v for k, v in data.get("sessions", {}).items() if str(k).isdigit() and v}
 
@@ -190,21 +168,17 @@ def load_all_sessions() -> dict[int, str]:
 def get_meta_state() -> dict:
     db = _get_db()
     if db is not None:
-        try:
-            doc = db["meta"].find_one({"_id": "config"}) or {}
-            links = list(doc.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
-            while len(links) < 2:
-                links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
-            return {
-                "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
-                "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
-                "dp_url": str(doc.get("dp_url") or ""),
-                "secret_mode": bool(doc.get("secret_mode", False)),
-                "group_links": [str(links[0]), str(links[1])],
-                "verified_users": list(dict.fromkeys(int(x) for x in doc.get("verified_users", []) if str(x).isdigit())),
-            }
-        except Exception:
-            pass
+        doc = db["meta"].find_one({"_id": "config"}) or {}
+        links = list(doc.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
+        while len(links) < 2:
+            links.append(GROUP_LINK_2 if len(links) == 1 else GROUP_LINK_1)
+        return {
+            "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
+            "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
+            "dp_url": str(doc.get("dp_url") or ""),
+            "secret_mode": bool(doc.get("secret_mode", False)),
+            "group_links": [str(links[0]), str(links[1])],
+        }
     data = _load_local()
     links = list(data.get("group_links") or [GROUP_LINK_1, GROUP_LINK_2])
     while len(links) < 2:
@@ -215,7 +189,6 @@ def get_meta_state() -> dict:
         "dp_url": str(data.get("dp_url") or ""),
         "secret_mode": bool(data.get("secret_mode", False)),
         "group_links": [str(links[0]), str(links[1])],
-        "verified_users": list(dict.fromkeys(int(x) for x in data.get("verified_users", []) if str(x).isdigit())),
     }
 
 
@@ -229,14 +202,11 @@ def save_meta_state(meta: dict):
         "dp_url": str(meta.get("dp_url") or ""),
         "secret_mode": bool(meta.get("secret_mode", False)),
         "group_links": [str(links[0]), str(links[1])],
-        "verified_users": list(dict.fromkeys(int(x) for x in meta.get("verified_users", []) if str(x).isdigit())),
     }
     db = _get_db()
     if db is not None:
-        try:
-            db["meta"].update_one({"_id": "config"}, {"$set": clean}, upsert=True)
-        except Exception:
-            pass
+        db["meta"].update_one({"_id": "config"}, {"$set": clean}, upsert=True)
+        return
     data = _load_local()
     data.update(clean)
     _save_local(data)
@@ -256,24 +226,6 @@ def get_active_group_links() -> tuple[str, str]:
     return meta["group_links"][0], meta["group_links"][1]
 
 
-def mark_user_verified(user_id: int):
-    VERIFIED_JOIN_USERS.add(int(user_id))
-    meta = get_meta_state()
-    if int(user_id) not in meta["verified_users"]:
-        meta["verified_users"].append(int(user_id))
-        save_meta_state(meta)
-
-
-def is_user_verified(user_id: int) -> bool:
-    if int(user_id) in VERIFIED_JOIN_USERS:
-        return True
-    meta = get_meta_state()
-    if int(user_id) in meta["verified_users"]:
-        VERIFIED_JOIN_USERS.add(int(user_id))
-        return True
-    return False
-
-
 def _escape_html(text: str) -> str:
     return (
         text.replace("&", "&amp;")
@@ -281,20 +233,6 @@ def _escape_html(text: str) -> str:
         .replace(">", "&gt;")
         .replace('"', "&quot;")
     )
-
-
-async def send_force_join_prompt(event):
-    link_1, link_2 = get_active_group_links()
-    safe_l1 = _escape_html(link_1)
-    safe_l2 = _escape_html(link_2)
-
-    msg = (
-        f"<blockquote><b>🔒✨ 𝗣𝗘𝗛𝗟𝗘 𝗗𝗢𝗡𝗢 𝗚𝗥𝗢𝗨𝗣𝗦 𝗣𝗘 𝗝𝗢𝗜𝗡 / 𝗥𝗘𝗤𝗨𝗘𝗦𝗧 𝗗𝗔𝗔𝗟𝗘𝗜𝗡!</b>\n\n"
-        f'• <a href="{safe_l1}">{BTN_1_TEXT}</a>\n'
-        f'• <a href="{safe_l2}">{BTN_2_TEXT}</a>\n\n'
-        f"✅ <b>𝗗𝗼𝗻𝗼 𝗽𝗲 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗱𝗮𝗮𝗹𝗻𝗲 𝗸𝗲 𝗯𝗮𝗮𝗱 <code>check joined</code> 𝗹𝗶𝗸𝗵𝗲𝗶𝗻!</b></blockquote>"
-    )
-    await event.reply(msg, parse_mode="html", link_preview=False)
 
 
 async def send_first_dm_card(event):
@@ -308,57 +246,6 @@ async def send_first_dm_card(event):
         f'• <a href="{safe_l2}">{BTN_2_TEXT}</a></blockquote>'
     )
     await event.reply(msg, parse_mode="html", link_preview=False)
-
-
-async def _check_single_link_joined_or_requested(client: TelegramClient, user_id: int, link: str) -> bool:
-    raw = (link or "").strip()
-    if not raw:
-        return True
-
-    try:
-        if "/+" in raw or "joinchat/" in raw:
-            invite_hash = (
-                raw.split("/+", 1)[1].split("?", 1)[0].strip()
-                if "/+" in raw
-                else raw.split("joinchat/", 1)[1].split("?", 1)[0].strip()
-            )
-            info = await client(functions.messages.CheckChatInviteRequest(hash=invite_hash))
-            chat_obj = getattr(info, "chat", None)
-            if chat_obj:
-                try:
-                    await client.get_permissions(chat_obj, user_id)
-                    return True
-                except Exception:
-                    pass
-                try:
-                    reqs = await client(
-                        functions.messages.GetChatInviteRequestsRequest(
-                            peer=chat_obj,
-                            limit=50,
-                        )
-                    )
-                    for r in getattr(reqs, "requests", []) or []:
-                        if getattr(r, "user_id", None) == user_id:
-                            return True
-                except Exception:
-                    pass
-            return False
-        else:
-            entity = await client.get_entity(raw)
-            try:
-                await client.get_permissions(entity, user_id)
-                return True
-            except Exception:
-                return False
-    except Exception:
-        return False
-
-
-async def verify_both_groups_for_user(client: TelegramClient, user_id: int) -> tuple[bool, bool, bool]:
-    link_1, link_2 = get_active_group_links()
-    ok1 = await _check_single_link_joined_or_requested(client, user_id, link_1)
-    ok2 = await _check_single_link_joined_or_requested(client, user_id, link_2)
-    return (ok1 and ok2), ok1, ok2
 
 
 def pick_random_message(host_state: dict, target_id: int) -> str:
@@ -412,16 +299,17 @@ async def _collect_group_targets(client: TelegramClient, chat_id: int) -> list[t
     except Exception:
         pass
 
-    try:
-        async for msg in client.iter_messages(chat_id, limit=500):
-            sender = msg.sender
-            if not sender or getattr(sender, "bot", False) or getattr(sender, "deleted", False):
-                continue
-            if sender.id and sender.id != my_id and sender.id not in seen_ids:
-                seen_ids.add(sender.id)
-                targets.append((sender.id, _clean_mention_name(sender)))
-    except Exception:
-        pass
+    if not targets:
+        try:
+            async for msg in client.iter_messages(chat_id, limit=200):
+                sender = msg.sender
+                if not sender or getattr(sender, "bot", False) or getattr(sender, "deleted", False):
+                    continue
+                if sender.id and sender.id != my_id and sender.id not in seen_ids:
+                    seen_ids.add(sender.id)
+                    targets.append((sender.id, _clean_mention_name(sender)))
+        except Exception:
+            pass
 
     return targets
 
@@ -432,7 +320,6 @@ async def _run_tagall_in_chat(
     tagging_chats: set,
     tag_text: str = "Hii",
     status_event=None,
-    owner_user_id: int | None = None,
 ):
     if chat_id in tagging_chats:
         return
@@ -468,36 +355,16 @@ async def _run_tagall_in_chat(
         else:
             await client.send_message(chat_id, start_text, parse_mode="html")
 
-        # Hosted userbot apne hi account se 1-by-1 poore GC ko tag karega; errors par loop nahi rukega
         for uid, uname in targets:
             if chat_id not in tagging_chats:
                 stopped_early = True
                 break
-
-            payload = f'<blockquote>✨ <b><a href="tg://user?id={uid}">{uname}</a></b> — <b>{clean_tag_text}</b></blockquote>'
-            while True:
-                if chat_id not in tagging_chats:
-                    stopped_early = True
-                    break
-                try:
-                    await client.send_message(chat_id, payload, parse_mode="html")
-                    tagged_count += 1
-                    break
-                except FloodWaitError as fw:
-                    await asyncio.sleep(int(fw.seconds) + 2)
-                except UserDeactivatedBanError:
-                    tagging_chats.discard(chat_id)
-                    if owner_user_id is not None:
-                        ACTIVE_HOSTS.pop(owner_user_id, None)
-                    return
-                except PeerIdInvalidError:
-                    break
-                except Exception:
-                    await asyncio.sleep(0.5)
-                    break
-
-            if stopped_early:
-                break
+            await client.send_message(
+                chat_id,
+                f'<blockquote>✨ <b><a href="tg://user?id={uid}">{uname}</a></b> — <b>{clean_tag_text}</b></blockquote>',
+                parse_mode="html",
+            )
+            tagged_count += 1
             await asyncio.sleep(TAG_DELAY_SECONDS)
 
         status_title = "🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗦𝘁𝗼𝗽𝗽𝗲𝗱!</b>" if stopped_early else "✅🎉 <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗲𝗱!</b>"
@@ -541,7 +408,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     raid_users = host_state["raid_users"]
     tagging_chats = host_state["tagging"]
     welcomed_users = host_state["welcomed_users"]
-    owner_user_id = host_state.get("owner_user_id")
     me = await client.get_me()
     my_id = me.id if me else 0
 
@@ -576,7 +442,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             tagging_chats,
             tag_text=tag_text,
             status_event=event,
-            owner_user_id=owner_user_id,
         )
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
@@ -662,6 +527,11 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
                 tagging_chats.discard(event.chat_id)
                 return
 
+            if re.match(r"^[.]?tagall(?:\s+.*)?$", (event.raw_text or "").strip(), flags=re.IGNORECASE):
+                tag_text = _extract_tag_text(event.raw_text or "")
+                await _run_tagall_in_chat(client, event.chat_id, tagging_chats, tag_text=tag_text)
+                return
+
             if sender_id in raid_users and await _is_userbot_mentioned(event, me):
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
@@ -669,34 +539,6 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             return
 
         if event.is_private:
-            raw_txt = (event.raw_text or "").strip().lower()
-
-            if raw_txt in {"check joined", ".checkjoined", "joined"}:
-                both_ok, g1_ok, g2_ok = await verify_both_groups_for_user(client, sender_id)
-                if both_ok:
-                    mark_user_verified(sender_id)
-                    welcomed_users.add(sender_id)
-                    await event.reply(
-                        "<blockquote>✅🎉 <b>𝗗𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽𝘀 𝗽𝗲 𝗷𝗼𝗶𝗻 / 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝘃𝗲𝗿𝗶𝗳𝘆 𝗵𝗼 𝗴𝗮𝘆𝗮! 𝗔𝗯 𝗮𝗮𝗴𝗲 𝗸𝗮 𝗮𝗰𝗰𝗲𝘀𝘀 𝗼𝗽𝗲𝗻 𝗵𝗮𝗶.</b></blockquote>",
-                        parse_mode="html",
-                    )
-                    await send_first_dm_card(event)
-                else:
-                    s1 = "✅" if g1_ok else "❌"
-                    s2 = "✅" if g2_ok else "❌"
-                    await event.reply(
-                        f"<blockquote>⚠️ <b>𝗣𝗲𝗵𝗹𝗲 𝗱𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽𝘀 𝗽𝗲 𝗷𝗼𝗶𝗻 / 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗱𝗮𝗮𝗹𝗲𝗶𝗻:</b>\n"
-                        f"{s1} {BTN_1_TEXT}\n"
-                        f"{s2} {BTN_2_TEXT}\n\n"
-                        f"👉 <b>𝗗𝗼𝗻𝗼 𝗸𝗲 𝗯𝗮𝗮𝗱 <code>check joined</code> 𝗯𝗵𝗲𝗷𝗲𝗶𝗻!</b></blockquote>",
-                        parse_mode="html",
-                    )
-                return
-
-            if not is_user_verified(sender_id) and raw_txt in {"/start", "start", "hi", "hii", "hello", "hey"}:
-                await send_force_join_prompt(event)
-                return
-
             if sender_id in raid_users:
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
@@ -743,10 +585,8 @@ async def start_client_from_session(
 
         meta = get_meta_state()
         set_group_links(meta["group_links"][0], meta["group_links"][1])
-        VERIFIED_JOIN_USERS.update(meta.get("verified_users", []))
 
         host_state = {
-            "owner_user_id": int(user_id),
             "client": client,
             "session": cleaned,
             "raid_users": set(),
