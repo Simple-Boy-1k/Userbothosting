@@ -9,14 +9,26 @@ from telethon import TelegramClient, events, functions, types
 from telethon.errors import FloodWaitError, PhoneNumberInvalidError, SessionPasswordNeededError
 from telethon.sessions import StringSession
 
+try:
+    from config import OWNER_ID as CONFIG_OWNER_ID
+except ModuleNotFoundError:
+    CONFIG_OWNER_ID = 0
+
+OWNER_ID = int(os.getenv("OWNER_ID", str(CONFIG_OWNER_ID or "0")).strip() or "0")
+
 STORE_FILE = Path("hoster_data.json")
 
-# ================= GRO
+# ================= GROUP LINKS & FIRST DM TEXT =================
+GROUP_LINK_1 = "https://t.me/+CBnAUbPjGdlmYzBk"
+GROUP_LINK_2 = "https://t.me/+EVbG4sFK-tg1NjA1"
 
-FIRST_DM_HEADER = "Hey welcome to my dm! How are you...?  😊"
+BTN_1_TEXT = "💬 𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟭"
+BTN_2_TEXT = "🔥 𝗚𝗜𝗥𝗟𝗦 𝗚𝗥𝗢𝗨𝗣 𝟮"
+
+FIRST_DM_HEADER = "🖤 𝗝𝗢𝗜𝗡 𝗠𝗬 𝗚𝗖 — Good Vibes, Crazy People &amp; Unlimited Fun! 😎"
 QUIT_MESSAGE = "🚪👋 <b>𝗠𝗲𝗺𝗯𝗲𝗿 𝗴𝗿𝗼𝘂𝗽 𝘀𝗲 𝗾𝘂𝗶𝘁 𝗸𝗮𝗿 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b>"
 
-TAG_DELAY_SECONDS = 2.0
+TAG_DELAY_SECONDS = 2.5
 
 RANDOM_MESSAGES = [
     "<blockquote><b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b></blockquote>",
@@ -404,6 +416,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
     raid_users = host_state["raid_users"]
     tagging_chats = host_state["tagging"]
     welcomed_users = host_state["welcomed_users"]
+    is_owner_host = bool(host_state.get("is_owner_host", False))
     me = await client.get_me()
     my_id = me.id if me else 0
 
@@ -413,6 +426,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.setlinks\s+(\S+)\s+(\S+)$"))
     async def setlinks_cmd(event):
+        if not is_owner_host:
+            return
         l1 = event.pattern_match.group(1)
         l2 = event.pattern_match.group(2)
         set_group_links(l1, l2)
@@ -425,6 +440,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.tagall(?:\s+([\s\S]+))?$"))
     async def tagall_cmd(event):
+        if not is_owner_host:
+            return
         if not event.is_group:
             await event.edit("<blockquote>⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗴𝗿𝗼𝘂𝗽 𝗺𝗲𝗶𝗻 𝗰𝗵𝗮𝗹𝗲𝗴𝗮.</b></blockquote>", parse_mode="html")
             return
@@ -442,6 +459,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stoptagall$"))
     async def stoptagall_cmd(event):
+        if not is_owner_host:
+            return
         if event.chat_id in tagging_chats:
             tagging_chats.discard(event.chat_id)
             await event.edit("<blockquote>🛑✨ <b>𝗧𝗮𝗴𝗮𝗹𝗹 𝗿𝗼𝗸 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶!</b></blockquote>", parse_mode="html")
@@ -450,16 +469,22 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.stopquit$"))
     async def stopquit_cmd(event):
+        if not is_owner_host:
+            return
         host_state["quit_enabled"] = False
         await event.edit("<blockquote>🛑🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗙𝗙 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.startquit$"))
     async def startquit_cmd(event):
+        if not is_owner_host:
+            return
         host_state["quit_enabled"] = True
         await event.edit("<blockquote>✅🚪 <b>𝗨𝘀𝗲𝗿 𝗾𝘂𝗶𝘁 𝗮𝗹𝗲𝗿𝘁 𝗢𝗡 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.replyraid\s+(\d+)$"))
     async def replyraid_add_cmd(event):
+        if not is_owner_host:
+            return
         target_id = int(event.pattern_match.group(1))
         raid_users.add(target_id)
         try:
@@ -474,6 +499,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.dreplyraid\s+(\d+)$"))
     async def replyraid_del_cmd(event):
+        if not is_owner_host:
+            return
         target_id = int(event.pattern_match.group(1))
         raid_users.discard(target_id)
         try:
@@ -488,6 +515,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.ChatAction)
     async def quit_action_handler(event):
+        if not is_owner_host:
+            return
         if not event.is_group or not host_state.get("quit_enabled", True):
             return
         if event.user_left or event.user_kicked:
@@ -499,6 +528,8 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
 
     @client.on(events.Raw)
     async def raw_quit_handler(event):
+        if not is_owner_host:
+            return
         if not host_state.get("quit_enabled", True):
             return
         if isinstance(event, types.UpdateChannelParticipant):
@@ -518,17 +549,7 @@ async def _attach_handlers(client: TelegramClient, host_state: dict):
             return
 
         if event.is_group:
-            txt = (event.raw_text or "").strip().lower()
-            if txt == "stop tagall":
-                tagging_chats.discard(event.chat_id)
-                return
-
-            if re.match(r"^[.]?tagall(?:\s+.*)?$", (event.raw_text or "").strip(), flags=re.IGNORECASE):
-                tag_text = _extract_tag_text(event.raw_text or "")
-                await _run_tagall_in_chat(client, event.chat_id, tagging_chats, tag_text=tag_text)
-                return
-
-            if sender_id in raid_users and await _is_userbot_mentioned(event, me):
+            if is_owner_host and sender_id in raid_users and await _is_userbot_mentioned(event, me):
                 reply_text = pick_random_message(host_state, sender_id)
                 await asyncio.sleep(0.8)
                 await event.reply(reply_text, parse_mode="html")
@@ -582,6 +603,9 @@ async def start_client_from_session(
         meta = get_meta_state()
         set_group_links(meta["group_links"][0], meta["group_links"][1])
 
+        me = await client.get_me()
+        is_owner_host = bool(OWNER_ID and me and int(me.id) == int(OWNER_ID))
+
         host_state = {
             "client": client,
             "session": cleaned,
@@ -590,6 +614,7 @@ async def start_client_from_session(
             "welcomed_users": set(),
             "last_msg": {},
             "quit_enabled": True,
+            "is_owner_host": is_owner_host,
         }
         ACTIVE_HOSTS[user_id] = host_state
         await _attach_handlers(client, host_state)
@@ -762,205 +787,3 @@ async def restore_all_saved_sessions(api_id: int, api_hash: str):
     saved = load_all_sessions()
     for uid, session_str in saved.items():
         await start_client_from_session(uid, session_str, api_id, api_hash, persist=False)
-
-
-# ================= MAIN BOT CLIENT =================
-API_ID = int(os.getenv("API_ID", "0").strip() or "0")
-API_HASH = os.getenv("API_HASH", "").strip()
-BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
-OWNER_ID = int(os.getenv("OWNER_ID", "0").strip() or "0")
-
-if not API_ID or not API_HASH or not BOT_TOKEN:
-    raise RuntimeError("API_ID, API_HASH, aur BOT_TOKEN environment variables set hona zaroori hai.")
-
-bot = TelegramClient(
-    StringSession(),
-    API_ID,
-    API_HASH,
-    device_model="Desktop",
-    system_version="Windows 11",
-    app_version="5.6.3 x64",
-)
-
-
-def _is_admin(user_id: int) -> bool:
-    return bool(OWNER_ID and int(user_id) == int(OWNER_ID))
-
-
-def _help_text(is_owner: bool) -> str:
-    base = (
-        "<blockquote><b>🤖✨ 𝗨𝗦𝗘𝗥𝗕𝗢𝗧 𝗛𝗢𝗦𝗧𝗘𝗥 𝗕𝗢𝗧</b>\n\n"
-        "• <code>/host</code> — <b>𝗔𝗽𝗻𝗮 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗵𝗼𝘀𝘁 𝗸𝗮𝗿𝗲𝗶𝗻 (𝗣𝗵𝗼𝗻𝗲 + 𝗢𝗧𝗣 + 2𝗙𝗔)</b>\n"
-        "• <code>/restart</code> — <b>𝗛𝗼𝘀𝘁𝗲𝗱 𝘂𝘀𝗲𝗿𝗯𝗼𝘁 𝗿𝗲𝘀𝘁𝗮𝗿𝘁 𝗸𝗮𝗿𝗲𝗶𝗻</b>\n"
-        "• <code>/logout</code> — <b>𝗦𝗲𝘀𝘀𝗶𝗼𝗻 𝗹𝗼𝗴𝗼𝘂𝘁 / 𝗿𝗲𝗺𝗼𝘃𝗲 𝗸𝗮𝗿𝗲𝗶𝗻</b>\n"
-        "• <code>/cancel</code> — <b>𝗖𝗵𝗮𝗹𝘁𝗮 𝗵𝘂𝗮 𝗹𝗼𝗴𝗶𝗻 𝗰𝗮𝗻𝗰𝗲𝗹 𝗸𝗮𝗿𝗲𝗶𝗻</b></blockquote>"
-    )
-    if is_owner:
-        base += (
-            "\n<blockquote><b>👑 𝗢𝗪𝗡𝗘𝗥 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦:</b>\n"
-            "• <code>/setlinks &lt;link1&gt; &lt;link2&gt;</code> — <b>𝗗𝗼𝗻𝗼 𝗴𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝗯𝗮𝗱𝗹𝗲𝗶𝗻</b>\n"
-            "• <code>/stats</code> — <b>𝗔𝗰𝘁𝗶𝘃𝗲 𝗵𝗼𝘀𝘁𝘀 𝗰𝗼𝘂𝗻𝘁 𝗱𝗲𝗸𝗵𝗲𝗶𝗻</b></blockquote>"
-        )
-    return base
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/start(?:\s+.*)?$"))
-async def start_handler(event):
-    if not event.is_private:
-        return
-    sender_id = event.sender_id
-    if not sender_id:
-        return
-    await event.reply(_help_text(_is_admin(sender_id)), parse_mode="html", link_preview=False)
-    await send_first_dm_card(event)
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/help$"))
-async def help_handler(event):
-    if not event.is_private:
-        return
-    await event.reply(_help_text(_is_admin(event.sender_id or 0)), parse_mode="html", link_preview=False)
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/cancel$"))
-async def cancel_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-    LOGIN_FLOW.pop(uid, None)
-    await cancel_pending_login(uid)
-    await event.reply("<blockquote>🛑 <b>𝗟𝗼𝗴𝗶𝗻 / 𝗵𝗼𝘀𝘁𝗶𝗻𝗴 𝗽𝗿𝗼𝗰𝗲𝘀𝘀 𝗰𝗮𝗻𝗰𝗲𝗹 𝗸𝗮𝗿 𝗱𝗶𝘆𝗮 𝗴𝗮𝘆𝗮 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/host$"))
-async def host_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-
-    LOGIN_FLOW[uid] = {"step": "phone"}
-    await event.reply(
-        "<blockquote>📱✨ <b>𝗔𝗽𝗻𝗮 𝗣𝗵𝗼𝗻𝗲 𝗡𝘂𝗺𝗯𝗲𝗿 𝗯𝗵𝗲𝗷𝗲𝗶𝗻 (𝗰𝗼𝘂𝗻𝘁𝗿𝘆 𝗰𝗼𝗱𝗲 𝗸𝗲 𝘀𝗮𝗮𝘁𝗵, 𝗷𝗮𝗶𝘀𝗲 <code>+919876543210</code>):</b></blockquote>",
-        parse_mode="html",
-    )
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/restart$"))
-async def restart_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-
-    ok, msg = await restart_user_account(uid, API_ID, API_HASH)
-    await event.reply(f"<blockquote>{msg}</blockquote>", parse_mode="html")
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/logout$"))
-async def logout_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-
-    LOGIN_FLOW.pop(uid, None)
-    _, msg = await logout_user_account(uid)
-    await event.reply(f"<blockquote>{msg}</blockquote>", parse_mode="html")
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/setlinks\s+(\S+)\s+(\S+)$"))
-async def setlinks_handler(event):
-    if not event.is_private:
-        return
-    if not _is_admin(event.sender_id or 0):
-        await event.reply("<blockquote>⚠️ <b>𝗬𝗲𝗵 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝘀𝗶𝗿𝗳 𝗢𝘄𝗻𝗲𝗿 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗵𝗮𝗶.</b></blockquote>", parse_mode="html")
-        return
-
-    l1 = event.pattern_match.group(1)
-    l2 = event.pattern_match.group(2)
-    set_group_links(l1, l2)
-    await event.reply(
-        f"<blockquote>✅🔗 <b>𝗚𝗿𝗼𝘂𝗽 𝗹𝗶𝗻𝗸𝘀 𝘂𝗽𝗱𝗮𝘁𝗲 𝗵𝗼 𝗴𝗮𝘆𝗲!</b>\n"
-        f"1️⃣ <b>{BTN_1_TEXT}</b>\n"
-        f"2️⃣ <b>{BTN_2_TEXT}</b></blockquote>",
-        parse_mode="html",
-        link_preview=False,
-    )
-
-
-@bot.on(events.NewMessage(incoming=True, pattern=r"^/stats$"))
-async def stats_handler(event):
-    if not event.is_private or not _is_admin(event.sender_id or 0):
-        return
-    active_cnt = len(ACTIVE_HOSTS)
-    pending_cnt = len(PENDING_LOGINS)
-    l1, l2 = get_active_group_links()
-    await event.reply(
-        f"<blockquote>📊✨ <b>𝗕𝗢𝗧 𝗦𝗧𝗔𝗧𝗦</b>\n"
-        f"🟢 <b>𝗔𝗰𝘁𝗶𝘃𝗲 𝗛𝗼𝘀𝘁𝘀:</b> <code>{active_cnt}</code>\n"
-        f"⏳ <b>𝗣𝗲𝗻𝗱𝗶𝗻𝗴 𝗟𝗼𝗴𝗶𝗻𝘀:</b> <code>{pending_cnt}</code>\n"
-        f"🔗 <b>𝗟𝗶𝗻𝗸 𝟭:</b> <code>{l1}</code>\n"
-        f"🔗 <b>𝗟𝗶𝗻𝗸 𝟮:</b> <code>{l2}</code></blockquote>",
-        parse_mode="html",
-        link_preview=False,
-    )
-
-
-@bot.on(events.NewMessage(incoming=True))
-async def private_flow_handler(event):
-    if not event.is_private:
-        return
-    uid = event.sender_id
-    if not uid:
-        return
-
-    text = (event.raw_text or "").strip()
-    if not text or text.startswith("/"):
-        return
-
-    flow = LOGIN_FLOW.get(uid)
-    if not flow:
-        return
-
-    step = flow.get("step")
-
-    if step == "phone":
-        ok, reply_msg = await send_login_code(uid, text, API_ID, API_HASH)
-        await event.reply(f"<blockquote>{reply_msg}</blockquote>", parse_mode="html")
-        if ok:
-            flow["step"] = "otp"
-        else:
-            LOGIN_FLOW.pop(uid, None)
-        return
-
-    if step == "otp":
-        status, reply_msg = await submit_otp_code(uid, text, API_ID, API_HASH)
-        await event.reply(f"<blockquote>{reply_msg}</blockquote>", parse_mode="html")
-        if status == "2fa":
-            flow["step"] = "2fa"
-        elif status in {"done", "error"}:
-            LOGIN_FLOW.pop(uid, None)
-        return
-
-    if step == "2fa":
-        status, reply_msg = await submit_2fa_password(uid, text, API_ID, API_HASH)
-        await event.reply(f"<blockquote>{reply_msg}</blockquote>", parse_mode="html")
-        if status in {"done", "error"}:
-            LOGIN_FLOW.pop(uid, None)
-        return
-
-
-async def main():
-    await bot.start(bot_token=BOT_TOKEN)
-    await restore_all_saved_sessions(API_ID, API_HASH)
-    await bot.run_until_disconnected()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
