@@ -12,9 +12,9 @@ from userbot_features import attach_userbot_handlers
 
 STORE_FILE = Path("hoster_data.json")
 
-ACTIVE_HOSTS = {}
-PENDING_LOGINS = {}
-LOGIN_FLOW = {}
+ACTIVE_HOSTS: dict[int, dict] = {}
+PENDING_LOGINS: dict[int, dict] = {}
+LOGIN_FLOW: dict[int, str] = {}
 
 _db = None
 
@@ -87,7 +87,7 @@ def delete_session(user_id: int):
 def load_all_sessions() -> dict[int, str]:
     db = _get_db()
     if db is not None:
-        out = {}
+        out: dict[int, str] = {}
         for doc in db["sessions"].find({}):
             uid = doc.get("user_id") or doc.get("_id")
             sess = doc.get("session")
@@ -193,7 +193,6 @@ async def start_client_from_session(
             "client": client,
             "session": cleaned,
             "raid_users": set(),
-            "sraid_users": set(),
             "approved_users": set(),
             "tagging_tasks": {},
             "background_tasks": {},
@@ -201,6 +200,7 @@ async def start_client_from_session(
             "welcomed_users": set(),
             "last_msg": {},
             "quit_enabled": True,
+            "welcome_enabled": True,
             "started_at": time.time(),
         }
         ACTIVE_HOSTS[user_id] = host_state
