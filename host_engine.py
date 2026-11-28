@@ -167,7 +167,7 @@ def save_meta_state(meta: dict):
     _save_local(data)
 
 
-def set_owner_random_messages(raw_text: str, append: bool = False) -> list[str]:
+def set_owner_random_messages(raw_text: str, append: bool = True) -> list[str]:
     new_items = parse_bulk_random_messages(raw_text)
     meta = get_meta_state()
     if append:
