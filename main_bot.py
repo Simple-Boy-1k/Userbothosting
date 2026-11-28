@@ -1,4 +1,5 @@
 import asyncio
+import os
 import time
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import TelegramError
@@ -24,8 +25,6 @@ try:
         OWNER_ID,
     )
 except ModuleNotFoundError:
-    import os
-
     API_ID = int(os.getenv("API_ID", "0").strip() or "0")
     API_HASH = os.getenv("API_HASH", "").strip()
     BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
