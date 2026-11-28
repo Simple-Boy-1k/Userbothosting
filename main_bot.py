@@ -1,4 +1,5 @@
 import asyncio
+import html
 import os
 import time
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
@@ -39,18 +40,22 @@ from host_engine import (
     ACTIVE_HOSTS,
     PENDING_LOGINS,
     cancel_pending_login,
+    clear_owner_random_messages,
     get_meta_state,
+    get_owner_random_messages,
     load_all_sessions,
     logout_user_account,
     restore_all_saved_sessions,
     restart_user_account,
     save_meta_state,
     send_login_code,
+    set_owner_random_messages,
     submit_2fa_password,
     submit_otp_code,
 )
 
 START_TIME = time.time()
+OWNER_RANDOM_INPUT_MODE: dict[int, str] = {}
 
 COMMAND_CATEGORIES: dict[str, tuple[str, str]] = {
     "spam": (
@@ -63,7 +68,7 @@ COMMAND_CATEGORIES: dict[str, tuple[str, str]] = {
     ),
     "raid": (
         "💥 Raid — Commands",
-        "1. Command\n.raid &lt;count&gt; [chatid] [@username]\n\n💡 Example\n.raid 10 @username\n\n2. Command\n.stopraid [id]",
+        "1. Command\n.raid &lt;count&gt; [chatid] [@username]\n\nOwner ke set kiye hue random messages se alag-alag message bhejta hai.\n\n2. Command\n.stopraid [id]",
     ),
     "abusiveraid": (
         "🔥 Abusive Raid — Commands",
@@ -71,7 +76,7 @@ COMMAND_CATEGORIES: dict[str, tuple[str, str]] = {
     ),
     "shayari": (
         "💌 Shayari Raid — Commands",
-        "1. Command\n.sraid &lt;count&gt; [username/userid]\n\n2. Command\n.stopsraid",
+        "1. Command\n.sraid &lt;count&gt; [username/userid]\n\nOwner ke set kiye hue random messages pool se alag-alag message bhejta hai.\n\n2. Command\n.stopsraid",
     ),
     "replyraid": (
         "🎯 Reply Raid — Commands",
@@ -265,8 +270,8 @@ def start_caption_html() -> str:
     )
 
 
-def help_text_html() -> str:
-    return (
+def help_text_html(uid: int = 0) -> str:
+    base = (
         "<b>🌟 PREMIUM HOSTER BOT COMMANDS 🌟</b>\n\n"
         "🔹 /start - Start bot\n"
         "🔹 /help - Help menu\n"
@@ -277,6 +282,15 @@ def help_text_html() -> str:
         "🔹 /logout - Logout userbot\n"
         "🔹 /status - Status check"
     )
+    if is_owner(uid):
+        base += (
+            "\n\n<b>👑 OWNER RANDOM MESSAGE COMMANDS:</b>\n"
+            "🔹 /setrandom - Nayi random messages list set karein (10/50/unlimited lines ek saath)\n"
+            "🔹 /addrandom - Existing list mein aur messages add karein\n"
+            "🔹 /listrandom - Saved random messages count/preview dekhein\n"
+            "🔹 /clearrandom - Saare custom random messages delete karein"
+        )
+    return base
 
 
 async def send_home_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -324,13 +338,85 @@ async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await guard(update, context):
         return
-    await update.message.reply_text(help_text_html(), parse_mode="HTML")
+    uid = update.effective_user.id if update.effective_user else 0
+    await update.message.reply_text(help_text_html(uid), parse_mode="HTML")
 
 
 async def commands_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await guard(update, context):
         return
     await update.message.reply_text(commands_home_html(), parse_mode="HTML", reply_markup=commands_menu_keyboard())
+
+
+async def setrandom_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    uid = update.effective_user.id
+    if not is_owner(uid):
+        await update.message.reply_text("Sirf Owner random messages set kar sakte hain.")
+        return
+    raw_arg = update.message.text.partition(" ")[2] if update.message and update.message.text else ""
+    if raw_arg.strip():
+        saved = set_owner_random_messages(raw_arg, append=False)
+        await update.message.reply_text(
+            f"✅ <b>{len(saved)}</b> random messages set ho gaye hain! Ab users ko inhi mein se alag-alag message milega.",
+            parse_mode="HTML",
+        )
+        return
+    OWNER_RANDOM_INPUT_MODE[uid] = "replace"
+    await update.message.reply_text(
+        "✍️ <b>Bulk Random Messages Set Mode</b>\n\n"
+        "Ek hi message mein 10, 50 ya jitne chahein utne random messages bhejein (har line ek alag message hoga, ya <code>||</code> se alag karein).\n"
+        "Cancel karne ke liye /cancel likhein.",
+        parse_mode="HTML",
+    )
+
+
+async def addrandom_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    uid = update.effective_user.id
+    if not is_owner(uid):
+        await update.message.reply_text("Sirf Owner random messages add kar sakte hain.")
+        return
+    raw_arg = update.message.text.partition(" ")[2] if update.message and update.message.text else ""
+    if raw_arg.strip():
+        saved = set_owner_random_messages(raw_arg, append=True)
+        await update.message.reply_text(
+            f"✅ Messages add ho gaye! Total random messages: <b>{len(saved)}</b>.",
+            parse_mode="HTML",
+        )
+        return
+    OWNER_RANDOM_INPUT_MODE[uid] = "append"
+    await update.message.reply_text(
+        "➕ <b>Add More Random Messages</b>\n\n"
+        "Jo naye messages (10, 50, ya unlimited) purani list mein jodne hain, unhe ek saath bhej dein.\n"
+        "Cancel karne ke liye /cancel likhein.",
+        parse_mode="HTML",
+    )
+
+
+async def listrandom_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    uid = update.effective_user.id
+    if not is_owner(uid):
+        await update.message.reply_text("Sirf Owner random messages list dekh sakte hain.")
+        return
+    msgs = get_owner_random_messages()
+    if not msgs:
+        await update.message.reply_text("Abhi koi random message set nahi hai. /setrandom se set karein.")
+        return
+    preview = "\n".join(f"{i + 1}. {html.escape(m)}" for i, m in enumerate(msgs[:25]))
+    extra = f"\n...aur {len(msgs) - 25} messages" if len(msgs) > 25 else ""
+    await update.message.reply_text(
+        f"🎲 <b>Total Random Messages: {len(msgs)}</b>\n\n{preview}{extra}",
+        parse_mode="HTML",
+    )
+
+
+async def clearrandom_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    uid = update.effective_user.id
+    if not is_owner(uid):
+        await update.message.reply_text("Sirf Owner random messages clear kar sakte hain.")
+        return
+    clear_owner_random_messages()
+    OWNER_RANDOM_INPUT_MODE.pop(uid, None)
+    await update.message.reply_text("🗑️ Saare custom random messages clear kar diye gaye hain.")
 
 
 async def host_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -349,11 +435,17 @@ async def cancel_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await guard(update, context):
         return
     uid = update.effective_user.id
+    cancelled_anything = False
+    if uid in OWNER_RANDOM_INPUT_MODE:
+        OWNER_RANDOM_INPUT_MODE.pop(uid, None)
+        cancelled_anything = True
     if uid in PENDING_LOGINS:
         await cancel_pending_login(uid)
-        await update.message.reply_text("Host login process cancel kar diya gaya hai.")
+        cancelled_anything = True
+    if cancelled_anything:
+        await update.message.reply_text("Active process cancel kar diya gaya hai.")
     else:
-        await update.message.reply_text("Koi active login process nahi hai.")
+        await update.message.reply_text("Koi active process nahi hai.")
 
 
 async def text_step_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -362,10 +454,22 @@ async def text_step_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await guard(update, context):
         return
     uid = update.effective_user.id
+    raw_text = update.message.text
+
+    if is_owner(uid) and uid in OWNER_RANDOM_INPUT_MODE:
+        mode = OWNER_RANDOM_INPUT_MODE.pop(uid)
+        saved = set_owner_random_messages(raw_text, append=(mode == "append"))
+        await update.message.reply_text(
+            f"✅ <b>{len(saved)}</b> random messages save ho gaye hain!\n"
+            "Users ke raid / sraid / replyraid / joke par ab inhi mein se alag-alag message aayega.",
+            parse_mode="HTML",
+        )
+        return
+
     pending = PENDING_LOGINS.get(uid)
     if not pending:
         return
-    text = update.message.text.strip()
+    text = raw_text.strip()
     step = pending.get("step")
 
     if step == "phone":
@@ -438,7 +542,8 @@ async def verify_force_join_cb(update: Update, context: ContextTypes.DEFAULT_TYP
 async def open_help_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    await query.message.reply_text(help_text_html(), parse_mode="HTML")
+    uid = query.from_user.id if query.from_user else 0
+    await query.message.reply_text(help_text_html(uid), parse_mode="HTML")
 
 
 async def back_to_commands_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -482,6 +587,10 @@ def main():
     app.add_handler(CommandHandler("start", start_cmd))
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("commands", commands_cmd))
+    app.add_handler(CommandHandler("setrandom", setrandom_cmd))
+    app.add_handler(CommandHandler("addrandom", addrandom_cmd))
+    app.add_handler(CommandHandler("listrandom", listrandom_cmd))
+    app.add_handler(CommandHandler("clearrandom", clearrandom_cmd))
     app.add_handler(CommandHandler("host", host_cmd))
     app.add_handler(CommandHandler("cancel", cancel_cmd))
     app.add_handler(CommandHandler("restart", restart_cmd))
