@@ -41,6 +41,7 @@ def _default_local_store() -> dict:
         "force_join_chat_id": 0,
         "force_join_link": "",
         "support_group_url": "",
+        "custom_random_messages": [],
     }
 
 
@@ -58,6 +59,21 @@ def _load_local() -> dict:
 
 def _save_local(data: dict):
     STORE_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+def parse_bulk_random_messages(raw_text: str) -> list[str]:
+    if not raw_text:
+        return []
+    if "||" in raw_text and "\n" not in raw_text.strip():
+        parts = raw_text.split("||")
+    else:
+        parts = raw_text.splitlines()
+    out: list[str] = []
+    for line in parts:
+        cleaned = line.strip()
+        if cleaned:
+            out.append(cleaned)
+    return out
 
 
 def save_session(user_id: int, string_session: str):
@@ -102,6 +118,8 @@ def get_meta_state() -> dict:
     db = _get_db()
     if db is not None:
         doc = db["meta"].find_one({"_id": "config"}) or {}
+        raw_msgs = doc.get("custom_random_messages", [])
+        msgs = [str(m).strip() for m in raw_msgs if isinstance(m, str) and m.strip()] if isinstance(raw_msgs, list) else []
         return {
             "sudos": list(dict.fromkeys(int(x) for x in doc.get("sudos", []) if str(x).isdigit())),
             "blocked": list(dict.fromkeys(int(x) for x in doc.get("blocked", []) if str(x).isdigit())),
@@ -110,8 +128,11 @@ def get_meta_state() -> dict:
             "force_join_chat_id": doc.get("force_join_chat_id", 0),
             "force_join_link": str(doc.get("force_join_link") or ""),
             "support_group_url": str(doc.get("support_group_url") or ""),
+            "custom_random_messages": msgs,
         }
     data = _load_local()
+    raw_msgs = data.get("custom_random_messages", [])
+    msgs = [str(m).strip() for m in raw_msgs if isinstance(m, str) and m.strip()] if isinstance(raw_msgs, list) else []
     return {
         "sudos": list(dict.fromkeys(int(x) for x in data.get("sudos", []) if str(x).isdigit())),
         "blocked": list(dict.fromkeys(int(x) for x in data.get("blocked", []) if str(x).isdigit())),
@@ -120,10 +141,13 @@ def get_meta_state() -> dict:
         "force_join_chat_id": data.get("force_join_chat_id", 0),
         "force_join_link": str(data.get("force_join_link") or ""),
         "support_group_url": str(data.get("support_group_url") or ""),
+        "custom_random_messages": msgs,
     }
 
 
 def save_meta_state(meta: dict):
+    raw_msgs = meta.get("custom_random_messages", [])
+    msgs = [str(m).strip() for m in raw_msgs if isinstance(m, str) and m.strip()] if isinstance(raw_msgs, list) else []
     clean = {
         "sudos": list(dict.fromkeys(int(x) for x in meta.get("sudos", []) if str(x).isdigit())),
         "blocked": list(dict.fromkeys(int(x) for x in meta.get("blocked", []) if str(x).isdigit())),
@@ -132,6 +156,7 @@ def save_meta_state(meta: dict):
         "force_join_chat_id": int(meta.get("force_join_chat_id") or 0),
         "force_join_link": str(meta.get("force_join_link") or ""),
         "support_group_url": str(meta.get("support_group_url") or ""),
+        "custom_random_messages": msgs,
     }
     db = _get_db()
     if db is not None:
@@ -140,6 +165,29 @@ def save_meta_state(meta: dict):
     data = _load_local()
     data.update(clean)
     _save_local(data)
+
+
+def set_owner_random_messages(raw_text: str, append: bool = False) -> list[str]:
+    new_items = parse_bulk_random_messages(raw_text)
+    meta = get_meta_state()
+    if append:
+        existing = meta.get("custom_random_messages", [])
+        combined = existing + new_items
+    else:
+        combined = new_items
+    meta["custom_random_messages"] = combined
+    save_meta_state(meta)
+    return combined
+
+
+def clear_owner_random_messages():
+    meta = get_meta_state()
+    meta["custom_random_messages"] = []
+    save_meta_state(meta)
+
+
+def get_owner_random_messages() -> list[str]:
+    return get_meta_state().get("custom_random_messages", [])
 
 
 def _cleanup_host_tasks(host_state: dict):
