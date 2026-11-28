@@ -17,31 +17,68 @@ FIRST_DM_HEADER = "Hey welcome to my dm! How are you...? 😊"
 QUIT_MESSAGE = "🚪👋 Member group se quit kar gaya hai!"
 TAG_DELAY_SECONDS = 2.5
 
-RANDOM_MESSAGES = [
+SHARED_MESSAGES = [
     "<b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b>",
     "<b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b>",
     "<b>𝗦𝗣𝗢𝗧𝗜𝗙𝗬 𝗣𝗘 𝗖𝗛𝗔𝗟𝗔 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗧𝗘𝗥𝗔 𝗕𝗔𝗔𝗣</b>",
+    "<b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b>",
     "<b>𝗦𝗨𝗔𝗥 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗦𝗘𝗘𝗗𝗛𝗔 𝗕𝗢𝗟 𝗥𝗔𝗛𝗔 𝗛𝗨𝗡</b>",
     "<b>𝗞𝗜𝗧𝗡𝗜 𝗚𝗔𝗟𝗜𝗬𝗔𝗡 𝗞𝗛𝗔𝗬𝗘𝗚𝗔 𝗔𝗝</b>",
     "<b>𝗕𝗘𝗦𝗔𝗡 𝗞𝗘 𝗟𝗔𝗗𝗗𝗨 𝗕𝗛𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗕𝗨 🤩🥳🔥😈</b>",
+    "<b>𝗦𝗣𝗘𝗘𝗗 𝗠𝗔𝗧𝗖𝗛 𝗡𝗔𝗛𝗜 𝗛𝗢 𝗥𝗔𝗛𝗜 𝗞𝗬𝗔</b>",
+    "<b>𝗞𝘂𝘁𝘁𝗲 𝗸𝗶 𝗷𝗮𝗮𝘁</b>",
+    "<b>𝗔𝗽𝗻𝗶 𝗷𝗮𝗴𝗮𝗵 𝗽𝗲 𝗯𝗮𝗶𝘁𝗵 𝗷𝗮𝗮</b>",
     "<b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b>",
     "<b>𝗦𝗨𝗧𝗟𝗜 𝗕𝗢𝗠𝗕 𝗙𝗢𝗗 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 💣</b>",
+    "<b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b>",
+    "<b>𝗔𝗽𝗻𝗶 𝗷𝗮𝗴𝗮𝗵 𝗽𝗲 𝗯𝗮𝗶𝘁𝗵 𝗷𝗮𝗮</b>",
+    "<b>𝗝𝗵𝗮𝗮𝗻𝘁 𝗸𝗲 𝗽𝗶𝘀𝘀𝘂</b>",
     "<b>𝗔𝗔𝗚 𝗟𝗔𝗚𝗔 𝗗𝗨𝗡𝗚𝗔 𝗖𝗛𝗔𝗧 𝗠𝗘𝗜𝗡 🔥🔥💦😆😆</b>",
+    "<b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b>",
+    "<b>𝗣𝗨𝗥𝗔 𝗙𝗔𝗔𝗗 𝗞𝗘 𝗥𝗔𝗞𝗛 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 😆💦🤤</b>",
+    "<b>𝗠𝗠𝗦 𝗕𝗔𝗡𝗔 𝗖𝗛𝗨𝗞𝗔 𝗛𝗔𝗜 𝗔𝗕 𝗗𝗘𝗞𝗛</b>",
+    "<b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b>",
+    "<b>𝗖𝗥𝗘𝗗𝗜𝗧 𝗖𝗔𝗥𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝟱𝟬𝟬 𝗞𝗘 𝗡𝗢𝗧𝗘 𝗡𝗜𝗞𝗔𝗟𝗨𝗡𝗚𝗔 💰💰🤩</b>",
+    "<b>𝗦𝗨𝗗𝗢 𝗟𝗔𝗚𝗔 𝗞𝗘 𝟵𝟵𝟵𝟵 𝗖𝗛𝗔𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 🤩🥳🔥</b>",
+    "<b>𝗧𝗨𝗝𝗛𝗘 𝗔𝗕 𝗧𝗔𝗞 𝗦𝗔𝗠𝗔𝗝𝗛 𝗡𝗔𝗛𝗜 𝗔𝗬𝗔 𝗞𝗬𝗔 🤩👊👤😍</b>",
+    "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
+    "<b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b>",
+    "<b>𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘𝗜𝗡 𝗦𝗛𝗢𝗥 𝗛𝗔𝗜 𝗔𝗝 💋💋💦</b>",
+    "<b>𝗦𝗨𝗡 𝗦𝗨𝗡 𝗦𝗨𝗔𝗥 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗕𝗔𝗔𝗧 𝗦𝗨𝗡</b>",
+    "<b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b>",
+    "<b>𝗖𝗛𝗘𝗘𝗠𝗦 𝗦𝗘 𝗕𝗔𝗝𝗪𝗔 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗕𝗨 💦🤣</b>",
+    "<b>𝗞𝗜𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦𝗦</b>",
+    "<b>𝗗𝗘𝗧𝗢𝗟 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗦𝗔𝗔𝗙 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔</b>",
+    "<b>𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗔𝗥 𝗗𝗜𝗬𝗘 𝗛𝗔𝗜𝗡 🤖🙏🤔</b>",
     "<b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b>",
+    "<b>𝗦𝗛𝗢𝗨𝗟𝗗𝗘𝗥𝗜𝗡𝗚 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝 😱🤮👺</b>",
+    "<b>𝗥𝗔𝗡𝗜𝗗𝗜𝗜𝗜</b>",
+    "<b>𝗜𝗧𝗡𝗔 𝗚𝗛𝗨𝗠𝗔𝗨𝗡𝗚𝗔 𝗞𝗜 𝗖𝗛𝗔𝗞𝗞𝗔𝗥 𝗔𝗔 𝗝𝗔𝗬𝗘𝗚𝗔 💦💋</b>",
+    "<b>𝗞𝗜𝗧𝗡𝗔 𝗖𝗛𝗔𝗟𝗔𝗨𝗡 𝗔𝗕 𝗢𝗥..</b>",
+    "<b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b>",
+    "<b>𝗣𝗨𝗥𝗔 𝗦𝗜𝗦𝗧𝗘𝗠 𝗛𝗜𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 𝗔𝗝</b>",
+    "<b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b>",
+    "<b>𝗨𝗣𝗔𝗥 𝗡𝗜𝗖𝗛𝗘 𝗖𝗛𝗔𝗟 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗦𝗔𝗕 🆙🆒😙</b>",
+    "<b>𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 💥😂😎</b>",
+    "<b>𝗩𝗜𝗗𝗘𝗢 𝗕𝗔𝗡𝗔 𝗞𝗘 𝗡𝗘𝗘𝗟𝗔𝗠 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 💦💋</b>",
+    "<b>𝗞𝗜𝗦𝗔𝗡 𝗞𝗢 𝗞𝗛𝗢𝗗𝗡𝗔 𝗢𝗥</b>",
+    "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
+    "<b>𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘𝗜𝗡 𝗦𝗛𝗢𝗥 𝗛𝗔𝗜 𝗔𝗝 🤤🤣</b>",
+    "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
+    "<b>𝗞𝗢𝗟𝗞𝗔𝗧𝗔 𝗪𝗔𝗟𝗘 𝗝𝗜𝗧𝗨 𝗕𝗛𝗔𝗜𝗬𝗔 𝗞𝗔 𝗦𝗔𝗟𝗔𝗔𝗠 🤩🤩</b>",
+    "<b>𝗟𝗨𝗗𝗢 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟𝗧𝗘 𝗞𝗛𝗘𝗟 𝗞𝗛𝗔𝗧𝗔𝗠 ☝🏻☝🏻😬</b>",
+    "<b>𝗞𝗔𝗔𝗟𝗔 𝗦𝗜𝗦𝗧𝗘𝗠 𝗖𝗛𝗔𝗟 𝗥𝗔𝗛𝗔 𝗛𝗔𝗜 𝗔𝗝</b>",
+    "<b>𝗨𝗹𝗹𝘂 𝗸𝗲 𝗽𝗮𝘁𝘁𝗵𝗲</b>",
+    "<b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b>",
+    "<b>𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 👻🔥</b>",
+    "<b>𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗢 𝗣𝗘𝗛𝗖𝗛𝗔𝗔𝗡 𝗟𝗘 𝗕𝗔𝗕𝗨</b>",
+    "<b>𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗛𝗔𝗜𝗡 𝗕𝗔𝗔𝗣 𝗛𝗨𝗡 𝗠𝗔𝗜𝗡 🤣🤣</b>",
+    "<b>𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜𝗡 𝗕𝗔𝗝𝗔 𝗗𝗔𝗟𝗔 🤣🤣💋</b>",
 ]
 
-SHAYARI_MESSAGES = [
-    "<b>✨ Dil ki baatein lafzon mein dhal rahi hain, aapki entry se mehfil chamak rahi hai!</b>",
-    "<b>🌙 Chaand taaron ki roshni mein ek baat khaas hai, aapka andaaz sabse behtareen aur khaas hai!</b>",
-    "<b>🔥 Khamoshiyon mein bhi ek shor hota hai, jab apna banda maidan mein zor hota hai!</b>",
-    "<b>💫 Waqt badalta hai, rang badalte hain, par asli attitude kabhi nahi badalta!</b>",
-]
-
-HINDI_JOKES = [
-    "😂 Teacher: Tum homework kyon nahi laaye?\nStudent: Sir, battery low thi, kal subah charge karke launga!",
-    "🤣 Doctor: Aapko bhoolne ki bimari hai.\nPatient: Kab se doctor?\nDoctor: Kya kab se?",
-    "😆 Dost: Bhai aaj kal kya chal raha hai?\nDosti: Bas alarm baj raha hai aur main snooze daba raha hoon!",
-]
+RANDOM_MESSAGES = list(SHARED_MESSAGES)
+SHAYARI_MESSAGES = list(SHARED_MESSAGES)
+HINDI_JOKES = list(SHARED_MESSAGES)
 
 _BOLD_SANS_MAP = str.maketrans(
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
@@ -144,17 +181,30 @@ async def _resolve_target_user(client: TelegramClient, event, token: str | None)
     return None
 
 
-def _pick_random_message(host_state: dict, target_id: int) -> str:
-    valid_msgs = [m.strip() for m in RANDOM_MESSAGES if isinstance(m, str) and m.strip()]
+def _pick_from_pool(host_state: dict, pool_key: str, pool_list: list[str], target_id: int) -> str:
+    valid_msgs = [m.strip() for m in pool_list if isinstance(m, str) and m.strip()]
     if not valid_msgs:
         return "<b>Hello! 👋</b>"
     if len(valid_msgs) == 1:
         return valid_msgs[0]
-    last_msg = host_state["last_msg"].get(target_id)
-    pool = [m for m in valid_msgs if m != last_msg]
-    chosen = random.choice(pool or valid_msgs)
-    host_state["last_msg"][target_id] = chosen
+    bucket = host_state.setdefault(pool_key, {})
+    last_msg = bucket.get(target_id)
+    candidates = [m for m in valid_msgs if m != last_msg]
+    chosen = random.choice(candidates or valid_msgs)
+    bucket[target_id] = chosen
     return chosen
+
+
+def _pick_random_message(host_state: dict, target_id: int) -> str:
+    return _pick_from_pool(host_state, "last_msg", RANDOM_MESSAGES, target_id)
+
+
+def _pick_shayari_message(host_state: dict, target_id: int) -> str:
+    return _pick_from_pool(host_state, "last_shayari", SHAYARI_MESSAGES, target_id)
+
+
+def _pick_joke_message(host_state: dict, target_id: int) -> str:
+    return _pick_from_pool(host_state, "last_joke", HINDI_JOKES, target_id)
 
 
 def _extract_tag_text(raw_text: str) -> str:
@@ -327,6 +377,9 @@ async def attach_userbot_handlers(client: TelegramClient, host_state: dict, acti
     host_state.setdefault("antisafe_enabled", False)
     host_state.setdefault("pending_clearall", False)
     host_state.setdefault("profile_backup", None)
+    host_state.setdefault("last_msg", {})
+    host_state.setdefault("last_shayari", {})
+    host_state.setdefault("last_joke", {})
 
     tagging_tasks: dict[int, asyncio.Task] = host_state["tagging_tasks"]
     welcomed_users: set[int] = host_state["welcomed_users"]
@@ -459,7 +512,7 @@ async def attach_userbot_handlers(client: TelegramClient, host_state: dict, acti
 
         async def _worker():
             for _ in range(count):
-                msg = random.choice(SHAYARI_MESSAGES)
+                msg = _pick_shayari_message(host_state, target.id if target else my_id)
                 await client.send_message(event.chat_id, f"{prefix}{msg}", parse_mode="html")
                 await asyncio.sleep(1.2)
 
@@ -550,7 +603,7 @@ async def attach_userbot_handlers(client: TelegramClient, host_state: dict, acti
 
         async def _worker():
             for _ in range(count):
-                line = _pick_random_message(host_state, my_id)
+                line = _pick_random_message(host_state, target_user.id if target_user else my_id)
                 await client.send_message(dest, f"{prefix}{line}", parse_mode="html")
                 await asyncio.sleep(0.8)
 
@@ -755,7 +808,7 @@ async def attach_userbot_handlers(client: TelegramClient, host_state: dict, acti
             if my_photos:
                 await client(
                     DeletePhotosRequest(
-                        [
+                        id=[
                             types.InputPhoto(
                                 id=my_photos[0].id,
                                 access_hash=my_photos[0].access_hash,
@@ -770,7 +823,8 @@ async def attach_userbot_handlers(client: TelegramClient, host_state: dict, acti
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.joke$"))
     async def joke_cmd(event):
-        await event.edit(random.choice(HINDI_JOKES))
+        msg = _pick_joke_message(host_state, event.chat_id or my_id)
+        await event.edit(msg, parse_mode="html")
 
     @client.on(events.NewMessage(outgoing=True, pattern=r"^\.flip$"))
     async def flip_cmd(event):
