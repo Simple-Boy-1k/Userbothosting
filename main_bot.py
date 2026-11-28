@@ -47,7 +47,6 @@ from host_engine import (
     logout_user_account,
     restore_all_saved_sessions,
     restart_user_account,
-    save_meta_state,
     send_login_code,
     set_owner_random_messages,
     submit_2fa_password,
@@ -156,11 +155,6 @@ def _normalize_tg_link(url: str) -> str:
 
 def is_owner(uid: int) -> bool:
     return uid == OWNER_ID
-
-
-def is_sudo(uid: int) -> bool:
-    meta = get_meta_state()
-    return uid == OWNER_ID or uid in meta.get("sudos", [])
 
 
 def is_blocked(uid: int) -> bool:
@@ -285,7 +279,7 @@ def help_text_html(uid: int = 0) -> str:
     if is_owner(uid):
         base += (
             "\n\n<b>👑 OWNER RANDOM MESSAGE COMMANDS:</b>\n"
-            "🔹 /setrandom - Nayi random messages list set karein (10/50/unlimited lines ek saath)\n"
+            "🔹 /setrandom - Naye random messages purani list mein jodein (10/50/unlimited lines ek saath)\n"
             "🔹 /addrandom - Existing list mein aur messages add karein\n"
             "🔹 /listrandom - Saved random messages count/preview dekhein\n"
             "🔹 /clearrandom - Saare custom random messages delete karein"
@@ -355,17 +349,17 @@ async def setrandom_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     raw_arg = update.message.text.partition(" ")[2] if update.message and update.message.text else ""
     if raw_arg.strip():
-        saved = set_owner_random_messages(raw_arg, append=False)
+        saved = set_owner_random_messages(raw_arg, append=True)
         await update.message.reply_text(
-            f"✅ <b>{len(saved)}</b> random messages set ho gaye hain! Ab users ko inhi mein se alag-alag message milega.",
+            f"✅ Naye messages purani list mein jud gaye! Total random messages: <b>{len(saved)}</b>.",
             parse_mode="HTML",
         )
         return
-    OWNER_RANDOM_INPUT_MODE[uid] = "replace"
+    OWNER_RANDOM_INPUT_MODE[uid] = "append"
     await update.message.reply_text(
-        "✍️ <b>Bulk Random Messages Set Mode</b>\n\n"
-        "Ek hi message mein 10, 50 ya jitne chahein utne random messages bhejein (har line ek alag message hoga, ya <code>||</code> se alag karein).\n"
-        "Cancel karne ke liye /cancel likhein.",
+        "✍️ <b>Random Messages Set / Add Mode</b>\n\n"
+        "Jitne chahein utne messages (10, 50, ya aur) ek saath bhejein — pehle wale messages safe rahenge aur naye unme jud jaayenge.\n"
+        "Sab hatane ke liye /clearrandom aur cancel ke liye /cancel likhein.",
         parse_mode="HTML",
     )
 
@@ -457,10 +451,10 @@ async def text_step_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     raw_text = update.message.text
 
     if is_owner(uid) and uid in OWNER_RANDOM_INPUT_MODE:
-        mode = OWNER_RANDOM_INPUT_MODE.pop(uid)
-        saved = set_owner_random_messages(raw_text, append=(mode == "append"))
+        OWNER_RANDOM_INPUT_MODE.pop(uid, None)
+        saved = set_owner_random_messages(raw_text, append=True)
         await update.message.reply_text(
-            f"✅ <b>{len(saved)}</b> random messages save ho gaye hain!\n"
+            f"✅ Messages save ho gaye! Ab total <b>{len(saved)}</b> random messages active hain.\n"
             "Users ke raid / sraid / replyraid / joke par ab inhi mein se alag-alag message aayega.",
             parse_mode="HTML",
         )
