@@ -679,7 +679,7 @@ async def attach_userbot_handlers(client: TelegramClient, host_state: dict, acti
         host_state["autoreply_msg"] = None
         await event.edit("🤖 Mention auto-reply <b>OFF</b> kar diya gaya hai.", parse_mode="html")
 
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^(?i)\.antisafe\s+(on|off)$"))
+    @client.on(events.NewMessage(outgoing=True, pattern=r"(?i)^\.antisafe\s+(on|off)$"))
     async def antisafe_cmd(event):
         mode = event.pattern_match.group(1).lower()
         host_state["antisafe_enabled"] = mode == "on"
@@ -835,7 +835,7 @@ async def attach_userbot_handlers(client: TelegramClient, host_state: dict, acti
         upper = max(1, int(event.pattern_match.group(1)))
         await event.edit(f"🎲 Roll (1-{upper}): <b>{random.randint(1, upper)}</b>", parse_mode="html")
 
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^(?i)\.rps\s+(rock|paper|scissors)$"))
+    @client.on(events.NewMessage(outgoing=True, pattern=r"(?i)^\.rps\s+(rock|paper|scissors)$"))
     async def rps_cmd(event):
         user_choice = event.pattern_match.group(1).lower()
         bot_choice = random.choice(["rock", "paper", "scissors"])
@@ -1002,7 +1002,7 @@ async def attach_userbot_handlers(client: TelegramClient, host_state: dict, acti
         except Exception as e:
             await event.edit(f"⚠️ Invall error: {e}")
 
-    @client.on(events.NewMessage(outgoing=True, pattern=r"^(?i)\.clearall(?:\s+(confirm))?$"))
+    @client.on(events.NewMessage(outgoing=True, pattern=r"(?i)^\.clearall(?:\s+(confirm))?$"))
     async def clearall_cmd(event):
         conf = (event.pattern_match.group(1) or "").lower()
         if conf != "confirm":
